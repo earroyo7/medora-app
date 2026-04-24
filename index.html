@@ -45,16 +45,11 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-
-  font-size: 30px;
-  font-weight: 800;
-
-  /* 🔥 Gradient text */
-  background: linear-gradient(135deg, #2F80ED, #6EA8FF);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-
-  letter-spacing: -0.5px;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  color: #2F80ED;
+  animation: fadeSlide 0.8s ease;
 }
 
 .brand svg {
@@ -69,10 +64,11 @@
 }
 
 .subtitle {
-  font-size: 13px;
-  color: #94A3B8;
+  font-size: 14px;
+  color: #667085;
   font-weight: 500;
-  letter-spacing: 0.2px;
+  margin-top: 4px;
+  letter-spacing: 0.1px;
 }
 
 .icon-btn {
@@ -106,8 +102,14 @@
     transform: translateY(0);
   }
 }
-    .topbar {
-  box-shadow: 0 6px 20px rgba(24,39,75,0.04);
+   .topbar {
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(24,39,75,0.045);
 }
 
 .hero-text {
@@ -214,7 +216,7 @@
           <div class="hero-text">
             <h1>Hi, I’m Medora 👋</h1>
             <p>I’m here to support your health journey. How are you feeling today?</p>
-            <button class="primary-btn" onclick="openScreen('chat')">💬 Chat with Medora</button>
+            <button class="primary-btn" onclick="startChat()">💬 Chat with Medora</button>
           </div>
           <img class="medora-img" src="medora-avatar.png" alt="Medora AI companion" />
         </div>
