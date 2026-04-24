@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medora AI Health Companion</title>
+  <style>
+    :root{
+      --primary:#2F80ED;
+      --primary-dark:#1C64D8;
+      --primary-soft:#EAF3FF;
+      --bg:#F7FAFF;
+      --card:#FFFFFF;
+      --text:#101828;
+      --muted:#667085;
+      --border:#E6EAF0;
+      --green:#23C58A;
+      --blue:#2F80ED;
+      --orange:#F97316;
+      --red:#FF5C6C;
+      --shadow:0 12px 30px rgba(24,39,75,.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    .app{max-width:430px;margin:0 auto;min-height:100vh;background:#fff;position:relative;overflow:hidden;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+    .screen{display:none;min-height:100vh;padding-bottom:88px}
+    .screen.active{display:block}
+    .topbar{height:78px;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:#fff;border-bottom:1px solid #F1F3F7}
+    .brand{text-align:center;line-height:1.1}
+    .brand-row{display:flex;align-items:center;justify-content:center;gap:8px;font-size:28px;font-weight:800}
+    .brand svg{width:31px;height:31px;color:var(--primary)}
+    .subtitle{font-size:14px;color:var(--muted);font-weight:500;margin-top:4px}
+    .icon-btn{border:0;background:transparent;font-size:28px;cursor:pointer;color:#101828;position:relative}
+    .badge{position:absolute;right:-4px;top:4px;background:#FF405D;color:white;border-radius:999px;font-size:11px;padding:2px 6px;border:2px solid #fff}
+    .content{padding:16px 20px}
+    .hero{background:linear-gradient(135deg,#EFF6FF 0%,#DCEBFF 100%);border:1px solid #D6E7FF;border-radius:20px;min-height:235px;display:flex;align-items:center;position:relative;overflow:hidden;padding:24px 20px;box-shadow:var(--shadow)}
+    .hero-text{width:56%;z-index:2}
+    .hero h1{font-size:25px;margin:0 0 16px;font-weight:800}
+    .hero p{font-size:17px;line-height:1.45;margin:0 0 20px;color:#1f2937}
+    .medora-img{position:absolute;right:0;bottom:0;width:48%;height:100%;object-fit:cover;object-position:center;border-radius:0 20px 20px 0}
+    .primary-btn{background:var(--primary);color:#fff;border:0;border-radius:16px;padding:14px 18px;font-size:15px;font-weight:800;box-shadow:0 10px 20px rgba(47,128,237,.22);cursor:pointer}
+    .primary-btn:active{transform:scale(.98)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-top:16px;box-shadow:0 8px 22px rgba(24,39,75,.05)}
+    .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .section-head h2{font-size:20px;margin:0;font-weight:800}
+    .date{color:var(--muted);font-size:14px}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .metric{border-radius:16px;text-align:center;padding:14px 8px;font-size:13px;color:#344054}
+    .metric .emoji{font-size:25px;margin-bottom:8px}
+    .metric strong{display:block;font-size:17px;color:#101828;margin:5px 0}
+    .metric small{font-size:13px;font-weight:700}
+    .mood{background:#EAFBF3}.sleep{background:#EEF5FF}.activity{background:#FFF4E7}.anxiety{background:#FFF0F2}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .action{border:1px solid var(--border);background:#fff;border-radius:16px;padding:16px;display:flex;gap:12px;align-items:center;cursor:pointer;text-align:left}
+    .action:hover{background:#F8FBFF}
+    .action-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:23px;font-weight:800;flex:none}
+    .action h3{margin:0;font-size:14px}.action p{margin:4px 0 0;color:var(--muted);font-size:12.5px;line-height:1.3}
+    .guide{background:linear-gradient(135deg,#EAF3FF,#DCEBFF);display:flex;justify-content:space-between;align-items:center}
+    .guide h3{font-size:18px;margin:0 0 6px}.guide p{margin:0;color:#475467;font-size:14px}.leaf{font-size:58px;opacity:.45}
+    .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:430px;width:100%;height:78px;background:#fff;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);align-items:center;z-index:20}
+    .nav button{border:0;background:transparent;color:#667085;font-size:12px;cursor:pointer}
+    .nav .nav-icon{font-size:22px;display:block;margin-bottom:4px}.nav .active-tab{color:var(--primary);font-weight:800}
+    .plus{width:58px;height:58px;border-radius:999px;background:var(--primary)!important;color:#fff!important;font-size:34px!important;box-shadow:0 12px 24px rgba(47,128,237,.28);margin:auto;display:flex!important;align-items:center;justify-content:center}
+    .chat-top{height:76px;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #F1F3F7;background:#fff}
+    .chat-title{display:flex;gap:12px;align-items:center}
+    .avatar{width:48px;height:48px;border-radius:999px;object-fit:cover;border:2px solid #E5EEF9}
+    .chat-title h2{font-size:18px;margin:0}.online{color:#0BA66D;font-size:14px}
+    .messages{padding:18px 18px 145px;background:#FBFCFF;min-height:calc(100vh - 76px)}
+    .row{display:flex;gap:10px;margin:14px 0}.row.user{justify-content:flex-end}
+    .bubble{max-width:78%;background:#fff;border:1px solid var(--border);border-radius:22px;padding:16px 18px;font-size:16px;line-height:1.38;box-shadow:0 5px 16px rgba(24,39,75,.06)}
+    .user .bubble{background:var(--primary);color:#fff;border-color:var(--primary);border-bottom-right-radius:7px}
+    .bot .bubble{border-bottom-left-radius:7px}.time{display:block;text-align:right;font-size:11px;opacity:.7;margin-top:7px}
+    .save-card{background:#fff;border:1px solid var(--border);border-radius:20px;margin:16px 0 16px 58px;padding:16px;display:flex;gap:14px;align-items:center;box-shadow:0 5px 16px rgba(24,39,75,.06)}
+    .save-icon{width:56px;height:56px;background:var(--primary-soft);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--primary)}
+    .save-card p{margin:0 0 10px;font-size:15.5px}.save-actions{display:flex;gap:10px}.secondary{border:0;border-radius:12px;padding:10px 16px;font-weight:800;cursor:pointer;background:#F2F4F7;color:#344054}.secondary.primary{background:var(--primary);color:#fff}
+    .chips{position:fixed;bottom:78px;left:50%;transform:translateX(-50%);max-width:430px;width:100%;display:flex;gap:10px;overflow-x:auto;padding:10px 18px;background:#FBFCFF}
+    .chip{white-space:nowrap;border:1px solid var(--border);background:#fff;border-radius:999px;padding:10px 14px;font-size:14px;cursor:pointer}
+    .composer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:430px;width:100%;padding:11px 16px 86px;background:linear-gradient(180deg,rgba(251,252,255,.7),#fff 35%)}
+    .inputbar{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:999px;padding:8px;box-shadow:0 5px 16px rgba(24,39,75,.06)}
+    .inputbar input{border:0;outline:0;flex:1;font-size:15px;padding:10px;background:transparent}
+    .round{width:42px;height:42px;border-radius:999px;border:0;background:#F2F4F7;font-size:22px;cursor:pointer}.send{background:var(--primary);color:#fff}
+    .placeholder{padding:30px 20px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section id="home" class="screen active">
+      <div class="topbar">
+        <button class="icon-btn">☰</button>
+        <div class="brand">
+          <div class="brand-row">
+            <svg viewBox="0 0 48 48" fill="none"><path d="M24 40s-4.5-3.8-10.1-8.7C7.6 25.8 4 22.2 4 15.9 4 10.7 8.1 7 13.1 7c3.2 0 6.1 1.7 7.9 4.2C22.8 8.7 25.7 7 28.9 7 33.9 7 38 10.7 38 15.9c0 .8-.1 1.6-.2 2.3" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M24 40s4.5-3.8 10.1-8.7C40.4 25.8 44 22.2 44 15.9" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+            Medora
+          </div>
+          <div class="subtitle">Your AI Health Companion</div>
+        </div>
+        <button class="icon-btn">♧<span class="badge">3</span></button>
+      </div>
+
+      <div class="content">
+        <div class="hero">
+          <div class="hero-text">
+            <h1>Hi, I’m Medora 👋</h1>
+            <p>I’m here to support your health journey. How are you feeling today?</p>
+            <button class="primary-btn" onclick="openScreen('chat')">💬 Chat with Medora</button>
+          </div>
+          <img class="medora-img" src="medora-avatar.png" alt="Medora AI companion" />
+        </div>
+
+        <div class="card">
+          <div class="section-head"><h2>Health Overview</h2><span class="date">Today, May 18</span></div>
+          <div class="metrics">
+            <div class="metric mood"><div class="emoji">😊</div>Mood<strong>Good</strong><small style="color:var(--green)">7/10</small></div>
+            <div class="metric sleep"><div class="emoji">🌙</div>Sleep<strong>6.5 hrs</strong><small style="color:var(--blue)">Fair</small></div>
+            <div class="metric activity"><div class="emoji">🏃</div>Activity<strong>45 min</strong><small style="color:var(--green)">Good</small></div>
+            <div class="metric anxiety"><div class="emoji">💧</div>Anxiety<strong>Mild</strong><small style="color:var(--red)">4/10</small></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head"><h2>Quick Actions</h2></div>
+          <div class="grid">
+            <button class="action" onclick="quickLog('Log Health')"><span class="action-icon" style="background:var(--green)">✚</span><span><h3>Log Health</h3><p>Symptoms, mood, sleep & more</p></span></button>
+            <button class="action" onclick="quickLog('Anxiety Check-In')"><span class="action-icon" style="background:var(--red)">♥</span><span><h3>Anxiety Check-In</h3><p>Track episodes and triggers</p></span></button>
+            <button class="action" onclick="quickLog('My Patterns')"><span class="action-icon" style="background:var(--blue)">▥</span><span><h3>My Patterns</h3><p>View insights and trends</p></span></button>
+            <button class="action" onclick="quickLog('Doctor Report')"><span class="action-icon" style="background:var(--blue)">▤</span><span><h3>Doctor Report</h3><p>Generate report for your doctor</p></span></button>
+          </div>
+        </div>
+
+        <div class="card guide">
+          <div><h3>Let Medora guide you</h3><p>The more we talk, the better I can understand and support you.</p></div>
+          <div class="leaf">🌿</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="chat" class="screen">
+      <div class="chat-top">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="chat-title"><img class="avatar" src="medora-avatar.png" alt="Medora"><div><h2>Medora</h2><div class="online">Online</div></div></div>
+        <button class="icon-btn">♢</button>
+      </div>
+      <div class="messages" id="messages">
+        <div class="row user"><div class="bubble">I’ve been feeling really anxious today and I only slept 4 hours last night.<span class="time">9:30 AM ✓✓</span></div></div>
+        <div class="row bot"><img class="avatar" src="medora-avatar.png" alt=""><div class="bubble">I’m sorry to hear that 😔 Lack of sleep can definitely make anxiety feel harder to manage. You’re not alone, and I’m here with you.<br><br>Let’s take a deep breath together first. Inhale... hold... exhale...<br>How does that feel?<span class="time">9:31 AM</span></div></div>
+        <div class="save-card"><div class="save-icon">📋</div><div><p>Would you like me to save this to your health log?</p><div class="save-actions"><button class="secondary primary" onclick="saveHealthLog()">Yes, Save It</button><button class="secondary">Not Now</button></div></div></div>
+      </div>
+      <div class="chips">
+        <button class="chip" onclick="sendChip('Log my dinner')">🥗 Log my dinner</button>
+        <button class="chip" onclick="sendChip('Track a symptom')">🌡️ Track a symptom</button>
+        <button class="chip" onclick="sendChip('I’m ok 😊')">I’m ok 😊</button>
+      </div>
+      <div class="composer">
+        <div class="inputbar">
+          <button class="round">+</button>
+          <input id="messageInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()" />
+          <button class="round send" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="insights" class="screen"><div class="topbar"><button class="icon-btn" onclick="openScreen('home')">‹</button><div class="brand-row">Insights</div><span></span></div><div class="placeholder">Your patterns and trends will show here.</div></section>
+    <section id="profile" class="screen"><div class="topbar"><button class="icon-btn" onclick="openScreen('home')">‹</button><div class="brand-row">Profile</div><span></span></div><div class="placeholder">Your profile settings will show here.</div></section>
+
+    <nav class="nav">
+      <button id="tab-home" class="active-tab" onclick="openScreen('home')"><span class="nav-icon">⌂</span>Home</button>
+      <button id="tab-chat" onclick="openScreen('chat')"><span class="nav-icon">☵</span>Chat</button>
+      <button class="plus" onclick="quickLog('Quick Add')">+</button>
+      <button id="tab-insights" onclick="openScreen('insights')"><span class="nav-icon">▥</span>Insights</button>
+      <button id="tab-profile" onclick="openScreen('profile')"><span class="nav-icon">♙</span>Profile</button>
+    </nav>
+  </main>
+
+  <script>
+    function openScreen(id){
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active-tab'));
+      const tab=document.getElementById('tab-'+id); if(tab) tab.classList.add('active-tab');
+    }
+    function timeNow(){
+      return new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+    }
+    function addMessage(text, who='user'){
+      const messages=document.getElementById('messages');
+      const row=document.createElement('div');
+      row.className='row '+who;
+      if(who==='bot'){
+        row.innerHTML='<img class="avatar" src="medora-avatar.png" alt=""><div class="bubble">'+text+'<span class="time">'+timeNow()+'</span></div>';
+      } else {
+        row.innerHTML='<div class="bubble">'+text+'<span class="time">'+timeNow()+' ✓✓</span></div>';
+      }
+      messages.appendChild(row);
+      messages.scrollTop=messages.scrollHeight;
+    }
+    function sendMessage(){
+      const input=document.getElementById('messageInput');
+      const text=input.value.trim();
+      if(!text) return;
+      addMessage(text,'user');
+      input.value='';
+      setTimeout(()=>addMessage('I hear you. I saved this context so we can track patterns over time. Would you like to log your mood, sleep, anxiety, or symptoms?','bot'),500);
+    }
+    function sendChip(text){
+      openScreen('chat');
+      addMessage(text,'user');
+      setTimeout(()=>addMessage('Got it. I can help you log that now. Add any details you want me to remember.','bot'),450);
+    }
+    function saveHealthLog(){
+      addMessage('Yes, please save it.','user');
+      setTimeout(()=>addMessage('Done! I’ve saved this to your health log:<br><br>😟 Anxiety: Elevated<br>🌙 Sleep: 4 hours<br>📝 Note: Felt anxious during the day<br>⏰ Time: '+timeNow()+'<br><br>Would you like to add anything else?','bot'),500);
+    }
+    function quickLog(label){
+      openScreen('chat');
+      addMessage(label,'user');
+      setTimeout(()=>addMessage('Okay — tell me what you want to add, and I’ll organize it into your health log.','bot'),450);
+    }
+  </script>
+</body>
+</html>
