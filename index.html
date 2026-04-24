@@ -58,16 +58,21 @@
 }
 
 .brand svg {
-  width: 31px;
-  height: 31px;
+  width: 34px;
+  height: 34px;
+
+  /* Gradient effect */
   color: #2F80ED;
+  filter: drop-shadow(0 4px 10px rgba(47,128,237,0.25));
+
+  transform: translateY(1px);
 }
 
 .subtitle {
-  font-size: 14px;
-  color: #667085;
-  margin-top: 4px;
-  background: transparent;
+  font-size: 13px;
+  color: #94A3B8;
+  font-weight: 500;
+  letter-spacing: 0.2px;
 }
 
 .icon-btn {
@@ -86,6 +91,23 @@
   background: #F4F7FB;
   overflow: hidden;
   min-height: 250px;
+}
+    .brand-row {
+  animation: fadeSlide 0.8s ease;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+    .topbar {
+  box-shadow: 0 6px 20px rgba(24,39,75,0.04);
 }
 
 .hero-text {
