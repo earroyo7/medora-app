@@ -25,12 +25,52 @@
     .app{max-width:430px;margin:0 auto;min-height:100vh;background:#fff;position:relative;overflow:hidden;border-left:1px solid var(--border);border-right:1px solid var(--border)}
     .screen{display:none;min-height:100vh;padding-bottom:88px}
     .screen.active{display:block}
-    .topbar{height:78px;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:#fff;border-bottom:1px solid #F1F3F7}
-    .brand{text-align:center;line-height:1.1}
-    .brand-row{display:flex;align-items:center;justify-content:center;gap:8px;font-size:28px;font-weight:800}
-    .brand svg{width:31px;height:31px;color:var(--primary)}
-    .subtitle{font-size:14px;color:var(--muted);font-weight:500;margin-top:4px}
-    .icon-btn{border:0;background:transparent;font-size:28px;cursor:pointer;color:#101828;position:relative}
+    .topbar {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: #fff;
+}
+
+.brand {
+  text-align: center;
+  line-height: 1.1;
+  background: transparent;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #2F80ED;
+  font-size: 30px;
+  font-weight: 800;
+  background: transparent;
+}
+
+.brand svg {
+  width: 31px;
+  height: 31px;
+  color: #2F80ED;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #667085;
+  margin-top: 4px;
+  background: transparent;
+}
+
+.icon-btn {
+  border: 0;
+  background: transparent;
+  font-size: 28px;
+  color: #101828;
+  position: relative;
+}
     .badge{position:absolute;right:-4px;top:4px;background:#FF405D;color:white;border-radius:999px;font-size:11px;padding:2px 6px;border:2px solid #fff}
     .content{padding:16px 20px}
     .hero {
