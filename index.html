@@ -44,11 +44,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  color: #2F80ED;
+  gap: 10px;
+
   font-size: 30px;
   font-weight: 800;
-  background: transparent;
+
+  /* 🔥 Gradient text */
+  background: linear-gradient(135deg, #2F80ED, #6EA8FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  letter-spacing: -0.5px;
 }
 
 .brand svg {
