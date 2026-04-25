@@ -307,7 +307,59 @@
       messages.appendChild(row);
       messages.scrollTop=messages.scrollHeight;
     }
-    async function sendMessage(){
+    const MEDORA_MEMORY_KEY = "medora_memory_v2";
+const MEDORA_PROFILE_KEY = "medora_profile_v2";
+
+function getMemory(){
+  return JSON.parse(localStorage.getItem(MEDORA_MEMORY_KEY) || "[]");
+}
+
+function saveMemory(role, content){
+  const memory = getMemory();
+
+  memory.push({
+    role,
+    content,
+    time: new Date().toISOString()
+  });
+
+  localStorage.setItem(MEDORA_MEMORY_KEY, JSON.stringify(memory.slice(-40)));
+}
+
+function getHealthProfile(){
+  return JSON.parse(localStorage.getItem(MEDORA_PROFILE_KEY) || JSON.stringify({
+    sleep: [],
+    mood: [],
+    anxiety: [],
+    symptoms: [],
+    food: [],
+    activity: [],
+    notes: []
+  }));
+}
+
+function saveHealthProfile(update){
+  const profile = getHealthProfile();
+
+  Object.keys(update || {}).forEach(key => {
+    if(Array.isArray(profile[key]) && update[key]){
+      profile[key].push({
+        value: update[key],
+        time: new Date().toISOString()
+      });
+      profile[key] = profile[key].slice(-20);
+    }
+  });
+
+  localStorage.setItem(MEDORA_PROFILE_KEY, JSON.stringify(profile));
+}
+
+function clearMedoraMemory(){
+  localStorage.removeItem(MEDORA_MEMORY_KEY);
+  localStorage.removeItem(MEDORA_PROFILE_KEY);
+}
+
+async function sendMessage(){
   const input = document.getElementById('messageInput');
   const text = input.value.trim();
   if(!text) return;
@@ -315,40 +367,38 @@
   addMessage(text,'user');
   input.value='';
 
-  // 🔥 Save user message to memory
-  saveMemory('user', text);
-
-  addMessage('Typing...', 'bot');
+  saveMemory("user", text);
+  addMessage("Typing...", "bot");
 
   try {
-    const memory = getMemory();
-
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         message: text,
-        memory: memory
+        memory: getMemory(),
+        healthProfile: getHealthProfile()
       })
     });
 
     const data = await res.json();
 
-    const messages = document.getElementById('messages');
+    const messages = document.getElementById("messages");
     const lastBot = messages.lastElementChild;
-    if(lastBot && lastBot.classList.contains('bot')) {
-      lastBot.remove();
+    if(lastBot && lastBot.classList.contains("bot")) lastBot.remove();
+
+    const reply = data.reply || "I’m here with you. Tell me a little more.";
+    addMessage(reply, "bot");
+    saveMemory("assistant", reply);
+
+    if(data.healthUpdate){
+      saveHealthProfile(data.healthUpdate);
     }
 
-    const reply = data.reply || 'Sorry, I had trouble responding.';
-    addMessage(reply, 'bot');
-
-    // 🔥 Save AI reply to memory
-    saveMemory('assistant', reply);
-
   } catch (err) {
-    addMessage('Sorry, I could not connect right now. Please try again.', 'bot');
+    addMessage("Sorry, I couldn’t connect right now. Please try again.", "bot");
   }
+}
 }function getMemory(){
   return JSON.parse(localStorage.getItem('medoraMemory') || '[]');
 }
