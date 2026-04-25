@@ -289,7 +289,22 @@
 let isCrisis = false;
 
 function handleCrisisFollowup(message) {
-  const text = message.toLowerCase();
+  const text = String(message || "").toLowerCase();
+
+  const medicalEmergency =
+    text.includes("chest pain") ||
+    text.includes("trouble breathing") ||
+    text.includes("can't breathe") ||
+    text.includes("cant breathe") ||
+    text.includes("shortness of breath") ||
+    text.includes("passed out") ||
+    text.includes("fainted") ||
+    text.includes("overdose") ||
+    text.includes("throat closing");
+
+  if (medicalEmergency) {
+    return "This could be a medical emergency. Please call emergency services now, or have someone near you call. Chest pain with trouble breathing needs urgent help right away.";
+  }
 
   if (text.includes("yes")) {
     return "Thank you for telling me. Please call emergency services right now or call/text 988 if you’re in the U.S. Can you do that now?";
@@ -297,7 +312,7 @@ function handleCrisisFollowup(message) {
 
   if (text.includes("no")) {
     isCrisis = false;
-    return "I’m really glad you’re safe right now. Let’s keep this simple — message or call one trusted person and stay near someone if you can.";
+    return "I’m really glad you’re safe right now. Stay near someone if you can, and message or call one trusted person now.";
   }
 
   return "I’m here with you. Are you safe right now — yes or no?";
