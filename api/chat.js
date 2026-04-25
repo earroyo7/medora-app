@@ -84,11 +84,56 @@ function detectCrisis(message) {
     (text.includes("hurt") && text.includes("myself")) ||
     (text.includes("harm") && text.includes("myself")) ||
     (text.includes("end") && text.includes("life")) ||
-    (text.includes("die") && (text.includes("want") || text.includes("wish"))) ||
+    text.includes("i want to die") ||
+text.includes("i wanna die") ||
+text.includes("wish i was dead") ||
+text.includes("wish i were dead") ||
     (text.includes("unsafe") && text.includes("myself"));
 
   return directMatch || intentMatch;
 }
+
+function detectRelationshipContext(message) {
+  const text = normalizeText(message);
+
+ const phrases = [
+  "breakup",
+  "break up",
+  "broke up",
+  "broken up",
+  "ex",
+  "my ex",
+  "girlfriend",
+  "boyfriend",
+  "wife",
+  "husband",
+  "partner",
+  "dating",
+  "relationship",
+  "miss her",
+  "miss him",
+  "miss them",
+  "text her",
+  "text him",
+  "text them",
+  "call her",
+  "call him",
+  "reach out",
+  "reach out to her",
+  "reach out to him",
+  "she left",
+  "he left",
+  "they left",
+  "heartbroken",
+  "rejected",
+  "ghosted",
+  "cheated",
+  "dumped me"
+];
+
+  return phrases.some(p => text.includes(p));
+}
+
 function detectMedicalEmergency(message) {
   const text = normalizeText(message);
 
@@ -157,6 +202,17 @@ For normal wellness messages:
 1. Identify the strongest driver.
 2. Explain why it matters in plain language.
 3. Give one focused next step.
+
+RELATIONSHIP SUPPORT:
+If the user talks about breakups, dating, an ex, rejection, missing someone, or wanting to contact someone:
+- Relationship mode overrides normal wellness coaching unless there is a safety risk.
+- Respond like a warm relationship coach, not a textbook.
+- Validate the pain first.
+- Name the hidden emotional driver: grief, rejection, loneliness, hope, guilt, confusion, or urge for relief.
+- If they want to text an ex, help them pause before acting.
+- Never encourage repeated unwanted contact, pressure, manipulation, tracking, or begging.
+- Give one grounded next step.
+- Do not use phrases like “it is important to consider” or “common urge.”
 
 STYLE:
 - Default to 3 sentences.
@@ -317,6 +373,8 @@ if (detectCrisis(message)) {
   });
 }
 
+   const relationshipMode = detectRelationshipContext(message);
+
     const recentMemory = memory.slice(-12);
 
     const memoryText = recentMemory
@@ -340,6 +398,35 @@ if (detectCrisis(message)) {
             role: "system",
             content: medoraSystemPrompt
           },
+          
+          {
+  role: "system",
+  content: relationshipMode ? `
+RELATIONSHIP / BREAKUP MODE IS ACTIVE.
+
+The user is talking about relationship pain, breakup grief, missing someone, rejection, or wanting to contact an ex.
+
+Override the default wellness tone.
+
+Respond like Medora is emotionally present and coaching them in the moment.
+
+Rules:
+- First sentence must validate the specific feeling.
+- Second sentence should explain the emotional driver in plain language.
+- Third sentence should give one grounded next step.
+- If the user wants to reach out, help them pause before texting.
+- Do not sound clinical.
+- Do not say "common urge."
+- Do not say "it is important to consider."
+- Do not lecture.
+- Do not over-explain.
+- Keep it short, warm, and useful.
+
+Example for "I really want to reach out to her":
+"I get why you want to reach out — when you miss someone, contact can feel like the fastest way to calm the pain. But that urge may be about getting relief right now, not necessarily knowing what’s best for you. Wait 10 minutes, breathe, and ask yourself: am I trying to reconnect, or am I trying to stop hurting?"
+` : ""
+},
+
           {
             role: "system",
             content: `USER HEALTH PROFILE:\n${JSON.stringify(healthProfile).slice(0, 4000)}`
