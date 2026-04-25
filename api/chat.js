@@ -89,6 +89,32 @@ function detectCrisis(message) {
 
   return directMatch || intentMatch;
 }
+function detectMedicalEmergency(message) {
+  const text = normalizeText(message);
+
+  return (
+    text.includes("chest pain") ||
+    text.includes("can't breathe") ||
+    text.includes("cant breathe") ||
+    text.includes("trouble breathing") ||
+    text.includes("difficulty breathing") ||
+    text.includes("shortness of breath") ||
+    text.includes("fainted") ||
+    text.includes("passed out") ||
+    text.includes("overdose") ||
+    text.includes("throat closing") ||
+    text.includes("severe allergic reaction") ||
+    text.includes("face drooping") ||
+    text.includes("slurred speech")
+  );
+}
+function medicalEmergencyResponse() {
+  return `This could be a medical emergency.
+
+Please call emergency services now, or have someone near you call.
+
+Chest pain, trouble breathing, fainting, overdose, or throat closing needs urgent help right away.`;
+}
 
 // ---------- SAFETY RESPONSE ----------
 function crisisResponse() {
@@ -259,22 +285,37 @@ export default async function handler(req, res) {
     if (!message) {
       return res.status(400).json({ reply: "Message is required" });
     }
-
-    // Crisis and emergency override happens BEFORE OpenAI
-    if (detectCrisis(message)) {
-      return res.status(200).json({
-        reply: crisisResponse(),
-        healthUpdate: {
-          sleep: null,
-          mood: null,
-          anxiety: null,
-          symptoms: null,
-          food: null,
-          activity: null,
-          notes: "CRISIS_MODE"
-        }
-      });
+// Medical emergency override (HIGHEST priority)
+if (detectMedicalEmergency(message)) {
+  return res.status(200).json({
+    reply: medicalEmergencyResponse(),
+    healthUpdate: {
+      sleep: null,
+      mood: null,
+      anxiety: null,
+      symptoms: null,
+      food: null,
+      activity: null,
+      notes: "CRISIS_MODE"
     }
+  });
+}
+
+// Crisis override (SECOND priority)
+if (detectCrisis(message)) {
+  return res.status(200).json({
+    reply: crisisResponse(),
+    healthUpdate: {
+      sleep: null,
+      mood: null,
+      anxiety: null,
+      symptoms: null,
+      food: null,
+      activity: null,
+      notes: "CRISIS_MODE"
+    }
+  });
+}
 
     const recentMemory = memory.slice(-12);
 
