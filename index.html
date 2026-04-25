@@ -315,13 +315,21 @@
   addMessage(text,'user');
   input.value='';
 
+  // 🔥 Save user message to memory
+  saveMemory('user', text);
+
   addMessage('Typing...', 'bot');
 
   try {
+    const memory = getMemory();
+
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text })
+      body: JSON.stringify({ 
+        message: text,
+        memory: memory
+      })
     });
 
     const data = await res.json();
@@ -332,11 +340,36 @@
       lastBot.remove();
     }
 
-    addMessage(data.reply || 'Sorry, I had trouble responding.', 'bot');
+    const reply = data.reply || 'Sorry, I had trouble responding.';
+    addMessage(reply, 'bot');
+
+    // 🔥 Save AI reply to memory
+    saveMemory('assistant', reply);
 
   } catch (err) {
     addMessage('Sorry, I could not connect right now. Please try again.', 'bot');
   }
+}function getMemory(){
+  return JSON.parse(localStorage.getItem('medoraMemory') || '[]');
+}
+
+function saveMemory(role, content){
+  const memory = getMemory();
+
+  memory.push({
+    role,
+    content,
+    time: new Date().toISOString()
+  });
+
+  // keep only last 20 messages
+  const recentMemory = memory.slice(-20);
+
+  localStorage.setItem('medoraMemory', JSON.stringify(recentMemory));
+}
+
+function clearMemory(){
+  localStorage.removeItem('medoraMemory');
 }
     function sendChip(text){
       openScreen('chat');
