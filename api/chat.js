@@ -4,17 +4,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message, memory = [] } = req.body || {};
+    const { message, memory = [], healthProfile = {} } = req.body || {};
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    const recentMemory = memory.slice(-12);
+    const recentMemory = memory.slice(-16).map(m => ({
+      role: m.role === "assistant" ? "assistant" : "user",
+      content: String(m.content || "").slice(0, 1200)
+    }));
 
-    const memoryText = recentMemory
-      .map(m => `${m.role}: ${m.content}`)
-      .join("\n");
+    const profileSummary = JSON.stringify(healthProfile).slice(0, 6000);
 
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -27,18 +28,57 @@ export default async function handler(req, res) {
         input: [
           {
             role: "system",
-            content:
-              "You are Medora, a warm, supportive AI health companion. Use recent memory when relevant. If the user mentioned sleep, mood, anxiety, food, symptoms, or activity earlier, reference it naturally. Do not diagnose or replace a doctor. For emergencies, tell the user to seek urgent help immediately."
+            content: `
+You are Medora, an advanced AI health companion.
+
+Your personality:
+- Warm, calm, emotionally intelligent
+- Supportive but not overly robotic
+- Short enough to feel conversational
+- Personalized using memory whenever relevant
+- Helpful with mood, sleep, anxiety, symptoms, food, activity, habits, and doctor-ready notes
+
+Rules:
+- Do NOT diagnose.
+- Do NOT prescribe medication.
+- Do NOT replace a doctor.
+- If user mentions self-harm, chest pain, trouble breathing, stroke symptoms, fainting, severe allergic reaction, severe pain, or immediate danger, tell them to seek urgent help now.
+- If memory is relevant, reference it naturally.
+- If the user shares trackable health data, extract it into healthUpdate.
+
+Return ONLY valid JSON:
+{
+  "reply": "string",
+  "healthUpdate": {
+    "sleep": null,
+    "mood": null,
+    "anxiety": null,
+    "symptoms": null,
+    "food": null,
+    "activity": null,
+    "notes": null
+  }
+}
+`
           },
           {
             role: "system",
-            content: `Recent memory:\n${memoryText || "No recent memory yet."}`
+            content: `Stored health profile:\n${profileSummary}`
+          },
+          {
+            role: "system",
+            content: `Recent conversation memory:\n${recentMemory.map(m => `${m.role}: ${m.content}`).join("\n") || "No recent memory yet."}`
           },
           {
             role: "user",
             content: message
           }
         ],
+        text: {
+          format: {
+            type: "json_object"
+          }
+        }
       }),
     });
 
@@ -47,20 +87,33 @@ export default async function handler(req, res) {
     if (!response.ok) {
       return res.status(response.status).json({
         reply: "Sorry, I could not connect to Medora right now.",
-        error: data,
+        error: data
       });
     }
 
-    const reply =
+    const raw =
       data.output?.[0]?.content?.[0]?.text ||
-      "I’m here with you. Tell me a little more about how you’re feeling.";
+      '{"reply":"I’m here with you. Tell me a little more.","healthUpdate":{}}';
 
-    return res.status(200).json({ reply });
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      parsed = {
+        reply: raw,
+        healthUpdate: {}
+      };
+    }
+
+    return res.status(200).json({
+      reply: parsed.reply || "I’m here with you. Tell me a little more.",
+      healthUpdate: parsed.healthUpdate || {}
+    });
 
   } catch (error) {
     return res.status(500).json({
       reply: "Something went wrong. Please try again.",
-      error: error.message,
+      error: error.message
     });
   }
 }
