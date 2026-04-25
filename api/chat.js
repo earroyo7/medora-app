@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     role: "user",
     content: message
   }
-]`,
+],
       }),
     });
 
