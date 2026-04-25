@@ -287,37 +287,6 @@
 
 <script>
 let isCrisis = false;
-function localDetectCrisis(message) {
-  const text = String(message || "").toLowerCase();
-
-  return (
-    text.includes("kill myself") ||
-    text.includes("killing myself") ||
-    text.includes("suicide") ||
-    text.includes("suicidal") ||
-    text.includes("end my life") ||
-    text.includes("want to die") ||
-    text.includes("hurt myself") ||
-    text.includes("self harm") ||
-    text.includes("don't want to live") ||
-    text.includes("dont want to live") ||
-    text.includes("no reason to live") ||
-    text.includes("can't go on") ||
-    (text.includes("kill") && text.includes("myself"))
-  );
-}
-
-function crisisStartResponse() {
-  return `I hear that you’re hurting, and I’m really sorry you’re in this much pain. I need to focus on your safety first.
-
-Are you thinking about suicide or about hurting yourself right now?
-
-If yes, are you in immediate danger, or do you have a plan, a way to do it, or a time in mind?
-
-If there is any immediate danger, call emergency services now. If you’re in the U.S. or Canada, call or text 988. Move away from anything you could use to hurt yourself and contact one trusted person right now.
-
-Are you safe in this exact moment?`;
-}
 
 function handleCrisisFollowup(message) {
   const text = String(message || "").toLowerCase();
@@ -458,13 +427,7 @@ async function sendMessage(){
   input.value='';
 
   saveMemory("user", text);
-  if (localDetectCrisis(text)) {
-  isCrisis = true;
-  const reply = crisisStartResponse();
-  addMessage(reply, "bot");
-  saveMemory("assistant", reply);
-  return;
-}
+  
   if (isCrisis) {
   const reply = handleCrisisFollowup(text);
   addMessage(reply, "bot");
@@ -497,7 +460,7 @@ async function sendMessage(){
       lastBot.remove();
     }
 
-    const reply = data.reply || "I’m here with you. Tell me a little more.";
+    const reply = data.reply || "I couldn’t get a clear response. Please try again.";
     addMessage(reply, "bot");
     saveMemory("assistant", reply);
 
@@ -506,7 +469,7 @@ async function sendMessage(){
     }
 
   } catch (err) {
-    addMessage("Sorry, I couldn’t connect right now. Please try again.", "bot");
+    addMessage("Connection issue. Please try again.", "bot");
   }
 }
 
