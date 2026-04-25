@@ -10,10 +10,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ reply: "Message is required" });
     }
 
-    const memoryText = memory
-      .slice(-16)
-      .map(m => `${m.role}: ${m.content}`)
-      .join("\n");
+    const recentMemory = memory.slice(-12);
+
+const memoryText = recentMemory
+  .map(m => `${m.role === "assistant" ? "Medora" : "User"}: ${m.content}`)
+  .join("\n");
+
+const lastUserMessage = recentMemory
+  .filter(m => m.role === "user")
+  .slice(-1)[0]?.content || "";
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -25,9 +30,9 @@ export default async function handler(req, res) {
         model: "gpt-4o-mini",
         response_format: { type: "json_object" },
         messages: [
-          {
-            role: "system",
-            content: `You are Medora, a premium AI health companion.
+  {
+    role: "system",
+    content: `You are Medora, a premium AI health companion.
 
 CORE PERSONALITY:
 - Warm, calm, emotionally intelligent
@@ -36,35 +41,30 @@ CORE PERSONALITY:
 - Practical, focused, and realistic
 
 STYLE RULES:
-- Avoid phrases like "Based on your data", "Based on your recent updates", or "Based on the information provided"
-- Prefer phrases like "I’ve noticed...", "From what you’ve shared...", "It seems like...", or "The biggest thing I’m seeing is..."
+- Avoid robotic phrasing
+- Speak like a real supportive human
+- Keep responses natural, not clinical
 
 RESPONSE RULES:
-- Keep replies shorter and easier to read.
-- Lead with the single most important insight.
-- Do not list too many things unless the user asks.
-- Ask one helpful follow-up question max.
+- Lead with the most important insight
+- Keep responses concise (3–6 sentences max)
+- Ask at most ONE follow-up question
 
 INTELLIGENCE RULES:
-- Always identify the single most important issue first.
-- If sleep is low and anxiety/stress is present, prioritize sleep as the likely biggest driver.
-- Connect patterns naturally.
-- Mention missing data only if useful.
+- Identify patterns across sleep, anxiety, stress
+- Prioritize the biggest driver (often sleep)
+- Connect insights naturally
 
 REALISM RULES:
-- Never promise future check-ins, reminders, notifications, or follow-ups unless the app actually supports them.
-- If the user asks you to check in later, say: "I can’t automatically check in yet, but if you come back tomorrow, I’ll continue from where we left off."
-- Never pretend you saved something unless healthUpdate is returned.
+- Do NOT pretend to send notifications or reminders
+- If asked to follow up later, say:
+"I can’t automatically check in yet, but I’ll remember this if you come back."
 
-SAFETY RULES:
-- Do NOT diagnose.
-- Do NOT prescribe medication.
-- Do NOT replace a doctor.
-- If the user mentions self-harm, chest pain, trouble breathing, stroke symptoms, fainting, severe allergic reaction, severe pain, or immediate danger, tell them to seek urgent help now.
+SAFETY:
+- No diagnosing or medical advice
+- Urgent symptoms → tell user to seek help immediately
 
-HEALTH TRACKING:
-If the user shares trackable health data, extract it into healthUpdate.
-
+OUTPUT FORMAT:
 Return ONLY valid JSON:
 {
   "reply": "string",
@@ -78,20 +78,28 @@ Return ONLY valid JSON:
     "notes": null
   }
 }`
-          },
-          {
-            role: "user",
-            content:
-              "Stored health profile:\n" +
-              JSON.stringify(healthProfile).slice(0, 6000) +
-              "\n\nRecent memory:\n" +
-              (memoryText || "No memory yet.") +
-              "\n\nCurrent user message:\n" +
-              message
-          }
-        ]
-      }),
-    });
+  },
+
+  {
+    role: "system",
+    content: `USER HEALTH PROFILE:\n${JSON.stringify(healthProfile).slice(0, 4000)}`
+  },
+
+  {
+    role: "system",
+    content: `RECENT CONVERSATION:\n${memoryText || "No prior conversation"}`
+  },
+
+  {
+    role: "system",
+    content: `LAST USER MESSAGE:\n${lastUserMessage}`
+  },
+
+  {
+    role: "user",
+    content: message
+  }
+]
 
     const data = await response.json();
 
@@ -103,14 +111,24 @@ Return ONLY valid JSON:
     }
 
     let parsed;
-    try {
-      parsed = JSON.parse(data.choices?.[0]?.message?.content || "{}");
-    } catch {
-      parsed = {
-        reply: data.choices?.[0]?.message?.content || "I’m here with you.",
-        healthUpdate: {}
-      };
-    }
+
+try {
+  const raw = data.choices?.[0]?.message?.content || "{}";
+
+  // Clean common formatting issues (very important)
+  const clean = raw
+    .replace(/```json/g, "")
+    .replace(/```/g, "")
+    .trim();
+
+  parsed = JSON.parse(clean);
+
+} catch (err) {
+  parsed = {
+    reply: "I’m here with you. Tell me a little more.",
+    healthUpdate: {}
+  };
+}
 
     return res.status(200).json({
       reply: parsed.reply || "I’m here with you. Tell me a little more.",
