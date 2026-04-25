@@ -306,16 +306,44 @@ function handleCrisisFollowup(message) {
     return "This could be a medical emergency. Please call emergency services now, or have someone near you call. Chest pain with trouble breathing needs urgent help right away.";
   }
 
-  if (text.includes("yes")) {
-    return "Thank you for telling me. Please call emergency services right now or call/text 988 if you’re in the U.S. Can you do that now?";
-  }
+  const clearlySafe =
+    text.includes("i'm safe") ||
+    text.includes("im safe") ||
+    text.includes("i am safe") ||
+    text.includes("safe now") ||
+    text.includes("i'm okay now") ||
+    text.includes("im okay now") ||
+    text.includes("i am okay now");
 
-  if (text.includes("no")) {
+  if (clearlySafe) {
     isCrisis = false;
     return "I’m really glad you’re safe right now. Stay near someone if you can, and message or call one trusted person now.";
   }
 
-  return "I’m here with you. Are you safe right now — yes or no?";
+  const highRisk =
+    text.includes("plan") ||
+    text.includes("tonight") ||
+    text.includes("right now") ||
+    text.includes("pills") ||
+    text.includes("knife") ||
+    text.includes("gun") ||
+    text.includes("rope") ||
+    text.includes("bridge") ||
+    text.includes("overdose");
+
+  if (highRisk) {
+    return "Thank you for telling me. This sounds urgent. Please call emergency services now or call/text 988 if you’re in the U.S. Move away from anything you could use to hurt yourself and get near another person right now.";
+  }
+
+  if (text === "yes" || text.includes("yes")) {
+    return "Thank you for being honest with me. Are you in immediate danger, or do you have a plan, a way to do it, or a time in mind?";
+  }
+
+  if (text === "no" || text.includes("no")) {
+    return "I’m glad you’re not in immediate danger. I still want to keep this focused on safety — are you safe right now, and can you stay near someone you trust?";
+  }
+
+  return "I hear that you’re hurting. I’m not judging you. Are you safe right now — yes or no?";
 }
 function openScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -423,6 +451,8 @@ async function sendMessage(){
   isCrisis = true;
 }
 
+// DO NOT turn crisis off automatically
+// Only allow exit when user clearly says safe
     const messages = document.getElementById("messages");
     const lastBot = messages.lastElementChild;
     if(lastBot && lastBot.classList.contains("bot")) {
