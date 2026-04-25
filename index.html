@@ -312,8 +312,10 @@
   const text = input.value.trim();
   if(!text) return;
 
-  addMessage(text, 'user');
-  input.value = '';
+  addMessage(text,'user');
+  input.value='';
+
+  addMessage('Typing...', 'bot');
 
   try {
     const res = await fetch('/api/chat', {
@@ -323,7 +325,15 @@
     });
 
     const data = await res.json();
+
+    const messages = document.getElementById('messages');
+    const lastBot = messages.lastElementChild;
+    if(lastBot && lastBot.classList.contains('bot')) {
+      lastBot.remove();
+    }
+
     addMessage(data.reply || 'Sorry, I had trouble responding.', 'bot');
+
   } catch (err) {
     addMessage('Sorry, I could not connect right now. Please try again.', 'bot');
   }
