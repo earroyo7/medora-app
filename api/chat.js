@@ -47,7 +47,7 @@ if (detectCrisis(message)) {
       symptoms: null,
       food: null,
       activity: null,
-      notes: "Crisis safety response triggered"
+      notes: "CRISIS_MODE"
     }
   });
 }
