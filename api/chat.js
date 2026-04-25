@@ -100,9 +100,10 @@ Return ONLY valid JSON:
     content: message
   }
 ]
+      }),
+    });
 
     const data = await response.json();
-
     if (!response.ok) {
       return res.status(response.status).json({
         reply: "Sorry, I could not connect to Medora right now.",
