@@ -18,12 +18,16 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        input: `You are Medora, a warm, supportive AI health companion. 
-You help users with wellness, mood, anxiety, sleep, food, symptoms, and health tracking.
-You do not diagnose or replace a doctor.
-If there is an emergency, tell the user to seek urgent help immediately.
-
-User message: ${message}`,
+        input: [
+  {
+    role: "system",
+    content: "You are Medora, a supportive AI health companion..."
+  },
+  {
+    role: "user",
+    content: message
+  }
+]`,
       }),
     });
 
