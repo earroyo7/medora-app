@@ -1,50 +1,37 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Use POST" });
+    return res.status(405).json({ reply: "Use POST" });
   }
 
   try {
     const { message, memory = [], healthProfile = {} } = req.body || {};
 
     if (!message) {
-      return res.status(400).json({ error: "Message is required" });
+      return res.status(400).json({ reply: "Message is required" });
     }
 
-    const recentMemory = memory.slice(-16).map(m => ({
-      role: m.role === "assistant" ? "assistant" : "user",
-      content: String(m.content || "").slice(0, 1200)
-    }));
+    const memoryText = memory
+      .slice(-16)
+      .map(m => `${m.role}: ${m.content}`)
+      .join("\n");
 
-    const profileSummary = JSON.stringify(healthProfile).slice(0, 6000);
-
-    const response = await fetch("https://api.openai.com/v1/responses", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4.1-mini",
-        input: [
+        model: "gpt-4o-mini",
+        response_format: { type: "json_object" },
+        messages: [
           {
             role: "system",
-            content: `
-You are Medora, an advanced AI health companion.
+            content: `You are Medora, a warm AI health companion.
 
-Your personality:
-- Warm, calm, emotionally intelligent
-- Supportive but not overly robotic
-- Short enough to feel conversational
-- Personalized using memory whenever relevant
-- Helpful with mood, sleep, anxiety, symptoms, food, activity, habits, and doctor-ready notes
-
-Rules:
-- Do NOT diagnose.
-- Do NOT prescribe medication.
-- Do NOT replace a doctor.
-- If user mentions self-harm, chest pain, trouble breathing, stroke symptoms, fainting, severe allergic reaction, severe pain, or immediate danger, tell them to seek urgent help now.
-- If memory is relevant, reference it naturally.
-- If the user shares trackable health data, extract it into healthUpdate.
+Use recent memory when relevant.
+Do not diagnose or replace a doctor.
+For emergencies, self-harm, chest pain, trouble breathing, stroke symptoms, fainting, severe allergic reaction, or immediate danger, tell the user to seek urgent help now.
 
 Return ONLY valid JSON:
 {
@@ -58,27 +45,19 @@ Return ONLY valid JSON:
     "activity": null,
     "notes": null
   }
-}
-`
-          },
-          {
-            role: "system",
-            content: `Stored health profile:\n${profileSummary}`
-          },
-          {
-            role: "system",
-            content: `Recent conversation memory:\n${recentMemory.map(m => `${m.role}: ${m.content}`).join("\n") || "No recent memory yet."}`
+}`
           },
           {
             role: "user",
-            content: message
+            content:
+              "Stored health profile:\n" +
+              JSON.stringify(healthProfile).slice(0, 6000) +
+              "\n\nRecent memory:\n" +
+              (memoryText || "No memory yet.") +
+              "\n\nCurrent user message:\n" +
+              message
           }
-        ],
-        text: {
-          format: {
-            type: "json_object"
-          }
-        }
+        ]
       }),
     });
 
@@ -91,16 +70,12 @@ Return ONLY valid JSON:
       });
     }
 
-    const raw =
-      data.output?.[0]?.content?.[0]?.text ||
-      '{"reply":"I’m here with you. Tell me a little more.","healthUpdate":{}}';
-
     let parsed;
     try {
-      parsed = JSON.parse(raw);
+      parsed = JSON.parse(data.choices?.[0]?.message?.content || "{}");
     } catch {
       parsed = {
-        reply: raw,
+        reply: data.choices?.[0]?.message?.content || "I’m here with you.",
         healthUpdate: {}
       };
     }
