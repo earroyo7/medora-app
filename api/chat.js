@@ -1,3 +1,31 @@
+function detectCrisis(message) {
+  const text = String(message || "").toLowerCase();
+
+  const crisisWords = [
+    "kill myself",
+    "killing myself",
+    "suicide",
+    "end my life",
+    "want to die",
+    "hurt myself",
+    "self harm",
+    "can't go on",
+    "dont want to live",
+    "don't want to live"
+  ];
+
+  return crisisWords.some(word => text.includes(word));
+}
+
+function crisisResponse() {
+  return `I’m really sorry you’re in that much pain. I need to check on your safety first.
+
+Are you in immediate danger or about to hurt yourself right now?
+
+If yes, please call emergency services now, or call/text 988 if you’re in the U.S. Move away from anything you could use to hurt yourself and message or call one trusted person right now.
+
+Stay with me. Are you safe in this exact moment?`;
+}
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ reply: "Use POST" });
@@ -9,6 +37,20 @@ export default async function handler(req, res) {
     if (!message) {
       return res.status(400).json({ reply: "Message is required" });
     }
+if (detectCrisis(message)) {
+  return res.status(200).json({
+    reply: crisisResponse(),
+    healthUpdate: {
+      sleep: null,
+      mood: null,
+      anxiety: null,
+      symptoms: null,
+      food: null,
+      activity: null,
+      notes: "Crisis safety response triggered"
+    }
+  });
+}
 
     const recentMemory = memory.slice(-12);
 
