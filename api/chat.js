@@ -92,13 +92,19 @@ function detectCrisis(message) {
 
 // ---------- SAFETY RESPONSE ----------
 function crisisResponse() {
-  return `I hear that you’re hurting, and I’m really sorry you’re in this much pain. I need to focus on your safety first.
+  return `I’m really sorry you’re in this much pain.
 
-Are you thinking about suicide or about hurting yourself right now?
+I need to focus on your safety first.
 
-If yes, are you in immediate danger, or do you have a plan, a way to do it, or a time in mind?
+Are you in immediate danger or about to hurt yourself right now?
 
-If there is any immediate danger, call emergency services now. If you’re in the U.S. or Canada, call or text 988. Move away from anything you could use to hurt yourself and contact one trusted person right now.
+If yes:
+• Call emergency services now
+• If you’re in the U.S. or Canada, call or text 988
+• Move away from anything you could use to hurt yourself
+• Get near one trusted person right now
+
+You don’t have to explain everything yet.
 
 Are you safe in this exact moment?`;
 }
