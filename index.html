@@ -286,6 +286,22 @@
   </main>
 
 <script>
+let isCrisis = false;
+
+function handleCrisisFollowup(message) {
+  const text = message.toLowerCase();
+
+  if (text.includes("yes")) {
+    return "Thank you for telling me. Please call emergency services right now or call/text 988 if you’re in the U.S. Can you do that now?";
+  }
+
+  if (text.includes("no")) {
+    isCrisis = false;
+    return "I’m really glad you’re safe right now. Let’s keep this simple — message or call one trusted person and stay near someone if you can.";
+  }
+
+  return "I’m here with you. Are you safe right now — yes or no?";
+}
 function openScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -368,6 +384,12 @@ async function sendMessage(){
   input.value='';
 
   saveMemory("user", text);
+  if (isCrisis) {
+  const reply = handleCrisisFollowup(text);
+  addMessage(reply, "bot");
+  saveMemory("assistant", reply);
+  return;
+}
   addMessage("Typing...", "bot");
 
   try {
@@ -382,6 +404,9 @@ async function sendMessage(){
     });
 
     const data = await res.json();
+    if (data.healthUpdate?.notes === "CRISIS_MODE") {
+  isCrisis = true;
+}
 
     const messages = document.getElementById("messages");
     const lastBot = messages.lastElementChild;
