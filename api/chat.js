@@ -91,14 +91,49 @@ function detectCrisis(message) {
 }
 
 // ---------- SAFETY RESPONSE ----------
-function crisisResponse() {
-  return `I’m really sorry you’re in this much pain. I need to focus on your safety first.
+function handleCrisisFollowup(message) {
+  const text = String(message || "").toLowerCase();
 
-Are you in immediate danger or about to hurt yourself right now?
+  const medicalEmergency =
+    text.includes("chest pain") ||
+    text.includes("trouble breathing") ||
+    text.includes("can't breathe") ||
+    text.includes("cant breathe") ||
+    text.includes("shortness of breath") ||
+    text.includes("passed out") ||
+    text.includes("fainted") ||
+    text.includes("overdose") ||
+    text.includes("throat closing");
 
-If yes, call emergency services now. If you’re in the U.S., call or text 988. Move away from anything you could use to hurt yourself and contact one trusted person right now.
+  if (medicalEmergency) {
+    return "This could be a medical emergency. Please call emergency services now, or have someone near you call. Chest pain with trouble breathing needs urgent help right away.";
+  }
 
-Stay with me. Are you safe in this exact moment?`;
+  const highRisk =
+    text.includes("plan") ||
+    text.includes("tonight") ||
+    text.includes("right now") ||
+    text.includes("knife") ||
+    text.includes("gun") ||
+    text.includes("pills") ||
+    text.includes("rope") ||
+    text.includes("bridge") ||
+    text.includes("overdose");
+
+  if (highRisk) {
+    return "Thank you for telling me. This sounds urgent. Please call emergency services now, or call/text 988 if you’re in the U.S. or Canada. Move away from anything you could use to hurt yourself and get near another person right now.";
+  }
+
+  if (text.includes("yes")) {
+    return "Thank you for being honest with me. Are you in immediate danger, or do you have a plan, a way to do it, or a time in mind?";
+  }
+
+  if (text.includes("no")) {
+    isCrisis = false;
+    return "I’m really glad you’re safe in this moment. Stay near someone if you can, and message or call one trusted person now so you’re not carrying this alone.";
+  }
+
+  return "I hear that you’re hurting. I’m not judging you. Are you safe right now — yes or no?";
 }
 
 // ---------- MEDORA SYSTEM PROMPT ----------
