@@ -307,14 +307,27 @@
       messages.appendChild(row);
       messages.scrollTop=messages.scrollHeight;
     }
-    function sendMessage(){
-      const input=document.getElementById('messageInput');
-      const text=input.value.trim();
-      if(!text) return;
-      addMessage(text,'user');
-      input.value='';
-      setTimeout(()=>addMessage('I hear you. I saved this context so we can track patterns over time. Would you like to log your mood, sleep, anxiety, or symptoms?','bot'),500);
-    }
+    async function sendMessage(){
+  const input = document.getElementById('messageInput');
+  const text = input.value.trim();
+  if(!text) return;
+
+  addMessage(text, 'user');
+  input.value = '';
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+
+    const data = await res.json();
+    addMessage(data.reply || 'Sorry, I had trouble responding.', 'bot');
+  } catch (err) {
+    addMessage('Sorry, I could not connect right now. Please try again.', 'bot');
+  }
+}
     function sendChip(text){
       openScreen('chat');
       addMessage(text,'user');
