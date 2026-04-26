@@ -1,431 +1,733 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Medora | AI Health Companion</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medora AI Health Companion</title>
+  <style>
+    :root {
+      --blue:#2F80ED;
+      --blue-dark:#1C64D8;
+      --soft-blue:#EAF3FF;
+      --bg:#F7FAFF;
+      --card:#FFFFFF;
+      --text:#101828;
+      --muted:#667085;
+      --border:#E6EAF0;
+      --green:#22C55E;
+      --orange:#F97316;
+      --red:#EF4444;
+      --shadow:0 12px 30px rgba(24,39,75,.08);
+    }
 
-<style>
-:root{
-  --primary:#7B5CFF;
-  --primary2:#9F7BFF;
-  --bg:#F6F4FF;
-  --card:#FFFFFF;
-  --text:#1A1A2E;
-  --muted:#6B6B8D;
-  --border:#ECEBFF;
-}
+    * { box-sizing:border-box; }
 
-*{box-sizing:border-box;}
+    body {
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
 
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto;
-  background:var(--bg);
-  color:var(--text);
-}
+    .app {
+      max-width:430px;
+      margin:0 auto;
+      min-height:100vh;
+      background:var(--bg);
+      position:relative;
+      padding-bottom:90px;
+    }
 
-.app{
-  max-width:430px;
-  margin:0 auto;
-  min-height:100vh;
-  padding-bottom:100px;
-}
+    header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:18px;
+      background:white;
+      position:sticky;
+      top:0;
+      z-index:20;
+      box-shadow:0 3px 12px rgba(0,0,0,.04);
+    }
 
-/* HEADER */
+    .icon-btn {
+      border:none;
+      background:var(--soft-blue);
+      color:var(--blue);
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      font-size:22px;
+      cursor:pointer;
+      font-weight:700;
+    }
 
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px;
-  background:white;
-  position:sticky;
-  top:0;
-  z-index:20;
-}
+    .brand {
+      text-align:center;
+    }
 
-.logo{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-weight:800;
-  font-size:20px;
-  color:var(--primary);
-}
+    .brand h1 {
+      margin:0;
+      font-size:20px;
+      color:var(--blue);
+    }
 
-.logo-heart{
-  width:20px;
-  height:20px;
-  background:linear-gradient(135deg,var(--primary),var(--primary2));
-  transform:rotate(45deg);
-  border-radius:4px;
-  position:relative;
-}
+    .brand p {
+      margin:2px 0 0;
+      font-size:12px;
+      color:var(--muted);
+    }
 
-.logo-heart::before,
-.logo-heart::after{
-  content:"";
-  position:absolute;
-  width:20px;
-  height:20px;
-  background:inherit;
-  border-radius:50%;
-}
+    .page {
+      display:none;
+      padding:18px;
+      animation:fade .2s ease;
+    }
 
-.logo-heart::before{top:-10px;left:0;}
-.logo-heart::after{left:-10px;top:0;}
+    .page.active {
+      display:block;
+    }
 
-.icon-btn{
-  border:none;
-  background:#F1EEFF;
-  padding:10px;
-  border-radius:12px;
-  font-size:18px;
-  cursor:pointer;
-}
+    @keyframes fade {
+      from {opacity:0; transform:translateY(5px);}
+      to {opacity:1; transform:translateY(0);}
+    }
 
-/* HERO */
+    .hero {
+      background:linear-gradient(135deg, #2F80ED, #65A5FF);
+      color:white;
+      padding:22px;
+      border-radius:26px;
+      box-shadow:var(--shadow);
+    }
 
-.hero{
-  margin:16px;
-  padding:20px;
-  border-radius:24px;
-  background:linear-gradient(135deg,var(--primary),var(--primary2));
-  color:white;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:14px;
-}
+    .hero h2 {
+      margin:0 0 8px;
+      font-size:24px;
+    }
 
-.hero-text{
-  max-width:60%;
-}
+    .hero p {
+      margin:0;
+      opacity:.95;
+      line-height:1.4;
+    }
 
-.hero h2{
-  margin:0 0 6px 0;
-}
+    .card {
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:18px;
+      margin-top:16px;
+      box-shadow:var(--shadow);
+    }
 
-.hero p{
-  margin:0;
-  font-size:14px;
-  opacity:.9;
-}
+    .grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
 
-.avatar{
-  width:120px;
-  border-radius:18px;
-}
+    .action {
+      border:none;
+      background:white;
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:16px;
+      text-align:left;
+      cursor:pointer;
+      box-shadow:var(--shadow);
+    }
 
-.primary-btn{
-  margin-top:12px;
-  padding:12px 16px;
-  border:none;
-  border-radius:16px;
-  background:white;
-  color:var(--primary);
-  font-weight:700;
-  cursor:pointer;
-}
+    .action strong {
+      display:block;
+      margin-bottom:6px;
+      color:var(--text);
+    }
 
-/* CARDS */
+    .action span {
+      font-size:13px;
+      color:var(--muted);
+    }
 
-.card{
-  background:var(--card);
-  margin:16px;
-  padding:16px;
-  border-radius:20px;
-  border:1px solid var(--border);
-}
+    label {
+      display:block;
+      font-size:13px;
+      font-weight:700;
+      margin-top:14px;
+      margin-bottom:6px;
+    }
 
-.card h3{
-  margin-top:0;
-}
+    input, select, textarea {
+      width:100%;
+      padding:13px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      font-size:15px;
+      background:white;
+    }
 
-/* FORM */
+    textarea {
+      resize:vertical;
+      min-height:85px;
+    }
 
-label{
-  font-size:12px;
-  font-weight:700;
-  margin-top:12px;
-  display:block;
-}
+    .primary {
+      width:100%;
+      margin-top:16px;
+      border:none;
+      padding:14px;
+      border-radius:16px;
+      background:var(--blue);
+      color:white;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+    }
 
-input,select,textarea{
-  width:100%;
-  padding:10px;
-  margin-top:6px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  font-size:14px;
-}
+    .secondary {
+      width:100%;
+      margin-top:10px;
+      border:1px solid var(--border);
+      padding:13px;
+      border-radius:16px;
+      background:white;
+      color:var(--blue);
+      font-weight:800;
+      cursor:pointer;
+    }
 
-textarea{
-  min-height:70px;
-}
+    .chat-box {
+      height:330px;
+      overflow-y:auto;
+      background:white;
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:14px;
+      margin-top:16px;
+      box-shadow:var(--shadow);
+    }
 
-.save-btn{
-  margin-top:14px;
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(135deg,var(--primary),var(--primary2));
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-}
+    .msg {
+      padding:12px 14px;
+      border-radius:18px;
+      margin-bottom:10px;
+      max-width:85%;
+      line-height:1.4;
+      font-size:14px;
+    }
 
-/* CHAT */
+    .bot {
+      background:var(--soft-blue);
+      color:var(--text);
+    }
 
-.chat-box{
-  height:320px;
-  overflow-y:auto;
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:10px;
-  background:white;
-}
+    .user {
+      background:var(--blue);
+      color:white;
+      margin-left:auto;
+    }
 
-.msg{
-  padding:10px 14px;
-  border-radius:18px;
-  margin-bottom:10px;
-  max-width:80%;
-  font-size:14px;
-}
+    .chat-row {
+      display:flex;
+      gap:8px;
+      margin-top:10px;
+    }
 
-.user{
-  background:linear-gradient(135deg,var(--primary),var(--primary2));
-  color:white;
-  margin-left:auto;
-}
+    .chat-row input {
+      flex:1;
+    }
 
-.bot{
-  background:#F2F1FF;
-}
+    .chat-row button {
+      width:58px;
+      border:none;
+      background:var(--blue);
+      color:white;
+      border-radius:14px;
+      font-weight:800;
+      cursor:pointer;
+    }
 
-.chat-row{
-  display:flex;
-  gap:8px;
-  margin-top:10px;
-}
+    .bottom-nav {
+      position:fixed;
+      bottom:0;
+      left:50%;
+      transform:translateX(-50%);
+      max-width:430px;
+      width:100%;
+      background:white;
+      border-top:1px solid var(--border);
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      padding:8px 6px 12px;
+      z-index:30;
+    }
 
-.chat-row input{
-  flex:1;
-}
+    .bottom-nav button {
+      border:none;
+      background:transparent;
+      font-size:11px;
+      color:var(--muted);
+      cursor:pointer;
+      padding:6px 0;
+    }
 
-.chat-row button{
-  border:none;
-  padding:10px 14px;
-  border-radius:12px;
-  background:var(--primary);
-  color:white;
-  cursor:pointer;
-}
+    .bottom-nav button.active {
+      color:var(--blue);
+      font-weight:800;
+    }
 
-/* NAV */
+    .bottom-nav span {
+      display:block;
+      font-size:21px;
+      margin-bottom:2px;
+    }
 
-.nav{
-  position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  max-width:430px;
-  width:100%;
-  background:white;
-  border-top:1px solid var(--border);
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  text-align:center;
-  padding:8px 0;
-}
+    .side-menu {
+      position:fixed;
+      top:0;
+      left:-280px;
+      width:280px;
+      height:100vh;
+      background:white;
+      z-index:50;
+      box-shadow:var(--shadow);
+      padding:22px;
+      transition:.25s ease;
+    }
 
-.nav button{
-  border:none;
-  background:none;
-  font-size:12px;
-  cursor:pointer;
-}
+    .side-menu.open {
+      left:0;
+    }
 
-.page{display:none;}
-.page.active{display:block;}
-</style>
+    .side-menu h2 {
+      color:var(--blue);
+      margin-top:0;
+    }
+
+    .side-menu button {
+      display:block;
+      width:100%;
+      text-align:left;
+      border:none;
+      background:var(--bg);
+      margin:8px 0;
+      padding:13px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .overlay {
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.25);
+      z-index:40;
+    }
+
+    .overlay.show {
+      display:block;
+    }
+
+    .data-row {
+      padding:12px;
+      border-radius:14px;
+      background:var(--bg);
+      margin-top:10px;
+      font-size:14px;
+    }
+
+    .small {
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="app">
+    <header>
+      <button class="icon-btn" onclick="toggleMenu()">☰</button>
+      <div class="brand">
+        <h1>Medora</h1>
+        <p>Your AI Health Companion</p>
+      </div>
+      <button class="icon-btn" onclick="showPage('streak')">♧3</button>
+    </header>
 
-<div class="app">
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-<div class="header">
-<button class="icon-btn" onclick="showPage('home')">☰</button>
+    <aside class="side-menu" id="sideMenu">
+      <h2>Medora Menu</h2>
+      <button onclick="go('home')">🏠 Home</button>
+      <button onclick="go('profile')">👤 Profile</button>
+      <button onclick="go('health')">🩺 Log Health</button>
+      <button onclick="go('anxiety')">🧠 Anxiety Check-In</button>
+      <button onclick="go('food')">🍽 Food Intake</button>
+      <button onclick="go('fluids')">💧 Fluid Intake</button>
+      <button onclick="go('patterns')">📊 My Patterns</button>
+      <button onclick="go('doctor')">📄 Doctor Report</button>
+      <button onclick="go('chat')">💬 Chat</button>
+    </aside>
 
-<div class="logo">
-<div class="logo-heart"></div>
-Medora
-</div>
+    <main>
+      <section id="home" class="page active">
+        <div class="hero">
+          <h2>Hi, I’m Medora.</h2>
+          <p>I can help track your health, mood, food, fluids, anxiety, sleep, and patterns over time.</p>
+        </div>
 
-<button class="icon-btn">🔔</button>
-</div>
+        <div class="grid">
+          <button class="action" onclick="showPage('health')"><strong>🩺 Log Health</strong><span>Symptoms, sleep, mood, energy</span></button>
+          <button class="action" onclick="showPage('anxiety')"><strong>🧠 Anxiety Check-In</strong><span>Triggers, feelings, coping</span></button>
+          <button class="action" onclick="showPage('food')"><strong>🍽 Food Intake</strong><span>Meals, reactions, cravings</span></button>
+          <button class="action" onclick="showPage('fluids')"><strong>💧 Fluid Intake</strong><span>Water, caffeine, hydration</span></button>
+          <button class="action" onclick="showPage('patterns')"><strong>📊 My Patterns</strong><span>View saved health trends</span></button>
+          <button class="action" onclick="showPage('doctor')"><strong>📄 Doctor Report</strong><span>Summary for appointments</span></button>
+        </div>
+      </section>
 
-<!-- HOME -->
-<div id="home" class="page active">
+      <section id="profile" class="page">
+        <h2>Profile</h2>
+        <div class="card">
+          <label>Name</label><input id="name" placeholder="Your name">
+          <label>Age</label><input id="age" type="number" placeholder="Age">
+          <label>Gender</label>
+          <select id="gender">
+            <option value="">Select</option>
+            <option>Female</option>
+            <option>Male</option>
+            <option>Non-binary</option>
+            <option>Prefer not to say</option>
+          </select>
+          <label>Height</label><input id="height" placeholder="Example: 5'5">
+          <label>Weight</label><input id="weight" placeholder="Example: 150 lbs">
+          <label>Health goals</label><textarea id="goals" placeholder="Example: sleep better, reduce anxiety, improve nutrition"></textarea>
+          <button class="primary" onclick="saveProfile()">Save Profile</button>
+        </div>
+      </section>
 
-<div class="hero">
-<div class="hero-text">
-<h2>Hi, I'm Medora 💜</h2>
-<p>Your AI wellness companion for insight and clarity.</p>
-<button class="primary-btn" onclick="showPage('chat')">Talk to Medora</button>
-</div>
-<img src="medora-avatar.png" class="avatar"/>
-</div>
+      <section id="health" class="page">
+        <h2>Log Health</h2>
+        <div class="card">
+          <label>Mood</label><input id="mood" placeholder="Anxious, calm, sad, tired...">
+          <label>Sleep hours</label><input id="sleep" type="number" placeholder="Example: 6">
+          <label>Energy level 1-10</label><input id="energy" type="number" min="1" max="10">
+          <label>Pain level 1-10</label><input id="pain" type="number" min="1" max="10">
+          <label>Symptoms</label><textarea id="symptoms" placeholder="Headache, nausea, dizziness, cramps..."></textarea>
+          <button class="primary" onclick="saveHealth()">Save Health Log</button>
+        </div>
+      </section>
 
-<div class="card">
-<h3>Daily Overview</h3>
-<p style="color:var(--muted)">Track mood, sleep, behavior, nutrition, stress, and more.</p>
-</div>
+      <section id="anxiety" class="page">
+        <h2>Anxiety Check-In</h2>
+        <div class="card">
+          <label>Anxiety level 1-10</label><input id="anxietyLevel" type="number" min="1" max="10">
+          <label>Trigger</label><input id="trigger" placeholder="What caused it?">
+          <label>Body symptoms</label><textarea id="bodySymptoms" placeholder="Racing heart, tight chest, shaking..."></textarea>
+          <label>What helped?</label><textarea id="coping" placeholder="Breathing, walking, talking, rest..."></textarea>
+          <button class="primary" onclick="saveAnxiety()">Save Anxiety Check-In</button>
+        </div>
+      </section>
 
-</div>
+      <section id="food" class="page">
+        <h2>Food Intake</h2>
+        <div class="card">
+          <label>Meal</label><input id="meal" placeholder="Breakfast, lunch, dinner, snack">
+          <label>What did you eat?</label><textarea id="foodText"></textarea>
+          <label>Reaction after eating</label><textarea id="foodReaction" placeholder="Bloated, energized, tired, stomach pain..."></textarea>
+          <button class="primary" onclick="saveFood()">Save Food Log</button>
+        </div>
+      </section>
 
-<!-- HEALTH LOG -->
-<div id="health" class="page">
-<div class="card">
-<h3>Comprehensive Health Log</h3>
+      <section id="fluids" class="page">
+        <h2>Fluid Intake</h2>
+        <div class="card">
+          <label>Water cups today</label><input id="water" type="number">
+          <label>Caffeine</label><input id="caffeine" placeholder="Coffee, energy drinks, tea...">
+          <label>Hydration symptoms</label><textarea id="hydrationSymptoms" placeholder="Dry mouth, headache, dark urine..."></textarea>
+          <button class="primary" onclick="saveFluids()">Save Fluid Log</button>
+        </div>
+      </section>
 
-<label>Mood (1–10)</label>
-<input id="mood"/>
+      <section id="patterns" class="page">
+        <h2>My Patterns</h2>
+        <div class="card">
+          <p class="small">Medora will use your saved logs to notice patterns over time.</p>
+          <div id="patternData"></div>
+          <button class="secondary" onclick="renderPatterns()">Refresh Patterns</button>
+        </div>
+      </section>
 
-<label>Sleep Hours</label>
-<input id="sleep"/>
+      <section id="doctor" class="page">
+        <h2>Doctor Report</h2>
+        <div class="card">
+          <div id="doctorReport"></div>
+          <button class="primary" onclick="generateDoctorReport()">Generate Report</button>
+        </div>
+      </section>
 
-<label>Anxiety Level (1–10)</label>
-<input id="anxiety"/>
+      <section id="streak" class="page">
+        <h2>Health Streak</h2>
+        <div class="card">
+          <h3>♧ 3 Day Streak</h3>
+          <p>You are building consistency. This page can track daily check-ins, completed logs, and health habits.</p>
+          <button class="primary" onclick="showPage('health')">Add Today’s Check-In</button>
+        </div>
+      </section>
 
-<label>Stress Level</label>
-<input id="stress"/>
+      <section id="chat" class="page">
+        <h2>Chat with Medora</h2>
+        <div class="chat-box" id="chatBox">
+          <div class="msg bot">Hi, I’m Medora. Tell me how you’re feeling, and I’ll help you reflect and track patterns.</div>
+        </div>
+        <div class="chat-row">
+          <input id="chatInput" placeholder="Message Medora...">
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </section>
+    </main>
 
-<label>Physical Symptoms</label>
-<textarea id="symptoms"></textarea>
+    <nav class="bottom-nav">
+      <button onclick="showPage('home')" id="nav-home" class="active"><span>🏠</span>Home</button>
+      <button onclick="showPage('chat')" id="nav-chat"><span>💬</span>Chat</button>
+      <button onclick="showPage('health')" id="nav-health"><span>＋</span>Log</button>
+      <button onclick="showPage('patterns')" id="nav-patterns"><span>📊</span>Insights</button>
+      <button onclick="showPage('profile')" id="nav-profile"><span>👤</span>Profile</button>
+    </nav>
+  </div>
 
-<label>Behavior Patterns (focus, motivation, irritability)</label>
-<textarea id="behavior"></textarea>
+  <script>
+    const storeKey = "medoraData";
 
-<label>Dietary Intake</label>
-<textarea id="diet"></textarea>
+    function getData() {
+      return JSON.parse(localStorage.getItem(storeKey)) || {
+        profile: {},
+        health: [],
+        anxiety: [],
+        food: [],
+        fluids: [],
+        chat: []
+      };
+    }
 
-<label>Hydration (cups of water)</label>
-<input id="hydration"/>
+    function saveData(data) {
+      localStorage.setItem(storeKey, JSON.stringify(data));
+    }
 
-<label>Physical Activity</label>
-<textarea id="activity"></textarea>
+    function today() {
+      return new Date().toLocaleString();
+    }
 
-<label>Medications / Supplements</label>
-<textarea id="medications"></textarea>
+    function showPage(id) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
 
-<label>Additional Notes</label>
-<textarea id="notes"></textarea>
+      document.querySelectorAll(".bottom-nav button").forEach(b => b.classList.remove("active"));
+      const nav = document.getElementById("nav-" + id);
+      if (nav) nav.classList.add("active");
 
-<button class="save-btn" onclick="saveHealth()">Save Log</button>
+      if (id === "patterns") renderPatterns();
+      if (id === "doctor") generateDoctorReport();
 
-</div>
-</div>
+      window.scrollTo(0,0);
+    }
 
-<!-- CHAT -->
-<div id="chat" class="page">
-<div class="card">
-<h3>Chat with Medora</h3>
-<div class="chat-box" id="chatBox">
-<div class="msg bot">Hi. Tell me what’s going on today.</div>
-</div>
+    function toggleMenu() {
+      document.getElementById("sideMenu").classList.toggle("open");
+      document.getElementById("overlay").classList.toggle("show");
+    }
 
-<div class="chat-row">
-<input id="chatInput" placeholder="Type a message..."/>
-<button onclick="sendMessage()">Send</button>
-</div>
-</div>
-</div>
+    function go(id) {
+      toggleMenu();
+      showPage(id);
+    }
 
-</div>
+    function saveProfile() {
+      const data = getData();
+      data.profile = {
+        name: name.value,
+        age: age.value,
+        gender: gender.value,
+        height: height.value,
+        weight: weight.value,
+        goals: goals.value
+      };
+      saveData(data);
+      alert("Profile saved.");
+    }
 
-<div class="nav">
-<button onclick="showPage('home')">Home</button>
-<button onclick="showPage('health')">Log</button>
-<button onclick="showPage('chat')">Chat</button>
-<button onclick="showPage('home')">Profile</button>
-</div>
+    function saveHealth() {
+      const data = getData();
+      data.health.push({
+        date: today(),
+        mood: mood.value,
+        sleep: sleep.value,
+        energy: energy.value,
+        pain: pain.value,
+        symptoms: symptoms.value
+      });
+      saveData(data);
+      alert("Health log saved.");
+      showPage("patterns");
+    }
 
-<script>
+    function saveAnxiety() {
+      const data = getData();
+      data.anxiety.push({
+        date: today(),
+        level: anxietyLevel.value,
+        trigger: trigger.value,
+        bodySymptoms: bodySymptoms.value,
+        coping: coping.value
+      });
+      saveData(data);
+      alert("Anxiety check-in saved.");
+      showPage("patterns");
+    }
 
-const storeKey="medoraData";
+    function saveFood() {
+      const data = getData();
+      data.food.push({
+        date: today(),
+        meal: meal.value,
+        food: foodText.value,
+        reaction: foodReaction.value
+      });
+      saveData(data);
+      alert("Food log saved.");
+      showPage("patterns");
+    }
 
-function getData(){
-return JSON.parse(localStorage.getItem(storeKey))||{logs:[],chat:[]};
-}
+    function saveFluids() {
+      const data = getData();
+      data.fluids.push({
+        date: today(),
+        water: water.value,
+        caffeine: caffeine.value,
+        symptoms: hydrationSymptoms.value
+      });
+      saveData(data);
+      alert("Fluid log saved.");
+      showPage("patterns");
+    }
 
-function saveData(d){
-localStorage.setItem(storeKey,JSON.stringify(d));
-}
+    function renderPatterns() {
+      const data = getData();
+      const box = document.getElementById("patternData");
 
-function showPage(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
+      box.innerHTML = `
+        <div class="data-row">🩺 Health logs: ${data.health.length}</div>
+        <div class="data-row">🧠 Anxiety logs: ${data.anxiety.length}</div>
+        <div class="data-row">🍽 Food logs: ${data.food.length}</div>
+        <div class="data-row">💧 Fluid logs: ${data.fluids.length}</div>
+        <div class="data-row">💬 Chat messages saved: ${data.chat.length}</div>
+      `;
 
-function saveHealth(){
-const data=getData();
-data.logs.push({
-date:new Date().toLocaleString(),
-mood:mood.value,
-sleep:sleep.value,
-anxiety:anxiety.value,
-stress:stress.value,
-symptoms:symptoms.value,
-behavior:behavior.value,
-diet:diet.value,
-hydration:hydration.value,
-activity:activity.value,
-medications:medications.value,
-notes:notes.value
-});
-saveData(data);
-alert("Health log saved.");
-showPage("home");
-}
+      if (data.health.length > 0) {
+        const last = data.health[data.health.length - 1];
+        box.innerHTML += `<div class="data-row"><strong>Last health log:</strong><br>Mood: ${last.mood || "Not entered"}<br>Sleep: ${last.sleep || "Not entered"} hours<br>Symptoms: ${last.symptoms || "None entered"}</div>`;
+      }
 
-function addMessage(text,type){
-const box=document.getElementById("chatBox");
-const div=document.createElement("div");
-div.className="msg "+type;
-div.textContent=text;
-box.appendChild(div);
-box.scrollTop=box.scrollHeight;
-}
+      if (data.anxiety.length > 0) {
+        const last = data.anxiety[data.anxiety.length - 1];
+        box.innerHTML += `<div class="data-row"><strong>Last anxiety log:</strong><br>Level: ${last.level || "Not entered"}<br>Trigger: ${last.trigger || "Not entered"}</div>`;
+      }
+    }
 
-async function sendMessage(){
-const input=document.getElementById("chatInput");
-const text=input.value.trim();
-if(!text)return;
+    function generateDoctorReport() {
+      const data = getData();
+      const report = document.getElementById("doctorReport");
 
-addMessage(text,"user");
-input.value="";
+      report.innerHTML = `
+        <h3>Medora Health Summary</h3>
+        <p><strong>Name:</strong> ${data.profile.name || "Not provided"}</p>
+        <p><strong>Age:</strong> ${data.profile.age || "Not provided"}</p>
+        <p><strong>Gender:</strong> ${data.profile.gender || "Not provided"}</p>
+        <p><strong>Goals:</strong> ${data.profile.goals || "Not provided"}</p>
+        <hr>
+        <p><strong>Total health logs:</strong> ${data.health.length}</p>
+        <p><strong>Total anxiety logs:</strong> ${data.anxiety.length}</p>
+        <p><strong>Total food logs:</strong> ${data.food.length}</p>
+        <p><strong>Total fluid logs:</strong> ${data.fluids.length}</p>
+      `;
 
-try{
-const res=await fetch("/api/chat",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({message:text})
-});
+      if (data.health.length > 0) {
+        const last = data.health[data.health.length - 1];
+        report.innerHTML += `
+          <h4>Most Recent Health Log</h4>
+          <p><strong>Date:</strong> ${last.date}</p>
+          <p><strong>Mood:</strong> ${last.mood}</p>
+          <p><strong>Sleep:</strong> ${last.sleep} hours</p>
+          <p><strong>Energy:</strong> ${last.energy}/10</p>
+          <p><strong>Pain:</strong> ${last.pain}/10</p>
+          <p><strong>Symptoms:</strong> ${last.symptoms}</p>
+        `;
+      }
+    }
 
-const result=await res.json();
-addMessage(result.reply||"I'm here.","bot");
+    function sendMessage() {
+      const input = document.getElementById("chatInput");
+      const text = input.value.trim();
+      if (!text) return;
 
-}catch(e){
-addMessage("Connection issue.","bot");
-}
-}
+      addMessage(text, "user");
 
-</script>
+      const data = getData();
+      data.chat.push({ date: today(), role: "user", text });
 
+      const response = medoraReply(text, data);
+      data.chat.push({ date: today(), role: "medora", text: response });
+
+      saveData(data);
+      addMessage(response, "bot");
+
+      input.value = "";
+    }
+
+    function addMessage(text, type) {
+      const box = document.getElementById("chatBox");
+      const div = document.createElement("div");
+      div.className = "msg " + type;
+      div.textContent = text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function medoraReply(text, data) {
+      const lower = text.toLowerCase();
+
+      if (lower.includes("sleep") || lower.includes("tired")) {
+        return "I hear that sleep is affecting you. I saved this conversation, and if you log your sleep in Log Health, I can help connect it to anxiety, mood, and energy patterns.";
+      }
+
+      if (lower.includes("anxious") || lower.includes("anxiety") || lower.includes("panic")) {
+        return "That sounds uncomfortable. Try using the Anxiety Check-In so we can track the trigger, body symptoms, and what helped. Over time, I can help notice your anxiety patterns.";
+      }
+
+      if (lower.includes("water") || lower.includes("dehydrated") || lower.includes("headache")) {
+        return "Hydration may be important here. You can use Fluid Intake to track water, caffeine, and symptoms like headaches or dry mouth.";
+      }
+
+      if (lower.includes("food") || lower.includes("stomach") || lower.includes("bloated")) {
+        return "Food reactions can reveal patterns. Use Food Intake to track what you ate and how your body reacted afterward.";
+      }
+
+      return "I’m listening. I saved this message. You can also use the health, anxiety, food, and fluid pages so I can understand your patterns better over time.";
+    }
+
+    window.onload = function() {
+      const data = getData();
+
+      if (data.profile.name) name.value = data.profile.name;
+      if (data.profile.age) age.value = data.profile.age;
+      if (data.profile.gender) gender.value = data.profile.gender;
+      if (data.profile.height) height.value = data.profile.height;
+      if (data.profile.weight) weight.value = data.profile.weight;
+      if (data.profile.goals) goals.value = data.profile.goals;
+    };
+  </script>
 </body>
 </html>
