@@ -4,308 +4,602 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Medora AI Health Companion</title>
+
   <style>
-    :root {
-      --blue:#2F80ED;
-      --blue-dark:#1C64D8;
-      --soft-blue:#EAF3FF;
+    :root{
+      --primary:#2F80ED;
+      --primary-dark:#1C64D8;
+      --primary-soft:#EAF3FF;
       --bg:#F7FAFF;
       --card:#FFFFFF;
       --text:#101828;
       --muted:#667085;
       --border:#E6EAF0;
-      --green:#22C55E;
+      --green:#23C58A;
+      --blue:#2F80ED;
       --orange:#F97316;
-      --red:#EF4444;
+      --red:#FF5C6C;
       --shadow:0 12px 30px rgba(24,39,75,.08);
     }
 
-    * { box-sizing:border-box; }
+    *{box-sizing:border-box}
 
-    body {
+    body{
       margin:0;
-      font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       background:var(--bg);
       color:var(--text);
     }
 
-    .app {
+    .app{
       max-width:430px;
       margin:0 auto;
       min-height:100vh;
-      background:var(--bg);
+      background:#fff;
       position:relative;
-      padding-bottom:90px;
+      overflow:hidden;
+      border-left:1px solid var(--border);
+      border-right:1px solid var(--border);
     }
 
-    header {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:18px;
-      background:white;
-      position:sticky;
-      top:0;
-      z-index:20;
-      box-shadow:0 3px 12px rgba(0,0,0,.04);
-    }
-
-    .icon-btn {
-      border:none;
-      background:var(--soft-blue);
-      color:var(--blue);
-      width:42px;
-      height:42px;
-      border-radius:14px;
-      font-size:22px;
-      cursor:pointer;
-      font-weight:700;
-    }
-
-    .brand {
-      text-align:center;
-    }
-
-    .brand h1 {
-      margin:0;
-      font-size:20px;
-      color:var(--blue);
-    }
-
-    .brand p {
-      margin:2px 0 0;
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .page {
+    .screen{
       display:none;
-      padding:18px;
+      min-height:100vh;
+      padding-bottom:88px;
       animation:fade .2s ease;
     }
 
-    .page.active {
-      display:block;
+    .screen.active{display:block}
+
+    @keyframes fade{
+      from{opacity:0;transform:translateY(5px)}
+      to{opacity:1;transform:translateY(0)}
     }
 
-    @keyframes fade {
-      from {opacity:0; transform:translateY(5px);}
-      to {opacity:1; transform:translateY(0);}
+    .topbar{
+      height:86px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 22px;
+      background:#fff;
+      box-shadow:0 8px 24px rgba(24,39,75,0.045);
+      position:sticky;
+      top:0;
+      z-index:25;
     }
 
-    .hero {
-      background:linear-gradient(135deg, #2F80ED, #65A5FF);
+    .brand{text-align:center;line-height:1.1}
+
+    .brand-row{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      font-size:30px;
+      font-weight:900;
+      letter-spacing:-0.8px;
+      color:var(--primary);
+      animation:fadeSlide .8s ease;
+    }
+
+    @keyframes fadeSlide{
+      from{opacity:0;transform:translateY(-6px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    .brand svg{
+      width:34px;
+      height:34px;
+      color:var(--primary);
+      filter:drop-shadow(0 4px 10px rgba(47,128,237,.25));
+      transform:translateY(1px);
+    }
+
+    .subtitle{
+      font-size:14px;
+      color:var(--muted);
+      font-weight:500;
+      margin-top:4px;
+    }
+
+    .icon-btn{
+      border:0;
+      background:transparent;
+      font-size:28px;
+      color:var(--text);
+      position:relative;
+      cursor:pointer;
+    }
+
+    .badge{
+      position:absolute;
+      right:-4px;
+      top:4px;
+      background:#FF405D;
       color:white;
-      padding:22px;
-      border-radius:26px;
+      border-radius:999px;
+      font-size:11px;
+      padding:2px 6px;
+      border:2px solid #fff;
+    }
+
+    .content{padding:16px 20px}
+
+    .hero{
+      position:relative;
+      padding:24px;
+      border-radius:24px;
+      background:#F4F7FB;
+      overflow:hidden;
+      min-height:250px;
       box-shadow:var(--shadow);
     }
 
-    .hero h2 {
-      margin:0 0 8px;
-      font-size:24px;
+    .hero-text{
+      position:relative;
+      z-index:2;
+      max-width:55%;
     }
 
-    .hero p {
-      margin:0;
-      opacity:.95;
-      line-height:1.4;
+    .hero h1{
+      font-size:25px;
+      margin:0 0 16px;
+      font-weight:800;
     }
 
-    .card {
+    .hero p{
+      font-size:17px;
+      line-height:1.45;
+      margin:0 0 20px;
+      color:#1f2937;
+    }
+
+    .medora-img{
+      position:absolute;
+      right:12px;
+      bottom:0;
+      width:190px;
+      height:230px;
+      object-fit:cover;
+      object-position:center top;
+      border-radius:20px;
+      animation:medoraBreathing 5s ease-in-out infinite;
+      z-index:1;
+    }
+
+    @keyframes medoraBreathing{
+      0%{transform:scale(1)}
+      50%{transform:scale(1.035)}
+      100%{transform:scale(1)}
+    }
+
+    .primary-btn,.primary{
+      background:var(--primary);
+      color:#fff;
+      border:0;
+      border-radius:16px;
+      padding:14px 18px;
+      font-size:15px;
+      font-weight:800;
+      box-shadow:0 10px 20px rgba(47,128,237,.22);
+      cursor:pointer;
+    }
+
+    .primary{
+      width:100%;
+      margin-top:16px;
+      font-size:16px;
+    }
+
+    .primary-btn:active,.primary:active{transform:scale(.98)}
+
+    .card{
       background:var(--card);
       border:1px solid var(--border);
-      border-radius:22px;
+      border-radius:20px;
       padding:18px;
       margin-top:16px;
-      box-shadow:var(--shadow);
+      box-shadow:0 8px 22px rgba(24,39,75,.05);
     }
 
-    .grid {
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+    }
+
+    .section-head h2{
+      font-size:20px;
+      margin:0;
+      font-weight:800;
+    }
+
+    .date{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .metric{
+      border-radius:16px;
+      text-align:center;
+      padding:14px 8px;
+      font-size:13px;
+      color:#344054;
+    }
+
+    .metric .emoji{
+      font-size:25px;
+      margin-bottom:8px;
+    }
+
+    .metric strong{
+      display:block;
+      font-size:17px;
+      color:#101828;
+      margin:5px 0;
+    }
+
+    .metric small{
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .mood{background:#EAFBF3}
+    .sleep{background:#EEF5FF}
+    .activity{background:#FFF4E7}
+    .anxiety{background:#FFF0F2}
+
+    .grid{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:12px;
-      margin-top:14px;
     }
 
-    .action {
-      border:none;
-      background:white;
+    .action{
       border:1px solid var(--border);
-      border-radius:20px;
+      background:#fff;
+      border-radius:16px;
       padding:16px;
-      text-align:left;
+      display:flex;
+      gap:12px;
+      align-items:center;
       cursor:pointer;
-      box-shadow:var(--shadow);
+      text-align:left;
+      box-shadow:0 5px 16px rgba(24,39,75,.04);
     }
 
-    .action strong {
-      display:block;
-      margin-bottom:6px;
-      color:var(--text);
+    .action:hover{background:#F8FBFF}
+
+    .action-icon{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:23px;
+      font-weight:800;
+      flex:none;
     }
 
-    .action span {
-      font-size:13px;
+    .action h3{
+      margin:0;
+      font-size:14px;
+    }
+
+    .action p{
+      margin:4px 0 0;
       color:var(--muted);
+      font-size:12.5px;
+      line-height:1.3;
     }
 
-    label {
+    .guide{
+      background:linear-gradient(135deg,#EAF3FF,#DCEBFF);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .guide h3{
+      font-size:18px;
+      margin:0 0 6px;
+    }
+
+    .guide p{
+      margin:0;
+      color:#475467;
+      font-size:14px;
+    }
+
+    .leaf{
+      font-size:58px;
+      opacity:.45;
+    }
+
+    label{
       display:block;
       font-size:13px;
-      font-weight:700;
+      font-weight:800;
       margin-top:14px;
       margin-bottom:6px;
     }
 
-    input, select, textarea {
+    input,select,textarea{
       width:100%;
       padding:13px;
       border:1px solid var(--border);
       border-radius:14px;
       font-size:15px;
       background:white;
+      outline:none;
     }
 
-    textarea {
+    textarea{
       resize:vertical;
       min-height:85px;
     }
 
-    .primary {
-      width:100%;
-      margin-top:16px;
-      border:none;
-      padding:14px;
-      border-radius:16px;
-      background:var(--blue);
-      color:white;
-      font-size:16px;
-      font-weight:800;
-      cursor:pointer;
-    }
-
-    .secondary {
+    .secondary{
       width:100%;
       margin-top:10px;
       border:1px solid var(--border);
       padding:13px;
       border-radius:16px;
       background:white;
-      color:var(--blue);
+      color:var(--primary);
       font-weight:800;
       cursor:pointer;
     }
 
-    .chat-box {
-      height:330px;
-      overflow-y:auto;
-      background:white;
-      border:1px solid var(--border);
-      border-radius:22px;
-      padding:14px;
-      margin-top:16px;
-      box-shadow:var(--shadow);
+    .data-row{
+      padding:12px;
+      border-radius:14px;
+      background:var(--bg);
+      margin-top:10px;
+      font-size:14px;
+      line-height:1.4;
     }
 
-    .msg {
-      padding:12px 14px;
-      border-radius:18px;
-      margin-bottom:10px;
-      max-width:85%;
+    .small{
+      color:var(--muted);
+      font-size:13px;
       line-height:1.4;
+    }
+
+    .chat-top{
+      height:76px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 20px;
+      border-bottom:1px solid #F1F3F7;
+      background:#fff;
+    }
+
+    .chat-title{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .avatar{
+      width:48px;
+      height:48px;
+      border-radius:999px;
+      object-fit:cover;
+      border:2px solid #E5EEF9;
+    }
+
+    .chat-title h2{
+      font-size:18px;
+      margin:0;
+    }
+
+    .online{
+      color:#0BA66D;
       font-size:14px;
     }
 
-    .bot {
-      background:var(--soft-blue);
-      color:var(--text);
+    .messages{
+      padding:18px 18px 145px;
+      background:#FBFCFF;
+      min-height:calc(100vh - 76px);
+      overflow-y:auto;
     }
 
-    .user {
-      background:var(--blue);
-      color:white;
-      margin-left:auto;
-    }
-
-    .chat-row {
+    .row{
       display:flex;
-      gap:8px;
-      margin-top:10px;
+      gap:10px;
+      margin:14px 0;
     }
 
-    .chat-row input {
-      flex:1;
+    .row.user{
+      justify-content:flex-end;
     }
 
-    .chat-row button {
-      width:58px;
-      border:none;
-      background:var(--blue);
-      color:white;
-      border-radius:14px;
-      font-weight:800;
+    .bubble{
+      max-width:78%;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:16px 18px;
+      font-size:16px;
+      line-height:1.38;
+      box-shadow:0 5px 16px rgba(24,39,75,.06);
+      white-space:pre-wrap;
+    }
+
+    .user .bubble{
+      background:var(--primary);
+      color:#fff;
+      border-color:var(--primary);
+      border-bottom-right-radius:7px;
+    }
+
+    .bot .bubble{
+      border-bottom-left-radius:7px;
+    }
+
+    .time{
+      display:block;
+      text-align:right;
+      font-size:11px;
+      opacity:.7;
+      margin-top:7px;
+    }
+
+    .chips{
+      position:fixed;
+      bottom:78px;
+      left:50%;
+      transform:translateX(-50%);
+      max-width:430px;
+      width:100%;
+      display:flex;
+      gap:10px;
+      overflow-x:auto;
+      padding:10px 18px;
+      background:#FBFCFF;
+      z-index:22;
+    }
+
+    .chip{
+      white-space:nowrap;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:14px;
       cursor:pointer;
     }
 
-    .bottom-nav {
+    .composer{
       position:fixed;
       bottom:0;
       left:50%;
       transform:translateX(-50%);
       max-width:430px;
       width:100%;
-      background:white;
+      padding:11px 16px 86px;
+      background:linear-gradient(180deg,rgba(251,252,255,.7),#fff 35%);
+      z-index:21;
+    }
+
+    .inputbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:8px;
+      box-shadow:0 5px 16px rgba(24,39,75,.06);
+    }
+
+    .inputbar input{
+      border:0;
+      outline:0;
+      flex:1;
+      font-size:15px;
+      padding:10px;
+      background:transparent;
+    }
+
+    .round{
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      border:0;
+      background:#F2F4F7;
+      font-size:22px;
+      cursor:pointer;
+    }
+
+    .send{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .nav{
+      position:fixed;
+      bottom:0;
+      left:50%;
+      transform:translateX(-50%);
+      max-width:430px;
+      width:100%;
+      height:78px;
+      background:#fff;
       border-top:1px solid var(--border);
       display:grid;
       grid-template-columns:repeat(5,1fr);
-      padding:8px 6px 12px;
+      align-items:center;
       z-index:30;
     }
 
-    .bottom-nav button {
-      border:none;
+    .nav button{
+      border:0;
       background:transparent;
-      font-size:11px;
-      color:var(--muted);
+      color:#667085;
+      font-size:12px;
       cursor:pointer;
-      padding:6px 0;
     }
 
-    .bottom-nav button.active {
-      color:var(--blue);
+    .nav .nav-icon{
+      font-size:22px;
+      display:block;
+      margin-bottom:4px;
+    }
+
+    .nav .active-tab{
+      color:var(--primary);
       font-weight:800;
     }
 
-    .bottom-nav span {
-      display:block;
-      font-size:21px;
-      margin-bottom:2px;
+    .plus{
+      width:58px;
+      height:58px;
+      border-radius:999px;
+      background:var(--primary)!important;
+      color:#fff!important;
+      font-size:34px!important;
+      box-shadow:0 12px 24px rgba(47,128,237,.28);
+      margin:auto;
+      display:flex!important;
+      align-items:center;
+      justify-content:center;
     }
 
-    .side-menu {
+    .side-menu{
       position:fixed;
       top:0;
-      left:-280px;
+      left:-285px;
       width:280px;
       height:100vh;
       background:white;
-      z-index:50;
+      z-index:60;
       box-shadow:var(--shadow);
       padding:22px;
       transition:.25s ease;
     }
 
-    .side-menu.open {
-      left:0;
-    }
+    .side-menu.open{left:0}
 
-    .side-menu h2 {
-      color:var(--blue);
+    .side-menu h2{
+      color:var(--primary);
       margin-top:0;
     }
 
-    .side-menu button {
+    .side-menu button{
       display:block;
       width:100%;
       text-align:left;
@@ -318,44 +612,26 @@
       font-weight:700;
     }
 
-    .overlay {
+    .overlay{
       display:none;
       position:fixed;
       inset:0;
       background:rgba(0,0,0,.25);
-      z-index:40;
+      z-index:50;
     }
 
-    .overlay.show {
-      display:block;
-    }
+    .overlay.show{display:block}
 
-    .data-row {
-      padding:12px;
-      border-radius:14px;
-      background:var(--bg);
-      margin-top:10px;
-      font-size:14px;
-    }
-
-    .small {
+    .placeholder{
+      padding:30px 20px;
+      text-align:center;
       color:var(--muted);
-      font-size:13px;
-      line-height:1.4;
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <header>
-      <button class="icon-btn" onclick="toggleMenu()">☰</button>
-      <div class="brand">
-        <h1>Medora</h1>
-        <p>Your AI Health Companion</p>
-      </div>
-      <button class="icon-btn" onclick="showPage('streak')">♧3</button>
-    </header>
+  <main class="app">
 
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -364,36 +640,170 @@
       <button onclick="go('home')">🏠 Home</button>
       <button onclick="go('profile')">👤 Profile</button>
       <button onclick="go('health')">🩺 Log Health</button>
-      <button onclick="go('anxiety')">🧠 Anxiety Check-In</button>
+      <button onclick="go('anxietyPage')">🧠 Anxiety Check-In</button>
       <button onclick="go('food')">🍽 Food Intake</button>
       <button onclick="go('fluids')">💧 Fluid Intake</button>
-      <button onclick="go('patterns')">📊 My Patterns</button>
+      <button onclick="go('insights')">📊 My Patterns</button>
       <button onclick="go('doctor')">📄 Doctor Report</button>
       <button onclick="go('chat')">💬 Chat</button>
     </aside>
 
-    <main>
-      <section id="home" class="page active">
+    <section id="home" class="screen active">
+      <div class="topbar">
+        <button class="icon-btn" onclick="toggleMenu()">☰</button>
+
+        <div class="brand">
+          <div class="brand-row">
+            <svg viewBox="0 0 48 48" fill="none">
+              <path d="M24 40s-4.5-3.8-10.1-8.7C7.6 25.8 4 22.2 4 15.9 4 10.7 8.1 7 13.1 7c3.2 0 6.1 1.7 7.9 4.2C22.8 8.7 25.7 7 28.9 7 33.9 7 38 10.7 38 15.9c0 .8-.1 1.6-.2 2.3" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+              <path d="M24 40s4.5-3.8 10.1-8.7C40.4 25.8 44 22.2 44 15.9" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+            Medora
+          </div>
+          <div class="subtitle">Your AI Health Companion</div>
+        </div>
+
+        <button class="icon-btn" onclick="openScreen('streak')">♧<span class="badge">3</span></button>
+      </div>
+
+      <div class="content">
         <div class="hero">
-          <h2>Hi, I’m Medora.</h2>
-          <p>I can help track your health, mood, food, fluids, anxiety, sleep, and patterns over time.</p>
+          <div class="hero-text">
+            <h1>Hi, I’m Medora 👋</h1>
+            <p>I’m here to support your health journey. How are you feeling today?</p>
+            <button class="primary-btn" onclick="openScreen('chat')">💬 Chat with Medora</button>
+          </div>
+          <img class="medora-img" src="medora-avatar.png" alt="Medora AI companion" />
         </div>
 
-        <div class="grid">
-          <button class="action" onclick="showPage('health')"><strong>🩺 Log Health</strong><span>Symptoms, sleep, mood, energy</span></button>
-          <button class="action" onclick="showPage('anxiety')"><strong>🧠 Anxiety Check-In</strong><span>Triggers, feelings, coping</span></button>
-          <button class="action" onclick="showPage('food')"><strong>🍽 Food Intake</strong><span>Meals, reactions, cravings</span></button>
-          <button class="action" onclick="showPage('fluids')"><strong>💧 Fluid Intake</strong><span>Water, caffeine, hydration</span></button>
-          <button class="action" onclick="showPage('patterns')"><strong>📊 My Patterns</strong><span>View saved health trends</span></button>
-          <button class="action" onclick="showPage('doctor')"><strong>📄 Doctor Report</strong><span>Summary for appointments</span></button>
-        </div>
-      </section>
-
-      <section id="profile" class="page">
-        <h2>Profile</h2>
         <div class="card">
-          <label>Name</label><input id="name" placeholder="Your name">
-          <label>Age</label><input id="age" type="number" placeholder="Age">
+          <div class="section-head">
+            <h2>Health Overview</h2>
+            <span class="date" id="todayDate">Today</span>
+          </div>
+
+          <div class="metrics">
+            <div class="metric mood">
+              <div class="emoji">😊</div>
+              Mood
+              <strong id="moodMetric">Good</strong>
+              <small style="color:var(--green)">7/10</small>
+            </div>
+
+            <div class="metric sleep">
+              <div class="emoji">🌙</div>
+              Sleep
+              <strong id="sleepMetric">-- hrs</strong>
+              <small style="color:var(--blue)">Track</small>
+            </div>
+
+            <div class="metric activity">
+              <div class="emoji">🏃</div>
+              Logs
+              <strong id="logMetric">0</strong>
+              <small style="color:var(--green)">Saved</small>
+            </div>
+
+            <div class="metric anxiety">
+              <div class="emoji">💧</div>
+              Anxiety
+              <strong id="anxietyMetric">--</strong>
+              <small style="color:var(--red)">Track</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head"><h2>Quick Actions</h2></div>
+
+          <div class="grid">
+            <button class="action" onclick="openScreen('health')">
+              <span class="action-icon" style="background:var(--green)">✚</span>
+              <span><h3>Log Health</h3><p>Symptoms, mood, sleep & more</p></span>
+            </button>
+
+            <button class="action" onclick="openScreen('anxietyPage')">
+              <span class="action-icon" style="background:var(--red)">♥</span>
+              <span><h3>Anxiety Check-In</h3><p>Track episodes and triggers</p></span>
+            </button>
+
+            <button class="action" onclick="openScreen('food')">
+              <span class="action-icon" style="background:var(--orange)">🍽</span>
+              <span><h3>Food Intake</h3><p>Meals, reactions, cravings</p></span>
+            </button>
+
+            <button class="action" onclick="openScreen('fluids')">
+              <span class="action-icon" style="background:var(--blue)">💧</span>
+              <span><h3>Fluid Intake</h3><p>Water, caffeine, hydration</p></span>
+            </button>
+
+            <button class="action" onclick="openScreen('insights')">
+              <span class="action-icon" style="background:var(--blue)">▥</span>
+              <span><h3>My Patterns</h3><p>View insights and trends</p></span>
+            </button>
+
+            <button class="action" onclick="openScreen('doctor')">
+              <span class="action-icon" style="background:var(--blue)">▤</span>
+              <span><h3>Doctor Report</h3><p>Generate report for your doctor</p></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="card guide">
+          <div>
+            <h3>Let Medora guide you</h3>
+            <p>The more we talk, the better I can understand and support you.</p>
+          </div>
+          <div class="leaf">🌿</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="chat" class="screen">
+      <div class="chat-top">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="chat-title">
+          <img class="avatar" src="medora-avatar.png" alt="Medora">
+          <div>
+            <h2>Medora</h2>
+            <div class="online">Online</div>
+          </div>
+        </div>
+        <button class="icon-btn" onclick="openScreen('insights')">♢</button>
+      </div>
+
+      <div class="messages" id="messages"></div>
+
+      <div class="chips">
+        <button class="chip" onclick="sendChip('Log my dinner')">🥗 Log my dinner</button>
+        <button class="chip" onclick="sendChip('Track a symptom')">🌡️ Track a symptom</button>
+        <button class="chip" onclick="sendChip('I only slept 4 hours and feel anxious')">😔 I feel anxious</button>
+      </div>
+
+      <div class="composer">
+        <div class="inputbar">
+          <button class="round" onclick="openScreen('health')">+</button>
+          <input id="messageInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()" />
+          <button class="round send" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="profile" class="screen">
+      <div class="topbar">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="brand-row">Profile</div>
+        <span></span>
+      </div>
+
+      <div class="content">
+        <div class="card">
+          <label>Name</label>
+          <input id="name" placeholder="Your name">
+
+          <label>Age</label>
+          <input id="age" type="number" placeholder="Age">
+
           <label>Gender</label>
           <select id="gender">
             <option value="">Select</option>
@@ -402,105 +812,181 @@
             <option>Non-binary</option>
             <option>Prefer not to say</option>
           </select>
-          <label>Height</label><input id="height" placeholder="Example: 5'5">
-          <label>Weight</label><input id="weight" placeholder="Example: 150 lbs">
-          <label>Health goals</label><textarea id="goals" placeholder="Example: sleep better, reduce anxiety, improve nutrition"></textarea>
+
+          <label>Height</label>
+          <input id="height" placeholder="Example: 5'5">
+
+          <label>Weight</label>
+          <input id="weight" placeholder="Example: 150 lbs">
+
+          <label>Health goals</label>
+          <textarea id="goals" placeholder="Example: sleep better, reduce anxiety, improve nutrition"></textarea>
+
           <button class="primary" onclick="saveProfile()">Save Profile</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="health" class="page">
-        <h2>Log Health</h2>
+    <section id="health" class="screen">
+      <div class="topbar">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="brand-row">Log Health</div>
+        <span></span>
+      </div>
+
+      <div class="content">
         <div class="card">
-          <label>Mood</label><input id="mood" placeholder="Anxious, calm, sad, tired...">
-          <label>Sleep hours</label><input id="sleep" type="number" placeholder="Example: 6">
-          <label>Energy level 1-10</label><input id="energy" type="number" min="1" max="10">
-          <label>Pain level 1-10</label><input id="pain" type="number" min="1" max="10">
-          <label>Symptoms</label><textarea id="symptoms" placeholder="Headache, nausea, dizziness, cramps..."></textarea>
+          <label>Mood</label>
+          <input id="mood" placeholder="Anxious, calm, sad, tired...">
+
+          <label>Sleep hours</label>
+          <input id="sleep" type="number" placeholder="Example: 6">
+
+          <label>Energy level 1-10</label>
+          <input id="energy" type="number" min="1" max="10">
+
+          <label>Pain level 1-10</label>
+          <input id="pain" type="number" min="1" max="10">
+
+          <label>Symptoms</label>
+          <textarea id="symptoms" placeholder="Headache, nausea, dizziness, cramps..."></textarea>
+
           <button class="primary" onclick="saveHealth()">Save Health Log</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="anxiety" class="page">
-        <h2>Anxiety Check-In</h2>
+    <section id="anxietyPage" class="screen">
+      <div class="topbar">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="brand-row">Anxiety</div>
+        <span></span>
+      </div>
+
+      <div class="content">
         <div class="card">
-          <label>Anxiety level 1-10</label><input id="anxietyLevel" type="number" min="1" max="10">
-          <label>Trigger</label><input id="trigger" placeholder="What caused it?">
-          <label>Body symptoms</label><textarea id="bodySymptoms" placeholder="Racing heart, tight chest, shaking..."></textarea>
-          <label>What helped?</label><textarea id="coping" placeholder="Breathing, walking, talking, rest..."></textarea>
+          <label>Anxiety level 1-10</label>
+          <input id="anxietyLevel" type="number" min="1" max="10">
+
+          <label>Trigger</label>
+          <input id="trigger" placeholder="What caused it?">
+
+          <label>Body symptoms</label>
+          <textarea id="bodySymptoms" placeholder="Racing heart, tight chest, shaking..."></textarea>
+
+          <label>What helped?</label>
+          <textarea id="coping" placeholder="Breathing, walking, talking, rest..."></textarea>
+
           <button class="primary" onclick="saveAnxiety()">Save Anxiety Check-In</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="food" class="page">
-        <h2>Food Intake</h2>
+    <section id="food" class="screen">
+      <div class="topbar">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="brand-row">Food</div>
+        <span></span>
+      </div>
+
+      <div class="content">
         <div class="card">
-          <label>Meal</label><input id="meal" placeholder="Breakfast, lunch, dinner, snack">
-          <label>What did you eat?</label><textarea id="foodText"></textarea>
-          <label>Reaction after eating</label><textarea id="foodReaction" placeholder="Bloated, energized, tired, stomach pain..."></textarea>
+          <label>Meal</label>
+          <input id="meal" placeholder="Breakfast, lunch, dinner, snack">
+
+          <label>What did you eat?</label>
+          <textarea id="foodText"></textarea>
+
+          <label>Reaction after eating</label>
+          <textarea id="foodReaction" placeholder="Bloated, energized, tired, stomach pain..."></textarea>
+
           <button class="primary" onclick="saveFood()">Save Food Log</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="fluids" class="page">
-        <h2>Fluid Intake</h2>
+    <section id="fluids" class="screen">
+      <div class="topbar">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="brand-row">Fluids</div>
+        <span></span>
+      </div>
+
+      <div class="content">
         <div class="card">
-          <label>Water cups today</label><input id="water" type="number">
-          <label>Caffeine</label><input id="caffeine" placeholder="Coffee, energy drinks, tea...">
-          <label>Hydration symptoms</label><textarea id="hydrationSymptoms" placeholder="Dry mouth, headache, dark urine..."></textarea>
+          <label>Water cups today</label>
+          <input id="water" type="number">
+
+          <label>Caffeine</label>
+          <input id="caffeine" placeholder="Coffee, energy drinks, tea...">
+
+          <label>Hydration symptoms</label>
+          <textarea id="hydrationSymptoms" placeholder="Dry mouth, headache, dark urine..."></textarea>
+
           <button class="primary" onclick="saveFluids()">Save Fluid Log</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="patterns" class="page">
-        <h2>My Patterns</h2>
+    <section id="insights" class="screen">
+      <div class="topbar">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="brand-row">Insights</div>
+        <span></span>
+      </div>
+
+      <div class="content">
         <div class="card">
           <p class="small">Medora will use your saved logs to notice patterns over time.</p>
           <div id="patternData"></div>
           <button class="secondary" onclick="renderPatterns()">Refresh Patterns</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="doctor" class="page">
-        <h2>Doctor Report</h2>
+    <section id="doctor" class="screen">
+      <div class="topbar">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="brand-row">Report</div>
+        <span></span>
+      </div>
+
+      <div class="content">
         <div class="card">
           <div id="doctorReport"></div>
           <button class="primary" onclick="generateDoctorReport()">Generate Report</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="streak" class="page">
-        <h2>Health Streak</h2>
+    <section id="streak" class="screen">
+      <div class="topbar">
+        <button class="icon-btn" onclick="openScreen('home')">‹</button>
+        <div class="brand-row">Streak</div>
+        <span></span>
+      </div>
+
+      <div class="content">
         <div class="card">
           <h3>♧ 3 Day Streak</h3>
           <p>You are building consistency. This page can track daily check-ins, completed logs, and health habits.</p>
-          <button class="primary" onclick="showPage('health')">Add Today’s Check-In</button>
+          <button class="primary" onclick="openScreen('health')">Add Today’s Check-In</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="chat" class="page">
-        <h2>Chat with Medora</h2>
-        <div class="chat-box" id="chatBox">
-          <div class="msg bot">Hi, I’m Medora. Tell me how you’re feeling, and I’ll help you reflect and track patterns.</div>
-        </div>
-        <div class="chat-row">
-          <input id="chatInput" placeholder="Message Medora...">
-          <button onclick="sendMessage()">Send</button>
-        </div>
-      </section>
-    </main>
-
-    <nav class="bottom-nav">
-      <button onclick="showPage('home')" id="nav-home" class="active"><span>🏠</span>Home</button>
-      <button onclick="showPage('chat')" id="nav-chat"><span>💬</span>Chat</button>
-      <button onclick="showPage('health')" id="nav-health"><span>＋</span>Log</button>
-      <button onclick="showPage('patterns')" id="nav-patterns"><span>📊</span>Insights</button>
-      <button onclick="showPage('profile')" id="nav-profile"><span>👤</span>Profile</button>
+    <nav class="nav">
+      <button id="tab-home" class="active-tab" onclick="openScreen('home')"><span class="nav-icon">⌂</span>Home</button>
+      <button id="tab-chat" onclick="openScreen('chat')"><span class="nav-icon">☵</span>Chat</button>
+      <button class="plus" onclick="openScreen('health')">+</button>
+      <button id="tab-insights" onclick="openScreen('insights')"><span class="nav-icon">▥</span>Insights</button>
+      <button id="tab-profile" onclick="openScreen('profile')"><span class="nav-icon">♙</span>Profile</button>
     </nav>
-  </div>
+  </main>
 
   <script>
     const storeKey = "medoraData";
+    let isCrisis = false;
 
     function getData() {
       return JSON.parse(localStorage.getItem(storeKey)) || {
@@ -521,16 +1007,35 @@
       return new Date().toLocaleString();
     }
 
-    function showPage(id) {
-      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    function shortToday() {
+      return new Date().toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function openScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
 
-      document.querySelectorAll(".bottom-nav button").forEach(b => b.classList.remove("active"));
-      const nav = document.getElementById("nav-" + id);
-      if (nav) nav.classList.add("active");
+      document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active-tab"));
 
-      if (id === "patterns") renderPatterns();
+      const navMap = {
+        home: "tab-home",
+        chat: "tab-chat",
+        insights: "tab-insights",
+        profile: "tab-profile"
+      };
+
+      if (navMap[id]) {
+        document.getElementById(navMap[id]).classList.add("active-tab");
+      }
+
+      if (id === "insights") renderPatterns();
       if (id === "doctor") generateDoctorReport();
+      if (id === "home") updateHomeMetrics();
+      if (id === "chat") renderChat();
 
       window.scrollTo(0,0);
     }
@@ -542,76 +1047,89 @@
 
     function go(id) {
       toggleMenu();
-      showPage(id);
+      openScreen(id);
     }
 
     function saveProfile() {
       const data = getData();
+
       data.profile = {
-        name: name.value,
-        age: age.value,
-        gender: gender.value,
-        height: height.value,
-        weight: weight.value,
-        goals: goals.value
+        name: document.getElementById("name").value,
+        age: document.getElementById("age").value,
+        gender: document.getElementById("gender").value,
+        height: document.getElementById("height").value,
+        weight: document.getElementById("weight").value,
+        goals: document.getElementById("goals").value
       };
+
       saveData(data);
       alert("Profile saved.");
+      updateHomeMetrics();
     }
 
     function saveHealth() {
       const data = getData();
+
       data.health.push({
         date: today(),
-        mood: mood.value,
-        sleep: sleep.value,
-        energy: energy.value,
-        pain: pain.value,
-        symptoms: symptoms.value
+        mood: document.getElementById("mood").value,
+        sleep: document.getElementById("sleep").value,
+        energy: document.getElementById("energy").value,
+        pain: document.getElementById("pain").value,
+        symptoms: document.getElementById("symptoms").value
       });
+
       saveData(data);
       alert("Health log saved.");
-      showPage("patterns");
+      updateHomeMetrics();
+      openScreen("insights");
     }
 
     function saveAnxiety() {
       const data = getData();
+
       data.anxiety.push({
         date: today(),
-        level: anxietyLevel.value,
-        trigger: trigger.value,
-        bodySymptoms: bodySymptoms.value,
-        coping: coping.value
+        level: document.getElementById("anxietyLevel").value,
+        trigger: document.getElementById("trigger").value,
+        bodySymptoms: document.getElementById("bodySymptoms").value,
+        coping: document.getElementById("coping").value
       });
+
       saveData(data);
       alert("Anxiety check-in saved.");
-      showPage("patterns");
+      updateHomeMetrics();
+      openScreen("insights");
     }
 
     function saveFood() {
       const data = getData();
+
       data.food.push({
         date: today(),
-        meal: meal.value,
-        food: foodText.value,
-        reaction: foodReaction.value
+        meal: document.getElementById("meal").value,
+        food: document.getElementById("foodText").value,
+        reaction: document.getElementById("foodReaction").value
       });
+
       saveData(data);
       alert("Food log saved.");
-      showPage("patterns");
+      openScreen("insights");
     }
 
     function saveFluids() {
       const data = getData();
+
       data.fluids.push({
         date: today(),
-        water: water.value,
-        caffeine: caffeine.value,
-        symptoms: hydrationSymptoms.value
+        water: document.getElementById("water").value,
+        caffeine: document.getElementById("caffeine").value,
+        symptoms: document.getElementById("hydrationSymptoms").value
       });
+
       saveData(data);
       alert("Fluid log saved.");
-      showPage("patterns");
+      openScreen("insights");
     }
 
     function renderPatterns() {
@@ -628,12 +1146,57 @@
 
       if (data.health.length > 0) {
         const last = data.health[data.health.length - 1];
-        box.innerHTML += `<div class="data-row"><strong>Last health log:</strong><br>Mood: ${last.mood || "Not entered"}<br>Sleep: ${last.sleep || "Not entered"} hours<br>Symptoms: ${last.symptoms || "None entered"}</div>`;
+
+        box.innerHTML += `
+          <div class="data-row">
+            <strong>Last health log:</strong><br>
+            Mood: ${last.mood || "Not entered"}<br>
+            Sleep: ${last.sleep || "Not entered"} hours<br>
+            Energy: ${last.energy || "Not entered"}/10<br>
+            Pain: ${last.pain || "Not entered"}/10<br>
+            Symptoms: ${last.symptoms || "None entered"}
+          </div>
+        `;
       }
 
       if (data.anxiety.length > 0) {
         const last = data.anxiety[data.anxiety.length - 1];
-        box.innerHTML += `<div class="data-row"><strong>Last anxiety log:</strong><br>Level: ${last.level || "Not entered"}<br>Trigger: ${last.trigger || "Not entered"}</div>`;
+
+        box.innerHTML += `
+          <div class="data-row">
+            <strong>Last anxiety log:</strong><br>
+            Level: ${last.level || "Not entered"}/10<br>
+            Trigger: ${last.trigger || "Not entered"}<br>
+            Body symptoms: ${last.bodySymptoms || "Not entered"}<br>
+            What helped: ${last.coping || "Not entered"}
+          </div>
+        `;
+      }
+
+      if (data.food.length > 0) {
+        const last = data.food[data.food.length - 1];
+
+        box.innerHTML += `
+          <div class="data-row">
+            <strong>Last food log:</strong><br>
+            Meal: ${last.meal || "Not entered"}<br>
+            Food: ${last.food || "Not entered"}<br>
+            Reaction: ${last.reaction || "Not entered"}
+          </div>
+        `;
+      }
+
+      if (data.fluids.length > 0) {
+        const last = data.fluids[data.fluids.length - 1];
+
+        box.innerHTML += `
+          <div class="data-row">
+            <strong>Last fluid log:</strong><br>
+            Water: ${last.water || "Not entered"} cups<br>
+            Caffeine: ${last.caffeine || "Not entered"}<br>
+            Symptoms: ${last.symptoms || "Not entered"}
+          </div>
+        `;
       }
     }
 
@@ -646,6 +1209,8 @@
         <p><strong>Name:</strong> ${data.profile.name || "Not provided"}</p>
         <p><strong>Age:</strong> ${data.profile.age || "Not provided"}</p>
         <p><strong>Gender:</strong> ${data.profile.gender || "Not provided"}</p>
+        <p><strong>Height:</strong> ${data.profile.height || "Not provided"}</p>
+        <p><strong>Weight:</strong> ${data.profile.weight || "Not provided"}</p>
         <p><strong>Goals:</strong> ${data.profile.goals || "Not provided"}</p>
         <hr>
         <p><strong>Total health logs:</strong> ${data.health.length}</p>
@@ -656,6 +1221,7 @@
 
       if (data.health.length > 0) {
         const last = data.health[data.health.length - 1];
+
         report.innerHTML += `
           <h4>Most Recent Health Log</h4>
           <p><strong>Date:</strong> ${last.date}</p>
@@ -666,67 +1232,270 @@
           <p><strong>Symptoms:</strong> ${last.symptoms}</p>
         `;
       }
+
+      if (data.anxiety.length > 0) {
+        const last = data.anxiety[data.anxiety.length - 1];
+
+        report.innerHTML += `
+          <h4>Most Recent Anxiety Check-In</h4>
+          <p><strong>Date:</strong> ${last.date}</p>
+          <p><strong>Level:</strong> ${last.level}/10</p>
+          <p><strong>Trigger:</strong> ${last.trigger}</p>
+          <p><strong>Body symptoms:</strong> ${last.bodySymptoms}</p>
+          <p><strong>What helped:</strong> ${last.coping}</p>
+        `;
+      }
     }
 
-    function sendMessage() {
-      const input = document.getElementById("chatInput");
-      const text = input.value.trim();
-      if (!text) return;
+    function localDetectCrisis(message) {
+      const text = String(message || "").toLowerCase();
 
-      addMessage(text, "user");
-
-      const data = getData();
-      data.chat.push({ date: today(), role: "user", text });
-
-      const response = medoraReply(text, data);
-      data.chat.push({ date: today(), role: "medora", text: response });
-
-      saveData(data);
-      addMessage(response, "bot");
-
-      input.value = "";
+      return (
+        text.includes("kill myself") ||
+        text.includes("killing myself") ||
+        text.includes("suicide") ||
+        text.includes("suicidal") ||
+        text.includes("end my life") ||
+        text.includes("take my life") ||
+        text.includes("want to die") ||
+        text.includes("i wanna die") ||
+        text.includes("hurt myself") ||
+        text.includes("self harm") ||
+        text.includes("don't want to live") ||
+        text.includes("dont want to live") ||
+        text.includes("no reason to live") ||
+        text.includes("can't go on") ||
+        text.includes("cant go on") ||
+        (text.includes("kill") && text.includes("myself"))
+      );
     }
 
-    function addMessage(text, type) {
-      const box = document.getElementById("chatBox");
-      const div = document.createElement("div");
-      div.className = "msg " + type;
-      div.textContent = text;
-      box.appendChild(div);
-      box.scrollTop = box.scrollHeight;
+    function crisisStartResponse() {
+      return `I’m really sorry you’re feeling this much pain. I need to focus on your safety first.
+
+Are you thinking about suicide or hurting yourself right now?
+
+If you are in immediate danger, call emergency services now. If you’re in the U.S. or Canada, call or text 988.
+
+Please move away from anything you could use to hurt yourself and contact one trusted person right now.
+
+Are you safe in this exact moment?`;
+    }
+
+    function handleCrisisFollowup(message) {
+      const text = String(message || "").toLowerCase();
+
+      if (
+        text.includes("yes") ||
+        text.includes("plan") ||
+        text.includes("not safe") ||
+        text.includes("unsafe") ||
+        text.includes("right now")
+      ) {
+        return `Thank you for telling me. Your safety matters more than anything right now.
+
+Please call emergency services now, or call/text 988 if you’re in the U.S. or Canada.
+
+While you do that:
+1. Move away from anything you could use to hurt yourself.
+2. Go near another person if possible.
+3. Text or call someone you trust: “I’m not safe alone right now. Can you stay with me?”
+
+Can you contact someone now?`;
+      }
+
+      if (
+        text.includes("no") ||
+        text.includes("safe") ||
+        text.includes("i am safe") ||
+        text.includes("im safe")
+      ) {
+        isCrisis = false;
+
+        return `I’m relieved you’re safe right now. Let’s keep things very simple for the next few minutes.
+
+Try this:
+- Put both feet on the floor.
+- Take one slow breath in.
+- Exhale longer than you inhale.
+- Name 3 things you can see.
+
+I can stay with you. What is the strongest feeling right now?`;
+      }
+
+      return `I’m here with you. I need to understand your safety first.
+
+Are you safe right now, and are you at risk of hurting yourself today?`;
     }
 
     function medoraReply(text, data) {
       const lower = text.toLowerCase();
 
-      if (lower.includes("sleep") || lower.includes("tired")) {
-        return "I hear that sleep is affecting you. I saved this conversation, and if you log your sleep in Log Health, I can help connect it to anxiety, mood, and energy patterns.";
+      if (lower.includes("sleep") || lower.includes("tired") || lower.includes("exhausted")) {
+        return "I hear that sleep is affecting you. Lack of sleep can make anxiety, mood, and energy feel harder to manage. If you log your sleep in Log Health, I can help connect it to your patterns over time.";
       }
 
       if (lower.includes("anxious") || lower.includes("anxiety") || lower.includes("panic")) {
-        return "That sounds uncomfortable. Try using the Anxiety Check-In so we can track the trigger, body symptoms, and what helped. Over time, I can help notice your anxiety patterns.";
+        return "That sounds uncomfortable. Let’s slow this down. Try one deep breath in, hold for a second, then exhale slowly. You can also use Anxiety Check-In to track the trigger, body symptoms, and what helped.";
       }
 
       if (lower.includes("water") || lower.includes("dehydrated") || lower.includes("headache")) {
         return "Hydration may be important here. You can use Fluid Intake to track water, caffeine, and symptoms like headaches or dry mouth.";
       }
 
-      if (lower.includes("food") || lower.includes("stomach") || lower.includes("bloated")) {
+      if (lower.includes("food") || lower.includes("dinner") || lower.includes("stomach") || lower.includes("bloated")) {
         return "Food reactions can reveal patterns. Use Food Intake to track what you ate and how your body reacted afterward.";
+      }
+
+      if (data.health.length > 0 || data.anxiety.length > 0) {
+        return "I’m listening. I saved this message. Since you already have some logs, I can start helping you connect symptoms, sleep, mood, anxiety, food, and hydration patterns.";
       }
 
       return "I’m listening. I saved this message. You can also use the health, anxiety, food, and fluid pages so I can understand your patterns better over time.";
     }
 
-    window.onload = function() {
+    function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      addMessage(text, "user");
+
+      const data = getData();
+      data.chat.push({
+        date: today(),
+        role: "user",
+        text
+      });
+
+      let response;
+
+      if (localDetectCrisis(text)) {
+        isCrisis = true;
+        response = crisisStartResponse();
+      } else if (isCrisis) {
+        response = handleCrisisFollowup(text);
+      } else {
+        response = medoraReply(text, data);
+      }
+
+      data.chat.push({
+        date: today(),
+        role: "medora",
+        text: response
+      });
+
+      saveData(data);
+      addMessage(response, "bot");
+
+      input.value = "";
+      updateHomeMetrics();
+    }
+
+    function sendChip(text) {
+      document.getElementById("messageInput").value = text;
+      sendMessage();
+    }
+
+    function addMessage(text, type) {
+      const box = document.getElementById("messages");
+
+      const row = document.createElement("div");
+      row.className = "row " + type;
+
+      if (type === "bot") {
+        const img = document.createElement("img");
+        img.className = "avatar";
+        img.src = "medora-avatar.png";
+        img.alt = "Medora";
+        row.appendChild(img);
+      }
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.innerHTML = `${escapeHTML(text)}<span class="time">${new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}</span>`;
+
+      row.appendChild(bubble);
+      box.appendChild(row);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function renderChat() {
+      const box = document.getElementById("messages");
       const data = getData();
 
-      if (data.profile.name) name.value = data.profile.name;
-      if (data.profile.age) age.value = data.profile.age;
-      if (data.profile.gender) gender.value = data.profile.gender;
-      if (data.profile.height) height.value = data.profile.height;
-      if (data.profile.weight) weight.value = data.profile.weight;
-      if (data.profile.goals) goals.value = data.profile.goals;
+      box.innerHTML = "";
+
+      if (data.chat.length === 0) {
+        addMessage("Hi, I’m Medora. Tell me how you’re feeling, and I’ll help you reflect and track patterns.", "bot");
+        return;
+      }
+
+      data.chat.forEach(msg => {
+        const type = msg.role === "user" ? "user" : "bot";
+
+        const row = document.createElement("div");
+        row.className = "row " + type;
+
+        if (type === "bot") {
+          const img = document.createElement("img");
+          img.className = "avatar";
+          img.src = "medora-avatar.png";
+          img.alt = "Medora";
+          row.appendChild(img);
+        }
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.innerHTML = `${escapeHTML(msg.text)}<span class="time">${msg.date || ""}</span>`;
+
+        row.appendChild(bubble);
+        box.appendChild(row);
+      });
+
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;")
+        .replaceAll("\n", "<br>");
+    }
+
+    function updateHomeMetrics() {
+      const data = getData();
+
+      document.getElementById("todayDate").textContent = shortToday();
+
+      const lastHealth = data.health[data.health.length - 1];
+      const lastAnxiety = data.anxiety[data.anxiety.length - 1];
+
+      document.getElementById("moodMetric").textContent = lastHealth?.mood || "Good";
+      document.getElementById("sleepMetric").textContent = lastHealth?.sleep ? `${lastHealth.sleep} hrs` : "-- hrs";
+      document.getElementById("logMetric").textContent = data.health.length + data.anxiety.length + data.food.length + data.fluids.length;
+      document.getElementById("anxietyMetric").textContent = lastAnxiety?.level ? `${lastAnxiety.level}/10` : "--";
+    }
+
+    function loadProfileFields() {
+      const data = getData();
+
+      if (data.profile.name) document.getElementById("name").value = data.profile.name;
+      if (data.profile.age) document.getElementById("age").value = data.profile.age;
+      if (data.profile.gender) document.getElementById("gender").value = data.profile.gender;
+      if (data.profile.height) document.getElementById("height").value = data.profile.height;
+      if (data.profile.weight) document.getElementById("weight").value = data.profile.weight;
+      if (data.profile.goals) document.getElementById("goals").value = data.profile.goals;
+    }
+
+    window.onload = function() {
+      loadProfileFields();
+      updateHomeMetrics();
+      renderChat();
     };
   </script>
 </body>
