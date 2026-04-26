@@ -781,9 +781,24 @@
 
       <div class="composer">
         <div class="inputbar">
-          <button class="round" onclick="openScreen('health')">+</button>
-          <input id="messageInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()" />
-          <button class="round send" onclick="sendMessage()">➤</button>
+         <button class="round" onclick="document.getElementById('fileUpload').click()">+</button>
+
+<input 
+  id="fileUpload" 
+  type="file" 
+  accept="image/*,.pdf,.txt,.csv" 
+  style="display:none" 
+  onchange="handleUpload(event)" 
+/>
+
+<input 
+  id="messageInput" 
+  placeholder="Type a message..." 
+  onkeydown="if(event.key==='Enter') sendMessage()" 
+/>
+
+<button class="round send" onclick="sendMessage()">➤</button>
+
         </div>
       </div>
     </section>
@@ -988,15 +1003,27 @@
     let isCrisis = false;
 
     function getData() {
-      return JSON.parse(localStorage.getItem(storeKey)) || {
-        profile: {},
-        health: [],
-        anxiety: [],
-        food: [],
-        fluids: [],
-        chat: []
-      };
-    }
+  const saved = JSON.parse(localStorage.getItem(storeKey));
+
+  const data = saved || {
+    profile: {},
+    health: [],
+    anxiety: [],
+    food: [],
+    fluids: [],
+    uploads: [],
+    chat: []
+  };
+
+  if (!data.uploads) data.uploads = [];
+  if (!data.chat) data.chat = [];
+  if (!data.health) data.health = [];
+  if (!data.anxiety) data.anxiety = [];
+  if (!data.food) data.food = [];
+  if (!data.fluids) data.fluids = [];
+
+  return data;
+}
 
     function saveData(data) {
       localStorage.setItem(storeKey, JSON.stringify(data));
@@ -1142,6 +1169,9 @@
         <div class="data-row">💧 Fluid logs: ${data.fluids.length}</div>
         <div class="data-row">💬 Chat messages saved: ${data.chat.length}</div>
       `;
+      box.innerHTML += `
+  <div class="data-row">📎 Uploaded files: ${data.uploads ? data.uploads.length : 0}</div>
+`;
 
       if (data.health.length > 0) {
         const last = data.health[data.health.length - 1];
@@ -1396,6 +1426,76 @@ Are you safe right now, and are you at risk of hurting yourself today?`;
       document.getElementById("messageInput").value = text;
       sendMessage();
     }
+
+function handleUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const data = getData();
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    const upload = {
+      date: today(),
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      preview: file.type.startsWith("image/") ? e.target.result : null
+    };
+
+    if (!data.uploads) data.uploads = [];
+    data.uploads.push(upload);
+
+    data.chat.push({
+      date: today(),
+      role: "user",
+      text: `Uploaded file: ${file.name}`
+    });
+
+    const response = analyzeUploadedFile(upload);
+
+    data.chat.push({
+      date: today(),
+      role: "medora",
+      text: response
+    });
+
+    saveData(data);
+    renderChat();
+    if (document.getElementById("insights").classList.contains("active")) {
+  renderPatterns();
+}
+    updateHomeMetrics();
+  };
+
+  reader.readAsDataURL(file);
+  event.target.value = "";
+}
+
+function analyzeUploadedFile(upload) {
+  if (upload.type.startsWith("image/")) {
+    return `I received your image: ${upload.name}. 
+
+Right now, I saved it to your Medora records. In the next upgrade, I can analyze images like meals, skin changes, swelling, medication labels, or health documents.
+
+For now, tell me what this image is related to: food, symptom, medication, report, or mood?`;
+  }
+
+  if (upload.type.includes("pdf")) {
+    return `I received your PDF: ${upload.name}.
+
+I saved it to your records. This could be useful for doctor reports, lab results, discharge papers, prescriptions, or health summaries.`;
+  }
+
+  if (upload.type.includes("csv")) {
+    return `I received your data file: ${upload.name}.
+
+This can be used for graphs, trends, and deeper health insights once we connect chart visualization.`;
+  }
+
+  return `I received your file: ${upload.name}. I saved it to your Medora records.`;
+}
+
 
     function addMessage(text, type) {
       const box = document.getElementById("messages");
