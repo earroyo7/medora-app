@@ -1729,45 +1729,79 @@ Are you safe right now, and are you at risk of hurting yourself today?`;
       return "I’m listening. I saved this message. You can also use the health, anxiety, food, and fluid pages so I can understand your patterns better over time.";
     }
 
-    function sendMessage() {
-      const input = document.getElementById("messageInput");
-      const text = input.value.trim();
+    async function sendMessage() {
+  const input = document.getElementById("messageInput");
+  const text = input.value.trim();
 
-      if (!text) return;
+  if (!text) return;
 
-      addMessage(text, "user");
+  addMessage(text, "user");
+  input.value = "";
 
-      const data = getData();
-      data.chat.push({
-        date: today(),
-        role: "user",
-        text
-      });
+  const data = getData();
 
-      let response;
+  data.chat.push({
+    date: today(),
+    role: "user",
+    text
+  });
 
-      if (localDetectCrisis(text)) {
-        isCrisis = true;
-        response = crisisStartResponse();
-      } else if (isCrisis) {
-        response = handleCrisisFollowup(text);
-      } else {
-        response = medoraReply(text, data);
-      }
+  saveData(data);
 
-      data.chat.push({
-        date: today(),
-        role: "medora",
-        text: response
-      });
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: text,
+        memory: data.chat.slice(-20).map(msg => ({
+          role: msg.role === "medora" ? "assistant" : "user",
+          content: msg.text
+        })),
+        healthProfile: {
+          profile: data.profile,
+          recentHealth: data.health.slice(-5),
+          recentAnxiety: data.anxiety.slice(-5),
+          recentFood: data.food.slice(-5),
+          recentFluids: data.fluids.slice(-5)
+        }
+      })
+    });
 
-      saveData(data);
-      addMessage(response, "bot");
+    const result = await response.json();
 
-      input.value = "";
-      updateHomeMetrics();
-      renderSmartChips();
-    }
+    const reply = result.reply || "I’m here with you. Tell me a little more.";
+
+    const freshData = getData();
+
+    freshData.chat.push({
+      date: today(),
+      role: "medora",
+      text: reply
+    });
+
+    saveData(freshData);
+    addMessage(reply, "bot");
+
+    updateHomeMetrics();
+    renderSmartChips();
+
+  } catch (error) {
+    const fallback = "I’m having trouble connecting right now, but I’m still here. Try again in a moment.";
+
+    const freshData = getData();
+    freshData.chat.push({
+      date: today(),
+      role: "medora",
+      text: fallback
+    });
+
+    saveData(freshData);
+    addMessage(fallback, "bot");
+  }
+}
 
     function sendChip(text) {
       document.getElementById("messageInput").value = text;
