@@ -39,7 +39,7 @@
       min-height:100vh;
       background:#fff;
       position:relative;
-      overflow:hidden;
+      overflow-x:hidden;
       border-left:1px solid var(--border);
       border-right:1px solid var(--border);
     }
@@ -642,6 +642,17 @@
 canvas{
   width:100%!important;
   max-height:260px;
+}
+
+/* FIX: prevent bottom nav overlap */
+#insights .content,
+#doctor .content,
+#profile .content,
+#health .content,
+#anxietyPage .content,
+#food .content,
+#fluids .content{
+  padding-bottom:220px;
 }
 
     .placeholder{
