@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Medora AI Health Companion</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root{
       --primary:#2F80ED;
@@ -621,6 +623,11 @@
 
     .overlay.show{display:block}
 
+canvas{
+  width:100%!important;
+  max-height:260px;
+}
+
     .placeholder{
       padding:30px 20px;
       text-align:center;
@@ -952,8 +959,15 @@
       <div class="content">
         <div class="card">
           <p class="small">Medora will use your saved logs to notice patterns over time.</p>
-          <div id="patternData"></div>
-          <button class="secondary" onclick="renderPatterns()">Refresh Patterns</button>
+         <div id="patternData"></div>
+
+<div class="card">
+  <h3>Health Visuals</h3>
+  <canvas id="sleepChart"></canvas>
+  <canvas id="anxietyChart" style="margin-top:25px;"></canvas>
+</div>
+
+<button class="secondary" onclick="renderPatterns()">Refresh Patterns</button>
         </div>
       </div>
     </section>
@@ -1003,17 +1017,153 @@
     let isCrisis = false;
 
     function getData() {
-  const saved = JSON.parse(localStorage.getItem(storeKey));
+  const defaultData = {
+    version: "1.0.0",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
 
-  const data = saved || {
-    profile: {},
+    profile: {
+      name: "",
+      age: "",
+      gender: "",
+      height: "",
+      weight: "",
+      goals: "",
+      conditions: "",
+      medications: "",
+      allergies: ""
+    },
+
     health: [],
     anxiety: [],
     food: [],
     fluids: [],
     uploads: [],
-    chat: []
+    chat: [],
+
+    insights: {
+      lastGenerated: null,
+      patterns: [],
+      warnings: [],
+      recommendations: []
+    },
+
+    settings: {
+      crisisMode: false,
+      onboardingComplete: false
+    }
   };
+
+  let saved = {};
+
+  try {
+    const raw = localStorage.getItem(storeKey);
+    saved = raw ? JSON.parse(raw) : {};
+  } catch (error) {
+    console.warn("Medora could not read saved data:", error);
+    saved = {};
+  }
+
+  const data = {
+    ...defaultData,
+    ...saved,
+
+    profile: {
+      ...defaultData.profile,
+      ...(saved.profile || {})
+    },
+
+    insights: {
+      ...defaultData.insights,
+      ...(saved.insights || {})
+    },
+
+    settings: {
+      ...defaultData.settings,
+      ...(saved.settings || {})
+    },
+
+    health: Array.isArray(saved.health) ? saved.health : [],
+    anxiety: Array.isArray(saved.anxiety) ? saved.anxiety : [],
+    food: Array.isArray(saved.food) ? saved.food : [],
+    fluids: Array.isArray(saved.fluids) ? saved.fluids : [],
+    uploads: Array.isArray(saved.uploads) ? saved.uploads : [],
+    chat: Array.isArray(saved.chat) ? saved.chat : []
+  };
+
+  data.health = data.health.map((item, index) => ({
+    id: item.id || `health-${Date.now()}-${index}`,
+    date: item.date || new Date().toLocaleString(),
+    mood: item.mood || "",
+    sleep: item.sleep || "",
+    energy: item.energy || "",
+    pain: item.pain || "",
+    symptoms: item.symptoms || "",
+    notes: item.notes || ""
+  }));
+
+  data.anxiety = data.anxiety.map((item, index) => ({
+    id: item.id || `anxiety-${Date.now()}-${index}`,
+    date: item.date || new Date().toLocaleString(),
+    level: item.level || "",
+    trigger: item.trigger || "",
+    bodySymptoms: item.bodySymptoms || "",
+    coping: item.coping || "",
+    notes: item.notes || ""
+  }));
+
+  data.food = data.food.map((item, index) => ({
+    id: item.id || `food-${Date.now()}-${index}`,
+    date: item.date || new Date().toLocaleString(),
+    meal: item.meal || "",
+    food: item.food || "",
+    reaction: item.reaction || "",
+    notes: item.notes || ""
+  }));
+
+  data.fluids = data.fluids.map((item, index) => ({
+    id: item.id || `fluid-${Date.now()}-${index}`,
+    date: item.date || new Date().toLocaleString(),
+    water: item.water || "",
+    caffeine: item.caffeine || "",
+    symptoms: item.symptoms || "",
+    notes: item.notes || ""
+  }));
+
+  data.uploads = data.uploads.map((item, index) => ({
+    id: item.id || `upload-${Date.now()}-${index}`,
+    date: item.date || new Date().toLocaleString(),
+    name: item.name || "Unknown file",
+    type: item.type || "unknown",
+    size: item.size || 0,
+    preview: item.preview || null,
+    category: item.category || "",
+    summary: item.summary || "",
+    extractedText: item.extractedText || "",
+    relatedTo: item.relatedTo || ""
+  }));
+
+  data.chat = data.chat.map((item, index) => ({
+    id: item.id || `chat-${Date.now()}-${index}`,
+    date: item.date || new Date().toLocaleString(),
+    role: item.role || "user",
+    text: item.text || "",
+    preview: item.preview || null,
+    fileName: item.fileName || "",
+    fileType: item.fileType || "",
+    insightTags: Array.isArray(item.insightTags) ? item.insightTags : []
+  }));
+
+  data.updatedAt = new Date().toISOString();
+
+  try {
+    localStorage.setItem(storeKey, JSON.stringify(data));
+  } catch (error) {
+    console.warn("Medora could not repair saved data:", error);
+  }
+
+  return data;
+}
 
   if (!data.uploads) data.uploads = [];
   if (!data.chat) data.chat = [];
@@ -1026,8 +1176,16 @@
 }
 
     function saveData(data) {
-      localStorage.setItem(storeKey, JSON.stringify(data));
-    }
+  try {
+    data.updatedAt = new Date().toISOString();
+    localStorage.setItem(storeKey, JSON.stringify(data));
+    return true;
+  } catch (error) {
+    console.error("Medora save failed:", error);
+    alert("Medora could not save this. Your browser storage may be full, especially if you uploaded large images.");
+    return false;
+  }
+}
 
     function today() {
       return new Date().toLocaleString();
@@ -1158,6 +1316,42 @@
       openScreen("insights");
     }
 
+function generateAutoInsights(data) {
+  const insights = [];
+
+  const lastHealth = data.health[data.health.length - 1];
+  const lastAnxiety = data.anxiety[data.anxiety.length - 1];
+
+  if (lastHealth?.sleep && Number(lastHealth.sleep) < 6) {
+    insights.push("Low sleep may be affecting mood, anxiety, energy, or pain today.");
+  }
+
+  if (lastAnxiety?.level && Number(lastAnxiety.level) >= 7) {
+    insights.push("Your latest anxiety level is high. Track sleep, caffeine, trigger, and body symptoms around this episode.");
+  }
+
+  if (data.food.length > 0 && data.health.length > 0) {
+    insights.push("Food and health logs are both available, so Medora can begin watching for food-related reactions.");
+  }
+
+  if (data.fluids.length > 0 && data.health.length > 0) {
+    insights.push("Hydration logs can be compared with symptoms like headache, fatigue, and dizziness.");
+  }
+
+  if (data.uploads.length > 0) {
+    insights.push("Uploaded files are saved to your Medora timeline and can be connected to symptoms, food, or doctor reports.");
+  }
+
+  if (insights.length === 0) {
+    insights.push("Keep logging sleep, anxiety, food, fluids, and symptoms so Medora can detect stronger patterns.");
+  }
+
+  data.insights.lastGenerated = today();
+  saveData(data);
+
+  return insights;
+}
+
     function renderPatterns() {
       const data = getData();
       const box = document.getElementById("patternData");
@@ -1171,6 +1365,15 @@
       `;
       box.innerHTML += `
   <div class="data-row">📎 Uploaded files: ${data.uploads ? data.uploads.length : 0}</div>
+`;
+
+const autoInsights = generateAutoInsights(data);
+
+box.innerHTML += `
+  <div class="data-row">
+    <strong>Medora Insights:</strong><br>
+    ${autoInsights.map(i => `• ${i}`).join("<br>")}
+  </div>
 `;
 
       if (data.health.length > 0) {
@@ -1227,7 +1430,66 @@
           </div>
         `;
       }
+      renderCharts(data);
     }
+
+let sleepChartInstance = null;
+let anxietyChartInstance = null;
+
+function renderCharts(data) {
+  const sleepCanvas = document.getElementById("sleepChart");
+  const anxietyCanvas = document.getElementById("anxietyChart");
+
+  if (!sleepCanvas || !anxietyCanvas) return;
+
+  const healthLabels = data.health.map((_, i) => `Log ${i + 1}`);
+  const sleepData = data.health.map(log => Number(log.sleep) || 0);
+
+  const anxietyLabels = data.anxiety.map((_, i) => `Log ${i + 1}`);
+  const anxietyData = data.anxiety.map(log => Number(log.level) || 0);
+
+  if (sleepChartInstance) sleepChartInstance.destroy();
+  if (anxietyChartInstance) anxietyChartInstance.destroy();
+
+  sleepChartInstance = new Chart(sleepCanvas, {
+    type: "line",
+    data: {
+      labels: healthLabels,
+      datasets: [{
+        label: "Sleep Hours",
+        data: sleepData,
+        tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  anxietyChartInstance = new Chart(anxietyCanvas, {
+    type: "line",
+    data: {
+      labels: anxietyLabels,
+      datasets: [{
+        label: "Anxiety Level",
+        data: anxietyData,
+        tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 10
+        }
+      }
+    }
+  });
+}
 
     function generateDoctorReport() {
       const data = getData();
@@ -1434,68 +1696,206 @@ function handleUpload(event) {
   const data = getData();
   const reader = new FileReader();
 
+  const isImage = file.type.startsWith("image/");
+  const isCSV = file.type.includes("csv") || file.name.toLowerCase().endsWith(".csv");
+  const isText = file.type.includes("text") || file.name.toLowerCase().endsWith(".txt");
+
+  const uploadId = `upload-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
   reader.onload = function(e) {
+    const fileContent = e.target.result;
+
     const upload = {
+      id: uploadId,
       date: today(),
+      timestamp: new Date().toISOString(),
       name: file.name,
-      type: file.type,
+      type: file.type || "unknown",
       size: file.size,
-      preview: file.type.startsWith("image/") ? e.target.result : null
+      sizeLabel: formatFileSize(file.size),
+      preview: isImage ? fileContent : null,
+      rawText: isText || isCSV ? fileContent : "",
+      category: detectUploadCategory(file.name, file.type),
+      relatedTo: "",
+      summary: "",
+      extractedText: "",
+      insights: [],
+      flags: [],
+      status: "saved"
     };
 
+    upload.summary = createUploadSummary(upload);
+    upload.insights = createUploadInsights(upload, data);
+
     if (!data.uploads) data.uploads = [];
+    if (!data.chat) data.chat = [];
+    if (!data.insights) data.insights = { lastGenerated: null, patterns: [], warnings: [], recommendations: [] };
+    if (!data.insights.patterns) data.insights.patterns = [];
+
     data.uploads.push(upload);
 
     data.chat.push({
+      id: `chat-${Date.now()}-upload`,
       date: today(),
       role: "user",
-      text: `Uploaded file: ${file.name}`
+      text: `Uploaded file: ${file.name}`,
+      preview: upload.preview,
+      fileName: upload.name,
+      fileType: upload.type,
+      uploadId: upload.id,
+      insightTags: ["upload", upload.category]
     });
-
-    const response = analyzeUploadedFile(upload);
 
     data.chat.push({
+      id: `chat-${Date.now()}-medora-upload`,
       date: today(),
       role: "medora",
-      text: response
+      text: analyzeUploadedFile(upload),
+      uploadId: upload.id,
+      insightTags: ["upload-analysis", upload.category]
     });
 
-    saveData(data);
+    data.insights.lastGenerated = today();
+
+    data.insights.patterns.push({
+      id: `pattern-${Date.now()}`,
+      date: today(),
+      type: "upload",
+      title: "New upload saved",
+      detail: `${upload.name} was saved as ${upload.category}.`,
+      uploadId: upload.id
+    });
+
+    const saved = saveData(data);
+    if (!saved) return;
+
     renderChat();
-    if (document.getElementById("insights").classList.contains("active")) {
-  renderPatterns();
-}
     updateHomeMetrics();
+
+    if (document.getElementById("insights").classList.contains("active")) {
+      renderPatterns();
+    }
   };
 
-  reader.readAsDataURL(file);
+  reader.onerror = function() {
+    alert("Medora could not read this file. Try a smaller file or a different format.");
+  };
+
+  if (isText || isCSV) {
+    reader.readAsText(file);
+  } else {
+    reader.readAsDataURL(file);
+  }
+
   event.target.value = "";
 }
 
+function formatFileSize(bytes) {
+  if (!bytes) return "0 KB";
+  const kb = bytes / 1024;
+  const mb = kb / 1024;
+  if (mb >= 1) return `${mb.toFixed(1)} MB`;
+  return `${kb.toFixed(1)} KB`;
+}
+
+function detectUploadCategory(name, type) {
+  const fileName = String(name || "").toLowerCase();
+  const fileType = String(type || "").toLowerCase();
+
+  if (fileType.startsWith("image/")) return "image";
+  if (fileName.includes("lab") || fileName.includes("blood") || fileName.includes("result")) return "lab-report";
+  if (fileName.includes("vaccine") || fileName.includes("immunization")) return "vaccine-record";
+  if (fileName.includes("prescription") || fileName.includes("medication") || fileName.includes("rx")) return "medication";
+  if (fileName.includes("food") || fileName.includes("meal")) return "food";
+  if (fileType.includes("pdf")) return "document";
+  if (fileName.endsWith(".csv")) return "data-file";
+  if (fileName.endsWith(".txt")) return "note";
+
+  return "general-file";
+}
+
 function analyzeUploadedFile(upload) {
+  const data = getData();
+
+  const lastHealth = data.health[data.health.length - 1];
+  const lastAnxiety = data.anxiety[data.anxiety.length - 1];
+
+  // IMAGE ANALYSIS
   if (upload.type.startsWith("image/")) {
-    return `I received your image: ${upload.name}. 
+    return `I received your image: ${upload.name}.
 
-Right now, I saved it to your Medora records. In the next upgrade, I can analyze images like meals, skin changes, swelling, medication labels, or health documents.
+I saved it to your Medora records and linked it to your health timeline.
 
-For now, tell me what this image is related to: food, symptom, medication, report, or mood?`;
+Images like this can help me understand patterns such as:
+• food reactions  
+• physical symptoms (skin, swelling, fatigue signals)  
+• medication or labels  
+• environmental triggers  
+
+${
+  lastHealth
+    ? `Your last health log mentioned "${lastHealth.symptoms || lastHealth.mood}". This image might be related — we can connect them.`
+    : ""
+}
+
+Tell me what this image represents so I can analyze it deeper.`;
   }
 
+  // PDF / DOCUMENT
   if (upload.type.includes("pdf")) {
-    return `I received your PDF: ${upload.name}.
+    return `I received your document: ${upload.name}.
 
-I saved it to your records. This could be useful for doctor reports, lab results, discharge papers, prescriptions, or health summaries.`;
+This type of file is often:
+• lab results  
+• prescriptions  
+• doctor summaries  
+• discharge papers  
+
+I saved it and added it to your medical record.
+
+In future upgrades, I’ll extract and explain key values automatically.
+
+If you want now, tell me what this document is and I’ll help interpret it manually.`;
   }
 
+  // CSV / DATA
   if (upload.type.includes("csv")) {
     return `I received your data file: ${upload.name}.
 
-This can be used for graphs, trends, and deeper health insights once we connect chart visualization.`;
+This is powerful.
+
+I can use this for:
+• trend detection  
+• symptom correlation  
+• sleep vs anxiety analysis  
+• hydration vs headache patterns  
+
+Next step: I’ll convert this into charts and insights.
+
+What kind of pattern are you trying to understand?`;
   }
 
-  return `I received your file: ${upload.name}. I saved it to your Medora records.`;
-}
+  // TEXT FILE
+  if (upload.type.includes("text") || upload.name.endsWith(".txt")) {
+    return `I received your notes: ${upload.name}.
 
+I saved this as part of your health journal.
+
+Written notes can help me detect:
+• emotional patterns  
+• recurring symptoms  
+• behavioral triggers  
+
+If you want, I can summarize or extract key insights from it.`;
+  }
+
+  // DEFAULT
+  return `I received your file: ${upload.name}.
+
+I saved it to your Medora records and added it to your timeline.
+
+Tell me what this file represents so I can connect it to your health patterns.`;
+}
 
     function addMessage(text, type) {
       const box = document.getElementById("messages");
