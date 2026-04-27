@@ -479,7 +479,7 @@
     /* ===== SMART SUGGESTION CHIPS ===== */
 .chips{
   position:fixed;
-  bottom:130px;
+  bottom:155px;
   left:50%;
   transform:translateX(-50%);
   max-width:430px;
@@ -502,6 +502,12 @@
   /* hide scroll bar */
   scrollbar-width:none;
 }
+
+.chips.hidden{
+  opacity:0;
+  pointer-events:none;
+}
+
 .chips::-webkit-scrollbar{display:none}
 
 
@@ -879,6 +885,7 @@ canvas{
 <input 
   id="messageInput" 
   placeholder="Type a message..." 
+  oninput="renderSmartChips()"
   onkeydown="if(event.key==='Enter') sendMessage()" 
 />
 
@@ -1818,16 +1825,22 @@ function getSmartSuggestions(data) {
 
 function renderSmartChips() {
   const chipBox = document.getElementById("smartChips");
+  const input = document.getElementById("messageInput");
+
   if (!chipBox) return;
+
+  if (input && input.value.trim().length > 0) {
+    chipBox.classList.add("hidden");
+    return;
+  }
+
+  chipBox.classList.remove("hidden");
 
   const data = getData();
   const suggestions = getSmartSuggestions(data);
 
   chipBox.innerHTML = suggestions.map(item => `
-    <button 
-      class="chip ${item.smart ? "smart" : ""}" 
-      onclick="sendChip('${item.message.replace(/'/g, "\\'")}')"
-    >
+    <button class="chip ${item.smart ? "smart" : ""}" onclick="sendChip('${String(item.message).replace(/'/g, "\\'")}')">
       ${item.label}
     </button>
   `).join("");
@@ -2178,10 +2191,11 @@ Tell me what this file represents so I can connect it to your health patterns.`;
     }
 
     window.onload = function() {
-      loadProfileFields();
-      updateHomeMetrics();
-      renderChat();
-    };
+  loadProfileFields();
+  updateHomeMetrics();
+  renderChat();
+  renderSmartChips();
+};
   </script>
 </body>
 </html>
