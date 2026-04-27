@@ -1927,7 +1927,8 @@ function handleUpload(event) {
     if (!saved) return;
 
     renderChat();
-    updateHomeMetrics();
+updateHomeMetrics();
+renderSmartChips();
 
     if (document.getElementById("insights").classList.contains("active")) {
       renderPatterns();
