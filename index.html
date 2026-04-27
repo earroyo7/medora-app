@@ -428,7 +428,23 @@
     .row.user{
       justify-content:flex-end;
     }
+.upload-preview{
+  width:100%;
+  max-height:240px;
+  object-fit:cover;
+  border-radius:16px;
+  margin-top:10px;
+  border:1px solid var(--border);
+}
 
+.file-pill{
+  display:block;
+  margin-top:10px;
+  padding:12px;
+  border-radius:14px;
+  background:#F2F6FF;
+  font-size:14px;
+}
     .bubble{
       max-width:78%;
       background:#fff;
@@ -1161,17 +1177,15 @@ canvas{
   } catch (error) {
     console.warn("Medora could not repair saved data:", error);
   }
-
-  return data;
-}
-
-  if (!data.uploads) data.uploads = [];
+if (!data.uploads) data.uploads = [];
   if (!data.chat) data.chat = [];
   if (!data.health) data.health = [];
   if (!data.anxiety) data.anxiety = [];
   if (!data.food) data.food = [];
   if (!data.fluids) data.fluids = [];
 
+  return data;
+}
   return data;
 }
 
@@ -1814,6 +1828,42 @@ function detectUploadCategory(name, type) {
   return "general-file";
 }
 
+function createUploadSummary(upload) {
+  if (upload.category === "image") {
+    return "Image saved and connected to your health timeline.";
+  }
+
+  if (upload.category === "vaccine-record") {
+    return "Vaccine document saved to your medical records.";
+  }
+
+  if (upload.category === "lab-report") {
+    return "Lab or health report saved for future insights.";
+  }
+
+  if (upload.category === "data-file") {
+    return "Data file saved for charts and trend analysis.";
+  }
+
+  return "File saved to Medora records.";
+}
+
+function createUploadInsights(upload, data) {
+  const insights = [];
+
+  insights.push(`Saved as ${upload.category}.`);
+  insights.push(`File size: ${upload.sizeLabel}.`);
+
+  if (upload.preview) {
+    insights.push("Image preview available.");
+  }
+
+  if (data.profile?.goals) {
+    insights.push(`Connected to goal: ${data.profile.goals}`);
+  }
+
+  return insights;
+}
 function analyzeUploadedFile(upload) {
   const data = getData();
 
@@ -1947,7 +1997,13 @@ Tell me what this file represents so I can connect it to your health patterns.`;
 
         const bubble = document.createElement("div");
         bubble.className = "bubble";
-        bubble.innerHTML = `${escapeHTML(msg.text)}<span class="time">${msg.date || ""}</span>`;
+        bubble.innerHTML = `
+  ${escapeHTML(msg.text)}
+  ${msg.preview ? `<img class="upload-preview" src="${msg.preview}" alt="Uploaded image">` : ""}
+  ${msg.fileName && !msg.preview ? `<span class="file-pill">📎 ${escapeHTML(msg.fileName)}</span>` : ""}
+  <span class="time">${msg.date || ""}</span>
+`;
+
 
         row.appendChild(bubble);
         box.appendChild(row);
