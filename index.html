@@ -1228,6 +1228,9 @@
         uploads: Array.isArray(saved.uploads) ? saved.uploads : [],
         chat: Array.isArray(saved.chat) ? saved.chat : []
       };
+            if (!Array.isArray(data.insights.recommendations)) {
+        data.insights.recommendations = [];
+      }
 
       data.health = data.health.map((item, index) => ({
         id: item.id || `health-${Date.now()}-${index}`,
@@ -1905,23 +1908,74 @@ Are you safe right now, and are you at risk of hurting yourself today?`;
 
         const result = await response.json();
 
-        const reply = result.reply && result.reply.length > 10
-          ? result.reply
-          : "I couldn’t get a clear response. Please try again.";
+const reply = result.reply && result.reply.length > 10
+  ? result.reply
+  : "I’m here with you. Tell me what you’re noticing right now.";
 
-        const freshData = getData();
+const freshData = getData();
 
-        freshData.chat.push({
-          date: today(),
-          role: "medora",
-          text: reply
-        });
+freshData.chat.push({
+  date: today(),
+  role: "medora",
+  text: reply
+});
 
-        saveData(freshData);
-        addMessage(reply, "medora");
-        scrollChatToBottom();
-        updateHomeMetrics();
+// Save AI-extracted health data into logs
+if (result.healthUpdate) {
+  const h = result.healthUpdate;
 
+  const hasHealthData =
+    h.sleep ||
+    h.mood ||
+    h.anxiety ||
+    h.stress ||
+    h.symptoms ||
+    h.pain ||
+    h.food ||
+    h.hydration ||
+    h.activity ||
+    h.medication ||
+    h.notes;
+
+  if (hasHealthData && h.riskLevel !== "urgent") {
+    freshData.health.push({
+      id: `health-ai-${Date.now()}`,
+      date: today(),
+      mood: h.mood || "",
+      sleep: h.sleep || "",
+      energy: "",
+      pain: h.pain || "",
+      symptoms: h.symptoms || "",
+      notes: [
+        h.anxiety ? `Anxiety: ${h.anxiety}` : "",
+        h.stress ? `Stress: ${h.stress}` : "",
+        h.food ? `Food: ${h.food}` : "",
+        h.hydration ? `Hydration: ${h.hydration}` : "",
+        h.activity ? `Activity: ${h.activity}` : "",
+        h.medication ? `Medication: ${h.medication}` : "",
+        h.notes ? `Notes: ${h.notes}` : ""
+      ].filter(Boolean).join(" | ")
+    });
+  }
+}
+
+// Save plan suggestion if AI gives one
+if (result.planSuggestion?.nextStep) {
+  freshData.insights.recommendations.push({
+    id: `plan-${Date.now()}`,
+    date: today(),
+    goal: result.planSuggestion.goal || "",
+    mainDriver: result.planSuggestion.mainDriver || "",
+    nextStep: result.planSuggestion.nextStep || "",
+    trackingMetric: result.planSuggestion.trackingMetric || "",
+    reviewWindow: result.planSuggestion.reviewWindow || ""
+  });
+}
+
+saveData(freshData);
+addMessage(reply, "medora");
+scrollChatToBottom();
+updateHomeMetrics();
       } catch (error) {
         const fallback = "I’m having trouble connecting right now, but I’m still here. Try again in a moment.";
 
