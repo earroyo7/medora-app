@@ -413,11 +413,12 @@
     }
 
     .messages{
-      padding:18px 18px 210px;
-      background:#FBFCFF;
-      height:calc(100vh - 76px);
-      overflow-y:auto;
-    }
+  padding:18px 18px 170px;
+  background:#FBFCFF;
+  height:calc(100vh - 76px);
+  overflow-y:auto;
+  scroll-padding-bottom:170px;
+}
 
     .row{
       display:flex;
@@ -448,16 +449,19 @@
     }
 
     .bubble{
-      max-width:78%;
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:22px;
-      padding:16px 18px;
-      font-size:16px;
-      line-height:1.38;
-      box-shadow:0 5px 16px rgba(24,39,75,.06);
-      white-space:pre-wrap;
-    }
+  display:inline-block;
+  width:auto;
+  max-width:78%;
+  min-height:auto;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:12px 15px;
+  font-size:16px;
+  line-height:1.38;
+  box-shadow:0 5px 16px rgba(24,39,75,.06);
+  white-space:pre-wrap;
+}
 
     .user .bubble{
       background:var(--primary);
@@ -490,6 +494,10 @@
       box-shadow:0 -6px 18px rgba(24,39,75,0.06);
       z-index:26;
     }
+    
+    .composer{
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+}
 
     .inputbar{
       display:flex;
@@ -726,6 +734,18 @@
       color:#8A94A6;
       font-weight:600;
     }
+    
+    body.keyboard-open .bottom-nav{
+  display:none;
+}
+
+body.keyboard-open .composer{
+  bottom:0;
+}
+
+body.keyboard-open .messages{
+  padding-bottom:120px;
+}
   </style>
 </head>
 
