@@ -1915,10 +1915,11 @@ const reply = result.reply && result.reply.length > 10
 let nextStep = result.planSuggestion?.nextStep;
 
 if (!nextStep && result.reply) {
-  const match = result.reply.match(/(?:next step|try this|you can try|a good next step might be)\s*[:\-]?\s*(.*)/i);
+  const match = result.reply.match(
+    /(?:next step|try this|you can try|a good next step might be|it might help to|consider|before you|try to)\s*[:\-]?\s*(.*)/i
+  );
   if (match) nextStep = match[1];
 }
-
 
 const freshData = getData();
 
