@@ -143,8 +143,10 @@ function detectProductMode(message) {
   const text = normalizeText(message);
 
   const phrases = [
+    // developer / backend language
     "system prompt",
     "api handler",
+    "api",
     "debug",
     "testing medora",
     "build medora",
@@ -154,7 +156,38 @@ function detectProductMode(message) {
     "json",
     "response format",
     "healthupdate",
-    "prompt"
+    "prompt",
+    "backend",
+    "frontend",
+
+    // app-building language
+    "on the app",
+    "in the app",
+    "my app",
+    "this app",
+    "medora app",
+    "how do i add",
+    "how do i improve",
+    "how do i build",
+    "what should i add",
+    "what should i build",
+    "how should it work",
+    "for users",
+    "user experience",
+    "ux",
+    "ui",
+    "feature",
+    "features",
+    "screen",
+    "button",
+    "page",
+    "flow",
+    "design",
+    "retention",
+    "subscription",
+    "billing",
+    "account",
+    "privacy"
   ];
 
   return phrases.some(p => text.includes(p));
@@ -540,26 +573,29 @@ Medora:
 const productModePrompt = `
 PRODUCT STRATEGIST MODE IS ACTIVE.
 
-The user is building or improving Medora.
+The user is building, improving, testing, or designing Medora.
 
-Be:
-- Direct
-- Technical
-- Strategic
-- Practical
-- Outcome-focused
+DO NOT respond like a wellness coach.
+DO NOT give generic wellness advice.
+DO NOT say things like "try journaling, mindfulness, or coping strategies" unless explaining them as product features.
 
-Focus on:
-- Prompt quality
-- Safety logic
-- Health data extraction
-- Memory design
-- UX
-- JSON consistency
-- Product scalability
-- Risk handling
+Respond as a product strategist.
 
-Do not use emotional coaching tone.
+Your job:
+- Give specific app improvements
+- Explain what is missing
+- Explain why it matters
+- Tell the user exactly what to build next
+- Focus on UX, safety, memory, health tracking, retention, personalization, and trust
+
+FORMAT:
+1. What is missing
+2. Why it matters
+3. What to build
+4. How it should work
+
+Keep the response direct, practical, and specific.
+Return valid JSON only.
 `;
 
 // ---------- SAFE FALLBACK OBJECT ----------
