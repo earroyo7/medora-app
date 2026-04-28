@@ -1912,6 +1912,20 @@ const reply = result.reply && result.reply.length > 10
   ? result.reply
   : "I’m here with you. Tell me what you’re noticing right now.";
 
+let nextStep = result.planSuggestion?.nextStep;
+
+if (!nextStep && result.reply) {
+  const match = result.reply.match(/(?:next step|try this|you can try|a good next step might be)\s*[:\-]?\s*(.*)/i);
+  if (match) nextStep = match[1];
+}
+
+// Fallback: extract from reply if missing
+if (!nextStep && result.reply) {
+  const match = result.reply.match(/next step.*?:?\s*(.*)/i);
+  if (match) nextStep = match[1];
+}
+
+
 const freshData = getData();
 
 freshData.chat.push({
@@ -1975,8 +1989,8 @@ if (result.planSuggestion?.nextStep) {
 saveData(freshData);
 addMessage(reply, "medora");
 
-if (result.planSuggestion?.nextStep) {
-  addMessage("👉 Next step: " + result.planSuggestion.nextStep, "medora");
+if (nextStep) {
+  addMessage("👉 Next step: " + nextStep, "medora");
 }
 
 scrollChatToBottom();
