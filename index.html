@@ -413,9 +413,9 @@
     }
 
    .messages{
-  padding:18px 18px 140px;
+  padding:18px 18px 210px;
   background:#FBFCFF;
-  height:calc(100vh - 76px - 140px);
+  height:calc(100vh - 76px);
   overflow-y:auto;
 }
 
@@ -479,7 +479,7 @@
     /* ===== SMART SUGGESTION CHIPS ===== */
 .chips{
   position:fixed;
-  bottom:155px;
+  bottom:140px;
   left:50%;
   transform:translateX(-50%);
   max-width:430px;
@@ -487,20 +487,21 @@
   display:flex;
   gap:10px;
   overflow-x:auto;
-  padding:10px 18px 12px;
+  padding:10px 16px;
 
-  /* smooth premium fade instead of hard background */
-  background:linear-gradient(
-    180deg,
-    rgba(251,252,255,0),
-    rgba(251,252,255,.85) 40%,
-    rgba(255,255,255,.96)
-  );
+  background:linear-gradient(to top, #fff 60%, rgba(255,255,255,0));
 
-  z-index:22;
+  z-index:24;
 
-  /* hide scroll bar */
   scrollbar-width:none;
+}
+
+.chips::-webkit-scrollbar{
+  display:none;
+}
+
+.chips.hidden{
+  display:none;
 }
 
 .chips.hidden{
@@ -550,21 +551,19 @@
 /* ===== INPUT AREA ===== */
 .composer{
   position:fixed;
-  bottom:85px;
+  bottom:78px;
   left:50%;
   transform:translateX(-50%);
   max-width:430px;
   width:100%;
-  padding:10px 16px;
+  padding:10px 14px;
 
-  /* subtle glass effect */
-  background:linear-gradient(
-    to top,
-    rgba(255,255,255,1),
-    rgba(255,255,255,.9)
-  );
+  background:#fff;
 
-  z-index:23;
+  /* subtle premium feel (instead of glass) */
+  box-shadow:0 -6px 18px rgba(24,39,75,0.06);
+
+  z-index:26;
 }
 
 
@@ -579,7 +578,7 @@
   border-radius:999px;
   padding:8px;
 
-  box-shadow:0 8px 20px rgba(24,39,75,.08);
+  box-shadow:0 6px 16px rgba(24,39,75,.06);
 }
 
 
@@ -594,19 +593,23 @@
 }
 
     .round{
-      width:42px;
-      height:42px;
-      border-radius:999px;
-      border:0;
-      background:#F2F4F7;
-      font-size:22px;
-      cursor:pointer;
-    }
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  border:0;
+  background:#F2F4F7;
+  font-size:20px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-    .send{
-      background:var(--primary);
-      color:#fff;
-    }
+.send{
+  background:var(--primary);
+  color:#fff;
+  font-weight:800;
+}
 
     .nav{
       position:fixed;
@@ -871,28 +874,33 @@ canvas{
      <div class="chips" id="smartChips"></div>
 
       <div class="composer">
-        <div class="inputbar">
-         <button class="round" onclick="document.getElementById('fileUpload').click()">+</button>
+  <div class="inputbar">
 
-<input 
-  id="fileUpload" 
-  type="file" 
-  accept="image/*,.pdf,.txt,.csv" 
-  style="display:none" 
-  onchange="handleUpload(event)" 
-/>
+    <!-- Upload button -->
+    <button class="round" onclick="document.getElementById('fileUpload').click()">+</button>
 
-<input 
-  id="messageInput" 
-  placeholder="Type a message..." 
-  oninput="renderSmartChips()"
-  onkeydown="if(event.key==='Enter') sendMessage()" 
-/>
+    <input 
+      id="fileUpload" 
+      type="file" 
+      accept="image/*,.pdf,.txt,.csv" 
+      style="display:none" 
+      onchange="handleUpload(event)" 
+    />
 
-<button class="round send" onclick="sendMessage()">➤</button>
+    <!-- Text input -->
+    <input 
+      id="messageInput" 
+      placeholder="Type a message..."
+      autocomplete="off"
+      oninput="renderSmartChips()"
+      onkeydown="if(event.key==='Enter') sendMessage()"
+    />
 
-        </div>
-      </div>
+    <!-- Send button -->
+    <button class="round send" onclick="sendMessage()">➤</button>
+
+  </div>
+</div>
     </section>
 
     <section id="profile" class="screen">
