@@ -859,12 +859,12 @@ canvas{
      <div class="quick-menu" id="quickMenu">
   <div class="menu-handle"></div>
 
-  <button onclick="openScreen('health')">✚ <span>Log Health<br><small>Symptoms, mood, sleep</small></span></button>
-  <button onclick="openScreen('anxietyPage')">🧠 <span>Anxiety Check-In<br><small>Triggers and body symptoms</small></span></button>
-  <button onclick="openScreen('food')">🍽 <span>Food Intake<br><small>Meals and reactions</small></span></button>
-  <button onclick="openScreen('fluids')">💧 <span>Fluid Intake<br><small>Water and caffeine</small></span></button>
-
-  <button onclick="sendChip('Create a doctor summary from my logs')">📝 <span>Doctor Report<br><small>Generate a health summary</small></span></button>
+  <button onclick="closeQuickMenu(); openScreen('health')">
+  <button onclick="closeQuickMenu(); openScreen('anxietyPage')">
+  <button onclick="closeQuickMenu(); openScreen('food')">
+  <button onclick="closeQuickMenu(); openScreen('fluids')">
+  
+  <button onclick="closeQuickMenu(); openScreen('doctor')">📝 <span>Doctor Report<br><small>Generate a health summary</small></span></button>
   <button onclick="sendChip('Show my account and security settings')">🔑 <span>Account<br><small>Login and privacy</small></span></button>
   <button onclick="sendChip('Show subscription options')">💳 <span>Billing<br><small>Plans and payments</small></span></button>
 
