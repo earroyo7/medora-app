@@ -1974,6 +1974,11 @@ if (result.planSuggestion?.nextStep) {
 
 saveData(freshData);
 addMessage(reply, "medora");
+
+if (result.planSuggestion?.nextStep) {
+  addMessage("👉 Next step: " + result.planSuggestion.nextStep, "medora");
+}
+
 scrollChatToBottom();
 updateHomeMetrics();
       } catch (error) {
