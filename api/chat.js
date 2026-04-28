@@ -793,10 +793,25 @@ export default async function handler(req, res) {
       type: "object",
       properties: {
         reply: { type: "string" },
-        healthUpdate: { type: "object" },
-        planSuggestion: { type: "object" }
+        healthUpdate: {
+          type: "object",
+          additionalProperties: true
+        },
+        planSuggestion: {
+          type: "object",
+          properties: {
+            goal: { type: ["string", "null"] },
+            mainDriver: { type: ["string", "null"] },
+            nextStep: { type: ["string", "null"] },
+            trackingMetric: { type: ["string", "null"] },
+            reviewWindow: { type: ["string", "null"] }
+          },
+          required: ["goal", "mainDriver", "nextStep", "trackingMetric", "reviewWindow"],
+          additionalProperties: false
+        }
       },
-      required: ["reply", "healthUpdate", "planSuggestion"]
+      required: ["reply", "healthUpdate", "planSuggestion"],
+      additionalProperties: false
     }
   }
 },
