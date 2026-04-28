@@ -1919,12 +1919,6 @@ if (!nextStep && result.reply) {
   if (match) nextStep = match[1];
 }
 
-// Fallback: extract from reply if missing
-if (!nextStep && result.reply) {
-  const match = result.reply.match(/next step.*?:?\s*(.*)/i);
-  if (match) nextStep = match[1];
-}
-
 
 const freshData = getData();
 
@@ -1974,13 +1968,13 @@ if (result.healthUpdate) {
 }
 
 // Save plan suggestion if AI gives one
-if (result.planSuggestion?.nextStep) {
+if (nextStep) {
   freshData.insights.recommendations.push({
     id: `plan-${Date.now()}`,
     date: today(),
     goal: result.planSuggestion.goal || "",
     mainDriver: result.planSuggestion.mainDriver || "",
-    nextStep: result.planSuggestion.nextStep || "",
+    nextStep: nextStep,
     trackingMetric: result.planSuggestion.trackingMetric || "",
     reviewWindow: result.planSuggestion.reviewWindow || ""
   });
