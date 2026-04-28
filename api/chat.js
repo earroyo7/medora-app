@@ -141,6 +141,7 @@ function detectRelationshipContext(message) {
 
 function detectProductMode(message) {
   const text = normalizeText(message);
+  if (text.includes("on the app") || text.includes("in the app")) return true;
 
   const phrases = [
     // developer / backend language
@@ -750,7 +751,21 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        response_format: { type: "json_object" },
+        response_format: {
+  type: "json_schema",
+  json_schema: {
+    name: "medora_response",
+    schema: {
+      type: "object",
+      properties: {
+        reply: { type: "string" },
+        healthUpdate: { type: "object" },
+        planSuggestion: { type: "object" }
+      },
+      required: ["reply", "healthUpdate", "planSuggestion"]
+    }
+  }
+},
         temperature: 0.55,
         messages: systemMessages
       })
@@ -765,21 +780,16 @@ export default async function handler(req, res) {
       });
     }
 
-    let parsed;
+let parsed;
 
-    try {
-      const raw = data.choices?.[0]?.message?.content || "{}";
+try {
+  const raw = data.choices?.[0]?.message?.content || "{}";
 
-      const clean = raw
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim();
-
-      parsed = JSON.parse(clean);
-    } catch (err) {
-      parsed = fallbackResponse();
-    }
-
+  parsed = JSON.parse(raw);
+} catch (err) {
+  console.error("JSON parse failed:", data);
+  parsed = fallbackResponse();
+}
     const fallback = fallbackResponse();
 
     return res.status(200).json({
