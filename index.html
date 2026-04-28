@@ -1703,32 +1703,7 @@ I can stay with you. What is the strongest feeling right now?`;
 Are you safe right now, and are you at risk of hurting yourself today?`;
     }
 
-    function medoraReply(text, data) {
-      const lower = text.toLowerCase();
-
-      if (lower.includes("sleep") || lower.includes("tired") || lower.includes("exhausted")) {
-        return "I hear that sleep is affecting you. Lack of sleep can make anxiety, mood, and energy feel harder to manage. If you log your sleep in Log Health, I can help connect it to your patterns over time.";
-      }
-
-      if (lower.includes("anxious") || lower.includes("anxiety") || lower.includes("panic")) {
-        return "That sounds uncomfortable. Let’s slow this down. Try one deep breath in, hold for a second, then exhale slowly. You can also use Anxiety Check-In to track the trigger, body symptoms, and what helped.";
-      }
-
-      if (lower.includes("water") || lower.includes("dehydrated") || lower.includes("headache")) {
-        return "Hydration may be important here. You can use Fluid Intake to track water, caffeine, and symptoms like headaches or dry mouth.";
-      }
-
-      if (lower.includes("food") || lower.includes("dinner") || lower.includes("stomach") || lower.includes("bloated")) {
-        return "Food reactions can reveal patterns. Use Food Intake to track what you ate and how your body reacted afterward.";
-      }
-
-      if (data.health.length > 0 || data.anxiety.length > 0) {
-        return "I’m listening. I saved this message. Since you already have some logs, I can start helping you connect symptoms, sleep, mood, anxiety, food, and hydration patterns.";
-      }
-
-      return "I’m listening. I saved this message. You can also use the health, anxiety, food, and fluid pages so I can understand your patterns better over time.";
-    }
-
+    
     async function sendMessage() {
   const input = document.getElementById("messageInput");
   const text = input.value.trim();
@@ -1772,7 +1747,9 @@ Are you safe right now, and are you at risk of hurting yourself today?`;
 
     const result = await response.json();
 
-    const reply = result.reply || "I’m here with you. Tell me a little more.";
+    const reply = result.reply && result.reply.length > 10
+  ? result.reply
+  : "I couldn’t get a clear response. Please try again.";
 
     const freshData = getData();
 
@@ -1813,48 +1790,55 @@ function getSmartSuggestions(data) {
 
   const lastHealth = data.health[data.health.length - 1];
   const lastAnxiety = data.anxiety[data.anxiety.length - 1];
-  const lastChat = data.chat[data.chat.length - 1];
-  const text = String(lastChat?.text || "").toLowerCase();
+  const recentChat = data.chat.slice(-6).map(m => m.text).join(" ").toLowerCase();
 
-  if (lastHealth?.sleep && Number(lastHealth.sleep) < 6) {
+  if (recentChat.includes("anxious") || recentChat.includes("anxiety") || recentChat.includes("panic")) {
     suggestions.push({
-      label: "🌙 Sleep affecting me",
-      message: "I slept poorly and I want to understand how it is affecting me",
+      label: "🧠 Calm anxiety",
+      message: "Help me calm my anxiety right now and understand the trigger",
+      smart: true
+    });
+  }
+
+  if (recentChat.includes("sleep") || recentChat.includes("tired") || recentChat.includes("exhausted") || Number(lastHealth?.sleep) < 6) {
+    suggestions.push({
+      label: "🌙 Sleep pattern",
+      message: "How is my sleep affecting my mood, anxiety, and energy?",
+      smart: true
+    });
+  }
+
+  if (recentChat.includes("headache") || recentChat.includes("pain") || lastHealth?.symptoms) {
+    suggestions.push({
+      label: "🌡️ Symptom insight",
+      message: "Help me understand what may be connected to my symptoms",
+      smart: true
+    });
+  }
+
+  if (recentChat.includes("ex") || recentChat.includes("relationship") || recentChat.includes("breakup")) {
+    suggestions.push({
+      label: "💔 Relationship support",
+      message: "Help me process this relationship feeling without reacting too fast",
       smart: true
     });
   }
 
   if (lastAnxiety?.level && Number(lastAnxiety.level) >= 7) {
     suggestions.push({
-      label: "🧠 Calm anxiety",
-      message: "My anxiety feels high. Help me calm down and understand the trigger",
-      smart: true
-    });
-  }
-
-  if (lastHealth?.symptoms) {
-    suggestions.push({
-      label: "🌡️ Explain symptom",
-      message: `Help me understand this symptom: ${lastHealth.symptoms}`,
-      smart: true
-    });
-  }
-
-  if (text.includes("girlfriend") || text.includes("relationship")) {
-    suggestions.push({
-      label: "💔 Relationship support",
-      message: "I feel emotionally affected by my relationship. Help me process it",
+      label: "🚦 High anxiety plan",
+      message: "Make me a simple plan for this high anxiety episode",
       smart: true
     });
   }
 
   suggestions.push(
-    { label: "📊 Show patterns", message: "What patterns do you notice from my data?" },
+    { label: "📊 Show patterns", message: "What patterns do you notice from my recent data?" },
     { label: "📝 Doctor summary", message: "Create a doctor summary from my logs" },
-    { label: "➕ Track symptom", message: "Track a symptom" }
+    { label: "➕ Track symptom", message: "I want to track a symptom" }
   );
 
-  return suggestions.slice(0, 8);
+  return suggestions.slice(0, 7);
 }
 
 function renderSmartChips() {
