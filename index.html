@@ -431,6 +431,10 @@
   justify-content:flex-end;
 }
 
+.row.medora{
+  justify-content:flex-start;
+}
+
 .upload-preview{
   width:100%;
   max-height:240px;
@@ -442,29 +446,34 @@
 
 .file-pill{
   display:block;
-  margin-top:10px;
-  padding:12px;
+  margin-top:8px;
+  padding:10px 12px;
   border-radius:14px;
   background:#F2F6FF;
   font-size:14px;
+  line-height:1.3;
+  max-width:100%;
+  overflow-wrap:anywhere;
 }
 
 .bubble{
-  display:block;
+  display:inline-flex;
+  flex-direction:column;
   width:fit-content;
-  max-width:76%;
+  max-width:68%;
   min-width:0;
   min-height:0 !important;
   height:auto !important;
   background:#fff;
   border:1px solid var(--border);
-  border-radius:20px;
-  padding:10px 13px;
-  font-size:16px;
-  line-height:1.35;
-  box-shadow:0 5px 16px rgba(24,39,75,.06);
+  border-radius:18px;
+  padding:8px 11px;
+  font-size:15px;
+  line-height:1.28;
+  box-shadow:0 4px 12px rgba(24,39,75,.05);
   white-space:pre-wrap;
-  overflow-wrap:break-word;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .user .bubble{
@@ -472,21 +481,30 @@
   background:var(--primary);
   color:#fff;
   border-color:var(--primary);
-  border-bottom-right-radius:7px;
+  border-bottom-right-radius:6px;
+  max-width:65%;
 }
 
 .medora .bubble{
   margin-right:auto;
-  border-bottom-left-radius:7px;
+  border-bottom-left-radius:6px;
+  max-width:70%;
 }
 
 .time{
-  display:block;
+  align-self:flex-end;
+  display:inline-block;
   text-align:right;
-  font-size:11px;
-  opacity:.6;
-  margin-top:5px;
+  font-size:10px;
+  opacity:.55;
+  margin-top:4px;
   line-height:1;
+}
+
+.typing-bubble{
+  font-size:15px;
+  color:#667085;
+  letter-spacing:0;
 }
 
     .composer{
@@ -1920,6 +1938,8 @@ Are you safe right now, and are you at risk of hurting yourself today?`;
       scrollChatToBottom();
       input.value = "";
 
+      showThinking();
+
       const data = getData();
 
       data.chat.push({
@@ -2046,8 +2066,8 @@ if (nextStep) {
 }
 
 saveData(freshData);
+removeThinking();
 addMessage(reply, "medora");
-
 
 scrollChatToBottom();
 updateHomeMetrics();
@@ -2063,6 +2083,7 @@ updateHomeMetrics();
         });
 
         saveData(freshData);
+        removeThinking();
         addMessage(fallback, "medora");
         scrollChatToBottom();
       }
@@ -2369,6 +2390,36 @@ Tell me what this file represents so I can connect it to your health patterns.`;
       box.appendChild(row);
       box.scrollTop = box.scrollHeight;
     }
+    
+    function showThinking() {
+  const box = document.getElementById("messages");
+  if (!box) return;
+
+  removeThinking();
+
+  const row = document.createElement("div");
+  row.className = "row medora";
+  row.id = "thinkingRow";
+
+  const img = document.createElement("img");
+  img.className = "avatar";
+  img.src = "medora-avatar.png";
+  img.alt = "Medora";
+  row.appendChild(img);
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble typing-bubble";
+  bubble.textContent = "💭 Thinking...";
+  row.appendChild(bubble);
+
+  box.appendChild(row);
+  box.scrollTop = box.scrollHeight;
+}
+
+function removeThinking() {
+  const thinking = document.getElementById("thinkingRow");
+  if (thinking) thinking.remove();
+}
 
     function renderChat() {
       const box = document.getElementById("messages");
