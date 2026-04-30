@@ -1183,51 +1183,55 @@ body.keyboard-open .messages{
     let anxietyChartInstance = null;
 
     function getData() {
-      const defaultData = {
-        version: "1.0.0",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        profile: {
-          name: "",
-          age: "",
-          gender: "",
-          height: "",
-          weight: "",
-          goals: "",
-          conditions: "",
-          medications: "",
-          allergies: ""
-        },
-        health: [],
-        anxiety: [],
-        food: [],
-        fluids: [],
-        uploads: [],
-        chat: [],
-        insights: {
-          lastGenerated: null,
-          patterns: [],
-          warnings: [],
-          recommendations: []
-        },
-        settings: {
-  crisisMode: false,
-  onboardingComplete: false
-},
+  const defaultData = {
+    version: "1.0.0",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
 
-healthProfile: {
-  relationalProfile: {
-    trustPosture: "testing",
-    memoryComfort: "medium",
-    dependencyRisk: "none",
-    preferredDepth: "balanced",
-    lastRupture: null,
-    repeatedThemes: []
-  }
-}
-};
+    profile: {
+      name: "",
+      age: "",
+      gender: "",
+      height: "",
+      weight: "",
+      goals: "",
+      conditions: "",
+      medications: "",
+      allergies: ""
+    },
 
-let saved = {};
+    health: [],
+    anxiety: [],
+    food: [],
+    fluids: [],
+    uploads: [],
+    chat: [],
+
+    insights: {
+      lastGenerated: null,
+      patterns: [],
+      warnings: [],
+      recommendations: []
+    },
+
+    settings: {
+      crisisMode: false,
+      onboardingComplete: false
+    },
+
+    healthProfile: {
+      relationalProfile: {
+        trustPosture: "testing",
+        memoryComfort: "medium",
+        dependencyRisk: "none",
+        preferredDepth: "balanced",
+        lastRupture: null,
+        repeatedThemes: []
+      }
+    }
+  };
+
+  let saved = {};
 
       try {
         const raw = localStorage.getItem(storeKey);
@@ -2487,6 +2491,21 @@ Tell me what this file represents so I can connect it to your health patterns.`;
     }
 
     window.onload = function() {
+      window.openScreen = openScreen;
+window.toggleMenu = toggleMenu;
+window.go = go;
+window.saveProfile = saveProfile;
+window.saveHealth = saveHealth;
+window.saveAnxiety = saveAnxiety;
+window.saveFood = saveFood;
+window.saveFluids = saveFluids;
+window.generateDoctorReport = generateDoctorReport;
+window.renderPatterns = renderPatterns;
+window.toggleQuickMenu = toggleQuickMenu;
+window.closeQuickMenu = closeQuickMenu;
+window.sendMessage = sendMessage;
+window.sendChip = sendChip;
+window.handleUpload = handleUpload;
       migrateBotRoleToMedora();
       loadProfileFields();
       updateHomeMetrics();
