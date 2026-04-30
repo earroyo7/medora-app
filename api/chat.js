@@ -1531,6 +1531,10 @@ export default async function handler(req, res) {
   try {
     const { message, memory = [], healthProfile = {} } = req.body || {};
 
+if (!message || typeof message !== "string") {
+  return res.status(400).json({ reply: "Message is required" });
+}
+
 const userHealthProfile = {
   ...healthProfile,
   relationalProfile: {
@@ -1559,7 +1563,6 @@ if (
   relationalText.includes("that sounded fake") ||
   relationalText.includes("you sound fake") ||
   relationalText.includes("you sound robotic") ||
-  relationalText.includes("you don't understand") ||
   relationalText.includes("you dont understand") ||
   relationalText.includes("that was generic") ||
   relationalText.includes("you are not listening")
@@ -1605,9 +1608,20 @@ if (
   userHealthProfile.relationalProfile.preferredDepth = "brief";
 }
 
-    if (!message || typeof message !== "string") {
-      return res.status(400).json({ reply: "Message is required" });
-    }
+if (
+  relationalText.includes("trust") ||
+  relationalText.includes("real") ||
+  relationalText.includes("care") ||
+  relationalText.includes("feelings")
+) {
+  userHealthProfile.relationalProfile.repeatedThemes = [
+    ...new Set([
+      ...(userHealthProfile.relationalProfile.repeatedThemes || []),
+      "trust-realism"
+    ])
+  ];
+}
+
 
     // Medical emergency override: highest priority
     if (detectMedicalEmergency(message)) {
