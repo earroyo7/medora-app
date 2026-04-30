@@ -2456,9 +2456,6 @@ Tell me what this file represents so I can connect it to your health patterns.`;
       box.scrollTop = box.scrollHeight;
     }
     
-let thinkingTimer = null;
-let thinkingStartTime = null;
-
 function getThinkingMode(text){
   const t = String(text || "").toLowerCase();
 
@@ -2527,6 +2524,7 @@ function showThinking(userText = ""){
   box.scrollTop = box.scrollHeight;
 
   let stageIndex = 0;
+  let lastStageSecond = 0;
 
   thinkingTimer = setInterval(() => {
     const seconds = Math.floor((Date.now() - thinkingStartTime) / 1000);
@@ -2536,7 +2534,8 @@ function showThinking(userText = ""){
 
     if (secondsEl) secondsEl.textContent = `${seconds}s`;
 
-    if (textEl && seconds > 0 && seconds % 2 === 0) {
+    if (textEl && seconds > 0 && seconds % 2 === 0 && seconds !== lastStageSecond) {
+      lastStageSecond = seconds;
       stageIndex = (stageIndex + 1) % state.stages.length;
       textEl.textContent = state.stages[stageIndex];
     }
