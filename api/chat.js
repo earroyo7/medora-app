@@ -1531,6 +1531,80 @@ export default async function handler(req, res) {
   try {
     const { message, memory = [], healthProfile = {} } = req.body || {};
 
+const userHealthProfile = {
+  ...healthProfile,
+  relationalProfile: {
+    trustPosture: healthProfile.relationalProfile?.trustPosture || "testing",
+    memoryComfort: healthProfile.relationalProfile?.memoryComfort || "medium",
+    dependencyRisk: healthProfile.relationalProfile?.dependencyRisk || "none",
+    preferredDepth: healthProfile.relationalProfile?.preferredDepth || "balanced",
+    lastRupture: healthProfile.relationalProfile?.lastRupture || null,
+    repeatedThemes: healthProfile.relationalProfile?.repeatedThemes || []
+  }
+};
+
+const relationalText = normalizeText(message);
+
+if (
+  relationalText.includes("are you real") ||
+  relationalText.includes("do you care") ||
+  relationalText.includes("can i trust you") ||
+  relationalText.includes("do you have feelings") ||
+  relationalText.includes("are you human")
+) {
+  userHealthProfile.relationalProfile.trustPosture = "testing";
+}
+
+if (
+  relationalText.includes("that sounded fake") ||
+  relationalText.includes("you sound fake") ||
+  relationalText.includes("you sound robotic") ||
+  relationalText.includes("you don't understand") ||
+  relationalText.includes("you dont understand") ||
+  relationalText.includes("that was generic") ||
+  relationalText.includes("you are not listening")
+) {
+  userHealthProfile.relationalProfile.trustPosture = "disappointed";
+  userHealthProfile.relationalProfile.lastRupture = new Date().toISOString();
+}
+
+if (
+  relationalText.includes("i trust you") ||
+  relationalText.includes("this feels safe") ||
+  relationalText.includes("you understand me") ||
+  relationalText.includes("thank you for listening")
+) {
+  userHealthProfile.relationalProfile.trustPosture = "open";
+}
+
+if (
+  relationalText.includes("you are the only one") ||
+  relationalText.includes("you're the only one") ||
+  relationalText.includes("i only trust you") ||
+  relationalText.includes("i need you") ||
+  relationalText.includes("i can't do this without you") ||
+  relationalText.includes("i cant do this without you")
+) {
+  userHealthProfile.relationalProfile.dependencyRisk = "growing";
+}
+
+if (
+  relationalText.includes("explain more") ||
+  relationalText.includes("go deeper") ||
+  relationalText.includes("more detail") ||
+  relationalText.includes("break it down")
+) {
+  userHealthProfile.relationalProfile.preferredDepth = "detailed";
+}
+
+if (
+  relationalText.includes("short answer") ||
+  relationalText.includes("keep it short") ||
+  relationalText.includes("simple answer")
+) {
+  userHealthProfile.relationalProfile.preferredDepth = "brief";
+}
+
     if (!message || typeof message !== "string") {
       return res.status(400).json({ reply: "Message is required" });
     }
@@ -1595,7 +1669,7 @@ export default async function handler(req, res) {
       },
       {
         role: "system",
-        content: `USER HEALTH PROFILE:\n${JSON.stringify(healthProfile).slice(0, 6000)}`
+        content: `USER HEALTH PROFILE:\n${JSON.stringify(userHealthProfile).slice(0, 6000)}`
       },
       {
         role: "system",
@@ -1676,16 +1750,21 @@ try {
     const fallback = fallbackResponse();
 
     return res.status(200).json({
-      reply: parsed.reply || fallback.reply,
-      healthUpdate: {
-        ...fallback.healthUpdate,
-        ...(parsed.healthUpdate || {})
-      },
-      planSuggestion: {
-        ...fallback.planSuggestion,
-        ...(parsed.planSuggestion || {})
-      }
-    });
+  reply: parsed.reply || fallback.reply,
+
+  healthUpdate: {
+    ...fallback.healthUpdate,
+    ...(parsed.healthUpdate || {})
+  },
+
+  planSuggestion: {
+    ...fallback.planSuggestion,
+    ...(parsed.planSuggestion || {})
+  },
+
+  healthProfile: userHealthProfile
+});
+
   } catch (error) {
     return res.status(500).json({
       reply: "Something went wrong. Please try again.",
