@@ -825,16 +825,18 @@
       font-weight:600;
     }
     
-    body.keyboard-open .nav{
+  body.keyboard-open .nav{
   display:none;
 }
 
 body.keyboard-open .composer{
   bottom:0;
+  z-index:999;
 }
 
 body.keyboard-open .messages{
-  padding-bottom:120px;
+  height:calc(100vh - 76px);
+  padding-bottom:180px;
 }
   </style>
 </head>
@@ -2675,10 +2677,33 @@ function removeThinking(){
       if (backdrop) backdrop.classList.remove("show");
     }
 
+function fixKeyboardView() {
+  const input = document.getElementById("messageInput");
+  const composer = document.querySelector(".composer");
+  const messages = document.getElementById("messages");
+
+  if (!input || !composer || !messages) return;
+
+  input.addEventListener("focus", () => {
+    document.body.classList.add("keyboard-open");
+
+    setTimeout(() => {
+      composer.scrollIntoView({ behavior: "smooth", block: "end" });
+      messages.scrollTop = messages.scrollHeight;
+    }, 300);
+  });
+
+  input.addEventListener("blur", () => {
+    setTimeout(() => {
+      document.body.classList.remove("keyboard-open");
+    }, 200);
+  });
+}
     window.onload = function() {
       window.openScreen = openScreen;
 window.toggleMenu = toggleMenu;
 window.go = go;
+fixKeyboardView();
 window.saveProfile = saveProfile;
 window.saveHealth = saveHealth;
 window.saveAnxiety = saveAnxiety;
