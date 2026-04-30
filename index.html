@@ -497,61 +497,74 @@
 
 .thinking-bubble{
   display:inline-flex !important;
-  flex-direction:row !important;
-  gap:6px;
   align-items:center;
-  justify-content:center;
-  padding:9px 13px;
+  gap:9px;
+  padding:9px 14px;
   width:auto;
-  min-width:48px !important;
+  border-radius:18px;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(14px);
+  transition:.3s ease;
 }
+
+.thinking-dots{display:flex;gap:5px}
 
 .dot{
-  width:7px;
-  height:7px;
-  background:#98A2B3;
-  border-radius:50%;
-  display:block;
-  animation:dotPulse .9s infinite ease-in-out;
-  -webkit-animation:dotPulse .9s infinite ease-in-out;
+  width:7px;height:7px;border-radius:50%;
+  animation:medoraThink 1.05s infinite ease-in-out;
 }
 
-.dot:nth-child(1){
-  animation-delay:0s;
-  -webkit-animation-delay:0s;
+.dot:nth-child(2){animation-delay:.14s}
+.dot:nth-child(3){animation-delay:.28s}
+
+.thinking-text{
+  font-size:12px;
+  font-weight:800;
+  color:#667085;
 }
 
-.dot:nth-child(2){
-  animation-delay:.15s;
-  -webkit-animation-delay:.15s;
+.thinking-seconds{
+  font-size:11px;
+  font-weight:800;
+  color:#98A2B3;
+  margin-left:2px;
 }
 
-.dot:nth-child(3){
-  animation-delay:.3s;
-  -webkit-animation-delay:.3s;
+
+.thinking-bubble.reflecting{
+  box-shadow:0 0 18px rgba(47,128,237,.28);
+}
+.thinking-bubble.reflecting .dot{
+  background:#2F80ED;
 }
 
-@keyframes dotPulse{
-  0%, 100%{
-    opacity:.3;
-    transform:scale(.75);
-  }
-  50%{
-    opacity:1;
-    transform:scale(1.25);
-  }
+.thinking-bubble.emotional{
+  box-shadow:0 0 18px rgba(255,92,108,.3);
+}
+.thinking-bubble.emotional .dot{
+  background:#FF5C6C;
 }
 
-@-webkit-keyframes dotPulse{
-  0%, 100%{
-    opacity:.3;
-    -webkit-transform:scale(.75);
-  }
-  50%{
-    opacity:1;
-    -webkit-transform:scale(1.25);
-  }
+.thinking-bubble.health{
+  box-shadow:0 0 18px rgba(35,197,138,.3);
 }
+.thinking-bubble.health .dot{
+  background:#23C58A;
+}
+
+.thinking-bubble.safety{
+  box-shadow:0 0 22px rgba(249,115,22,.35);
+}
+.thinking-bubble.safety .dot{
+  background:#F97316;
+}
+
+@keyframes medoraThink{
+  0%,100%{transform:translateY(0) scale(.75);opacity:.35}
+  40%{transform:translateY(-6px) scale(1.2);opacity:1}
+  70%{transform:translateY(1px) scale(.9);opacity:.65}
+}
+
 
 .typing-bubble{
   font-size:15px;
@@ -1258,7 +1271,8 @@ body.keyboard-open .messages{
     let isCrisis = false;
     let sleepChartInstance = null;
     let anxietyChartInstance = null;
-
+    let thinkingTimer = null;
+    let thinkingStartTime = null;
     function getData() {
   const defaultData = {
     version: "1.0.0",
@@ -1990,7 +2004,7 @@ Are you safe right now, and are you at risk of hurting yourself today?`;
       scrollChatToBottom();
       input.value = "";
 
-      showThinking();
+      showThinking(text);
 
       const data = getData();
 
@@ -2109,14 +2123,13 @@ if (nextStep) {
   freshData.insights.recommendations.push({
     id: `plan-${Date.now()}`,
     date: today(),
-    goal: result.planSuggestion.goal || "",
-    mainDriver: result.planSuggestion.mainDriver || "",
+    goal: result.planSuggestion?.goal || "",
+    mainDriver: result.planSuggestion?.mainDriver || "",
     nextStep: nextStep,
-    trackingMetric: result.planSuggestion.trackingMetric || "",
-    reviewWindow: result.planSuggestion.reviewWindow || ""
+    trackingMetric: result.planSuggestion?.trackingMetric || "",
+    reviewWindow: result.planSuggestion?.reviewWindow || ""
   });
 }
-
 saveData(freshData);
 removeThinking();
 addMessage(reply, "medora");
@@ -2443,11 +2456,47 @@ Tell me what this file represents so I can connect it to your health patterns.`;
       box.scrollTop = box.scrollHeight;
     }
     
-function showThinking() {
+let thinkingTimer = null;
+let thinkingStartTime = null;
+
+function getThinkingMode(text){
+  const t = String(text || "").toLowerCase();
+
+  if (t.includes("hurt myself") || t.includes("kill myself") || t.includes("suicide") || t.includes("chest pain") || t.includes("can't breathe")) {
+    return {
+      mode: "safety",
+      stages: ["checking safety", "slowing down", "protecting you"]
+    };
+  }
+
+  if (t.includes("anxious") || t.includes("sad") || t.includes("lonely") || t.includes("trust") || t.includes("care") || t.includes("fake") || t.includes("robotic")) {
+    return {
+      mode: "emotional",
+      stages: ["reading emotion", "listening deeper", "choosing care"]
+    };
+  }
+
+  if (t.includes("sleep") || t.includes("pain") || t.includes("symptom") || t.includes("food") || t.includes("water") || t.includes("health")) {
+    return {
+      mode: "health",
+      stages: ["checking patterns", "connecting logs", "building insight"]
+    };
+  }
+
+  return {
+    mode: "reflecting",
+    stages: ["thinking", "understanding", "forming reply"]
+  };
+}
+
+function showThinking(userText = ""){
   const box = document.getElementById("messages");
   if (!box) return;
 
   removeThinking();
+
+  const state = getThinkingMode(userText);
+  thinkingStartTime = Date.now();
 
   const row = document.createElement("div");
   row.className = "row medora";
@@ -2460,24 +2509,49 @@ function showThinking() {
   row.appendChild(img);
 
   const bubble = document.createElement("div");
-  bubble.className = "bubble thinking-bubble";
-bubble.setAttribute("aria-label", "Medora is thinking");
+  bubble.className = `bubble thinking-bubble ${state.mode}`;
+  bubble.setAttribute("aria-label", "Medora is thinking");
+
   bubble.innerHTML = `
-    <span class="dot"></span>
-    <span class="dot"></span>
-    <span class="dot"></span>
+    <span class="thinking-dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </span>
+    <span class="thinking-text" id="thinkingText">${state.stages[0]}</span>
+    <span class="thinking-seconds" id="thinkingSeconds">0s</span>
   `;
 
   row.appendChild(bubble);
   box.appendChild(row);
   box.scrollTop = box.scrollHeight;
+
+  let stageIndex = 0;
+
+  thinkingTimer = setInterval(() => {
+    const seconds = Math.floor((Date.now() - thinkingStartTime) / 1000);
+
+    const secondsEl = document.getElementById("thinkingSeconds");
+    const textEl = document.getElementById("thinkingText");
+
+    if (secondsEl) secondsEl.textContent = `${seconds}s`;
+
+    if (textEl && seconds > 0 && seconds % 2 === 0) {
+      stageIndex = (stageIndex + 1) % state.stages.length;
+      textEl.textContent = state.stages[stageIndex];
+    }
+  }, 500);
 }
 
-function removeThinking() {
+function removeThinking(){
+  if (thinkingTimer) {
+    clearInterval(thinkingTimer);
+    thinkingTimer = null;
+  }
+
   const thinking = document.getElementById("thinkingRow");
   if (thinking) thinking.remove();
 }
-
     function renderChat() {
       const box = document.getElementById("messages");
       const data = getData();
