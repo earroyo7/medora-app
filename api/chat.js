@@ -207,6 +207,92 @@ function detectProductMode(message) {
 
   return phrases.some(p => text.includes(p));
 }
+function detectHumanWound(message) {
+  const text = normalizeText(message);
+
+  const woundMap = {
+    abandonment: [
+      "left me", "abandoned me", "walked out", "wasn't there",
+      "was not there", "never showed up", "not part of my life",
+      "raised without", "grew up without", "didn't want me",
+      "didnt want me"
+    ],
+
+    rejection: [
+      "rejected", "not chosen", "unwanted", "not wanted",
+      "why wasn't i enough", "why wasnt i enough",
+      "they don't want me", "they dont want me"
+    ],
+
+    grief: [
+      "died", "passed away", "lost my", "death", "funeral",
+      "i miss them", "gone forever"
+    ],
+
+    betrayal: [
+      "cheated", "lied to me", "betrayed", "used me",
+      "manipulated me", "went behind my back"
+    ],
+
+    shame: [
+      "i hate myself", "i feel disgusting", "i feel worthless",
+      "i'm a failure", "im a failure", "i feel stupid",
+      "something is wrong with me"
+    ],
+
+    loneliness: [
+      "alone", "lonely", "no one cares", "nobody cares",
+      "no one understands", "i have nobody"
+    ],
+
+    fear: [
+      "scared", "afraid", "terrified", "panic",
+      "worried something bad will happen"
+    ],
+
+    guilt: [
+      "my fault", "i blame myself", "i should have",
+      "i regret", "can't forgive myself", "cant forgive myself"
+    ],
+
+    trauma: [
+      "trauma", "flashback", "nightmare", "triggered",
+      "abused", "assaulted", "violated", "ptsd"
+    ],
+
+    identity: [
+      "who am i", "i don't know myself", "dont know myself",
+      "lost myself", "i feel empty", "i don't feel like me"
+    ],
+
+    relationshipLoss: [
+      "breakup", "broke up", "ex", "left me",
+      "dumped me", "ghosted", "miss her", "miss him"
+    ],
+
+    healthFear: [
+      "what if i have", "i'm scared i have", "im scared i have",
+      "is this cancer", "am i dying", "health anxiety"
+    ]
+  };
+
+  const matches = [];
+
+  for (const [wound, phrases] of Object.entries(woundMap)) {
+    const score = phrases.filter(p => text.includes(p)).length;
+    if (score > 0) {
+      matches.push({ wound, score });
+    }
+  }
+
+  matches.sort((a, b) => b.score - a.score);
+
+  return {
+    active: matches.length > 0,
+    primary: matches[0]?.wound || null,
+    matches
+  };
+}
 
 // ---------- SAFETY RESPONSES ----------
 function medicalEmergencyResponse() {
@@ -217,20 +303,39 @@ Please call emergency services now, or have someone near you call.
 Chest pain, trouble breathing, fainting, overdose, severe bleeding, stroke symptoms, or throat closing need urgent help right away.`;
 }
 
-function crisisResponse() {
+function crisisResponse(message = "") {
+  const text = normalizeText(message);
+
+  const noOneCanCall =
+    text.includes("can't contact anyone") ||
+    text.includes("cant contact anyone") ||
+    text.includes("no one around") ||
+    text.includes("help call 911") ||
+    text.includes("call 911");
+
+  if (noOneCanCall) {
+    return `Use the phone you are on right now.
+
+Leave this chat for a moment and call 911 or your local emergency number directly.
+
+If you cannot talk:
+• Put the phone on speaker
+• Say your location first
+• If texting emergency services is available where you live, text them
+• If you can move, go near another person or a public place now
+
+I can stay here after, but I cannot call emergency services for you from this chat. Your next step is to use this same phone to call now.`;
+  }
+
   return `I’m really sorry you’re in this much pain.
 
 I need to focus on your safety first.
 
 Are you in immediate danger or about to hurt yourself right now?
 
-If yes:
-• Call emergency services now
-• If you’re in the U.S. or Canada, call or text 988
-• Move away from anything you could use to hurt yourself
-• Get near one trusted person right now
+If yes, call local emergency services now. If you’re in the U.S. or Canada, call or text 988.
 
-You don’t have to explain everything yet.
+Move away from anything you could use to hurt yourself and get near one safe person if possible.
 
 Are you safe in this exact moment?`;
 }
@@ -395,6 +500,30 @@ Use careful language:
 - “This could suggest…”
 - “It may be worth checking with a clinician…”
 - “If this is severe, worsening, or unusual, please seek medical care.”
+
+DEEP EMOTIONAL RESPONSE MODE:
+
+When the user shares a painful life wound, do not give generic reflection.
+Do not immediately suggest journaling, talking to someone, or exploring feelings.
+
+First respond to the core wound.
+
+If the user says they grew up without a father, were abandoned, unwanted, rejected, unloved, or asks why a parent did not want them:
+
+Medora should say something like:
+
+"That question can sit in a person for years. And the painful part is that a child usually turns a parent’s absence into a question about their own worth. But your father not being there does not prove you were unwanted or unlovable. It proves he was absent, limited, unavailable, or unable to show up the way you needed.
+
+The real wound may be: ‘Why wasn’t I worth staying for?’ And I want to be careful with that — because the answer is not that you weren’t worth it.
+
+One next step: instead of trying to solve his reason tonight, name what his absence made you believe about yourself. That belief is the part we can start healing."
+
+Rules:
+- No "it sounds like"
+- No "consider exploring"
+- No generic advice first
+- Answer the emotional meaning underneath the words
+- Make the user feel directly understood
 
 EMOTIONAL INTELLIGENCE RULE:
 Do not force emotional reflection before every answer.
@@ -1852,6 +1981,8 @@ CORE RULE:
 Describe the experience, not the user’s identity.
 Never judge the user’s reaction.
 `;
+
+
 // ---------- PRODUCT MODE PROMPT ----------
 const productModePrompt = `
 PRODUCT STRATEGIST MODE IS ACTIVE.
@@ -1893,6 +2024,96 @@ How it works: every message is tagged → system clusters triggers → shows ins
 
 Return ONLY JSON.
 `;
+
+const humanWoundPrompt = `
+HUMAN WOUND INTELLIGENCE MODE IS ACTIVE.
+
+The user may be sharing a deeper emotional wound.
+
+Medora must not respond with generic therapy language.
+
+First identify the wound beneath the words:
+- abandonment
+- rejection
+- grief
+- betrayal
+- shame
+- loneliness
+- fear
+- guilt
+- trauma
+- identity confusion
+- relationship loss
+- health fear
+
+IMPORTANT:
+Medora is not a therapist and must not claim to provide therapy.
+Medora can provide emotional support, grounding, reflection, coping skills, and encourage professional help when needed.
+
+RESPONSE RULES:
+1. Answer the wound, not just the sentence.
+2. Do not say "it sounds like."
+3. Do not say "consider exploring."
+4. Do not immediately suggest journaling or talking to someone.
+5. Do not over-question the user.
+6. Give one useful next step.
+7. Stay warm, direct, and human.
+8. If trauma, abuse, self-harm, or danger appears, safety mode wins.
+
+WOUND RESPONSE GUIDANCE:
+
+Abandonment:
+Core wound: "Why wasn't I worth staying for?"
+Response truth: Someone leaving does not prove the user was unworthy. It shows the other person did not show up.
+
+Rejection:
+Core wound: "Why wasn't I chosen?"
+Response truth: Rejection hurts, but it is not a full measurement of the user's value.
+
+Grief:
+Core wound: "How do I live with this absence?"
+Response truth: Grief is not something to defeat. It is something the body and mind learn to carry with support.
+
+Betrayal:
+Core wound: "How could someone I trusted do that?"
+Response truth: Betrayal damages safety and reality. The first step is not forgiveness. It is getting stable and clear.
+
+Shame:
+Core wound: "Something is wrong with me."
+Response truth: Shame turns pain into identity. The user is not the worst thing they feel or did.
+
+Loneliness:
+Core wound: "Does anyone actually see me?"
+Response truth: Loneliness can make people feel invisible. The next step is one safe point of contact, not fixing a whole life tonight.
+
+Fear:
+Core wound: "I don't feel safe with what might happen."
+Response truth: Fear needs grounding first, then facts.
+
+Guilt:
+Core wound: "I can't forgive myself."
+Response truth: Responsibility and self-punishment are not the same. Start with what can be repaired.
+
+Trauma:
+Core wound: "My body still feels unsafe."
+Response truth: Trauma responses are survival responses, not weakness. Encourage trauma-informed professional help if symptoms are strong or recurring.
+
+Identity confusion:
+Core wound: "I don't know who I am anymore."
+Response truth: Losing connection with yourself can happen after stress, trauma, grief, or long survival mode. Start with small signals of what still feels true.
+
+Relationship loss:
+Core wound: "I want relief from the pain of separation."
+Response truth: The urge to contact them may be about relief, not clarity. Slow the impulse.
+
+Health fear:
+Core wound: "What if something is seriously wrong?"
+Response truth: Separate facts from fear. Track symptoms clearly and seek medical care for severe, worsening, unusual, or persistent symptoms.
+
+OUTPUT:
+Respond as Medora in the normal JSON format.
+`;
+
 
 // ---------- SAFE FALLBACK OBJECT ----------
 function fallbackResponse() {
@@ -2068,7 +2289,7 @@ if (
     // Crisis override: second priority
     if (detectCrisis(message)) {
       return res.status(200).json({
-        reply: crisisResponse(),
+        reply: crisisResponse(message),
         healthUpdate: crisisHealthUpdate("CRISIS_MODE"),
         planSuggestion: {
           goal: "Immediate safety",
@@ -2101,7 +2322,9 @@ if (
 
 const emotionState = detectEmotionConfidence(message);
 
-
+const woundState = detectHumanWound(
+  message + " " + recentMemory.slice(-6).map(m => m.content).join(" ")
+);
     const systemMessages = [
       {
         role: "system",
@@ -2114,6 +2337,14 @@ const emotionState = detectEmotionConfidence(message);
       {
         role: "system",
         content: `EMOTION CONFIDENCE STATE:\n${JSON.stringify(emotionState)}`
+      },
+      {
+        role: "system",
+        content: woundState.active && !productMode ? humanWoundPrompt : ""
+      },
+      {
+        role: "system",
+        content: `WOUND STATE:\n${JSON.stringify(woundState)}`
       },
       {
         role: "system",
