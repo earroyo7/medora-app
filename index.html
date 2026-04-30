@@ -420,21 +420,6 @@
   scroll-padding-bottom:170px;
 }
 
-   .row{
-  display:flex;
-  gap:10px;
-  margin:10px 0;
-  align-items:flex-end;
-}
-
-.row.user{
-  justify-content:flex-end;
-}
-
-.row.medora{
-  justify-content:flex-start;
-}
-
 .upload-preview{
   width:100%;
   max-height:240px;
@@ -456,48 +441,57 @@
   overflow-wrap:anywhere;
 }
 
+ .row{
+  display:flex;
+  gap:8px;
+  margin:8px 0;
+  align-items:flex-end;
+}
+
+.row.user{
+  justify-content:flex-end;
+}
+
+.row.medora{
+  justify-content:flex-start;
+}
+
 .bubble{
-  display:inline-flex;
-  flex-direction:column;
-  width:fit-content;
-  max-width:68%;
-  min-width:0;
+  display:inline-block;
+  width:auto;
+  max-width:72%;
+  min-width:0 !important;
   min-height:0 !important;
   height:auto !important;
   background:#fff;
   border:1px solid var(--border);
   border-radius:18px;
-  padding:8px 11px;
+  padding:8px 12px;
   font-size:15px;
   line-height:1.28;
   box-shadow:0 4px 12px rgba(24,39,75,.05);
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
-  word-break:break-word;
+  white-space:normal;
+  overflow-wrap:break-word;
+  word-break:normal;
 }
 
 .user .bubble{
-  margin-left:auto;
   background:var(--primary);
   color:#fff;
   border-color:var(--primary);
-  border-bottom-right-radius:6px;
-  max-width:65%;
+  border-bottom-right-radius:5px;
 }
 
 .medora .bubble{
-  margin-right:auto;
-  border-bottom-left-radius:6px;
-  max-width:70%;
+  border-bottom-left-radius:5px;
 }
 
 .time{
-  align-self:flex-end;
-  display:inline-block;
-  text-align:right;
+  display:block;
   font-size:10px;
   opacity:.55;
   margin-top:4px;
+  text-align:right;
   line-height:1;
 }
 
