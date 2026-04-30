@@ -239,52 +239,70 @@ Are you safe in this exact moment?`;
 function detectEmotionConfidence(message) {
   const text = normalizeText(message);
 
-  const clearEmotionSignals = {
-    frustrated: ["frustrated", "annoyed", "mad", "angry", "irritated", "this is annoying"],
-    anxious: ["anxious", "anxiety", "panic", "worried", "scared", "nervous"],
-    sad: ["sad", "depressed", "down", "hurt", "crying", "heartbroken"],
-    overwhelmed: ["overwhelmed", "too much", "stressed out", "can't handle", "cant handle"],
-    ashamed: ["ashamed", "embarrassed", "feel stupid", "i failed", "i messed up"]
+  const highSignals = {
+    frustrated: [
+      "frustrated", "so frustrated", "really frustrating", "annoyed",
+      "mad", "angry", "irritated", "pissed", "this is annoying",
+      "nothing is working"
+    ],
+    anxious: [
+      "anxious", "anxiety", "panic", "panicking", "worried",
+      "scared", "nervous", "afraid", "freaking out"
+    ],
+    sad: [
+      "sad", "depressed", "down", "hurt", "crying",
+      "heartbroken", "empty", "lonely"
+    ],
+    overwhelmed: [
+      "overwhelmed", "too much", "stressed out",
+      "can't handle", "cant handle", "i can't deal", "i cant deal"
+    ],
+    ashamed: [
+      "ashamed", "embarrassed", "feel stupid",
+      "i failed", "i messed up", "i feel dumb"
+    ],
+    hopeless: [
+      "hopeless", "what's the point", "whats the point",
+      "nothing will change", "i give up"
+    ]
   };
 
-  for (const [emotion, phrases] of Object.entries(clearEmotionSignals)) {
+  for (const [emotion, phrases] of Object.entries(highSignals)) {
     if (phrases.some(p => text.includes(p))) {
       return {
         emotion,
         confidence: "high",
-        instruction: `The user clearly expressed ${emotion}. You may name it briefly, but do not overdo it.`
+        labelAllowed: true,
+        instruction:
+          `HIGH confidence: user clearly expressed ${emotion}. You may name it once, briefly and naturally. Do not over-explain the emotion. Then move to the useful next step.`
       };
     }
   }
 
-  const possibleStressSignals = [
-    "waiting",
-    "delay",
-    "not working",
-    "confused",
-    "stuck",
-    "bills",
-    "debt",
-    "money",
-    "rent",
-    "job",
-    "work",
-    "relationship",
-    "ex"
+  const mediumSignals = [
+    "waiting", "delay", "slow", "very slow", "still slow",
+    "not responding", "not working", "broken", "glitch",
+    "lagging", "freezing", "crashing", "confused", "stuck",
+    "bills", "debt", "money", "rent", "job", "work",
+    "relationship", "ex", "breakup"
   ];
 
-  if (possibleStressSignals.some(p => text.includes(p))) {
+  if (mediumSignals.some(p => text.includes(p))) {
     return {
       emotion: null,
       confidence: "medium",
-      instruction: "There may be stress, but do not label the user's emotion. Describe the situation only."
+      labelAllowed: false,
+      instruction:
+        "MEDIUM confidence: situation may carry stress, but do not label the user's emotion. Do not say 'it sounds like' or 'you might be feeling.' Describe the situation only, then give a direct fix or next step."
     };
   }
 
   return {
     emotion: null,
     confidence: "low",
-    instruction: "Do not guess the user's emotion. Stay neutral, direct, and helpful."
+    labelAllowed: false,
+    instruction:
+      "LOW confidence: do not guess emotion. No emotional narration. Respond directly, plainly, and helpfully."
   };
 }
 
@@ -725,6 +743,7 @@ Medora must not:
 - over-reference past messages
 - make the user feel studied
 - claim memory that was not actually stored
+
 EMOTIONAL PRECISION ENGINE:
 Do not use generic empathy.
 Do not guess emotions unless the user clearly shows them.
