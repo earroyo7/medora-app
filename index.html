@@ -420,67 +420,74 @@
   scroll-padding-bottom:170px;
 }
 
-    .row{
-      display:flex;
-      gap:10px;
-      margin:14px 0;
-    }
-
-    .row.user{
-      justify-content:flex-end;
-    }
-
-    .upload-preview{
-      width:100%;
-      max-height:240px;
-      object-fit:cover;
-      border-radius:16px;
-      margin-top:10px;
-      border:1px solid var(--border);
-    }
-
-    .file-pill{
-      display:block;
-      margin-top:10px;
-      padding:12px;
-      border-radius:14px;
-      background:#F2F6FF;
-      font-size:14px;
-    }
-
-    .bubble{
-  display:inline-block;
-  width:auto;
-  max-width:78%;
-  min-height:auto;
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:12px 15px;
-  font-size:16px;
-  line-height:1.38;
-  box-shadow:0 5px 16px rgba(24,39,75,.06);
-  white-space:pre-wrap;
+   .row{
+  display:flex;
+  gap:10px;
+  margin:10px 0;
+  align-items:flex-end;
 }
 
-    .user .bubble{
-      background:var(--primary);
-      color:#fff;
-      border-color:var(--primary);
-      border-bottom-right-radius:7px;
-    }
+.row.user{
+  justify-content:flex-end;
+}
 
-    .medora .bubble{
-      border-bottom-left-radius:7px;
-    }
+.upload-preview{
+  width:100%;
+  max-height:240px;
+  object-fit:cover;
+  border-radius:16px;
+  margin-top:10px;
+  border:1px solid var(--border);
+}
 
-    .time{
-      display:block;
-      text-align:right;
-      font-size:11px;
-      opacity:.7;
-      margin-top:7px;
-    }
+.file-pill{
+  display:block;
+  margin-top:10px;
+  padding:12px;
+  border-radius:14px;
+  background:#F2F6FF;
+  font-size:14px;
+}
+
+.bubble{
+  display:block;
+  width:fit-content;
+  max-width:76%;
+  min-width:0;
+  min-height:0 !important;
+  height:auto !important;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:10px 13px;
+  font-size:16px;
+  line-height:1.35;
+  box-shadow:0 5px 16px rgba(24,39,75,.06);
+  white-space:pre-wrap;
+  overflow-wrap:break-word;
+}
+
+.user .bubble{
+  margin-left:auto;
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+  border-bottom-right-radius:7px;
+}
+
+.medora .bubble{
+  margin-right:auto;
+  border-bottom-left-radius:7px;
+}
+
+.time{
+  display:block;
+  text-align:right;
+  font-size:11px;
+  opacity:.6;
+  margin-top:5px;
+  line-height:1;
+}
 
     .composer{
       position:fixed;
@@ -2041,9 +2048,6 @@ if (nextStep) {
 saveData(freshData);
 addMessage(reply, "medora");
 
-if (nextStep) {
-  addMessage("👉 Next step: " + nextStep, "medora");
-}
 
 scrollChatToBottom();
 updateHomeMetrics();
