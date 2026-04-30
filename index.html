@@ -496,11 +496,14 @@
 }
 
 .thinking-bubble{
-  display:flex;
-  gap:5px;
+  display:inline-flex !important;
+  flex-direction:row !important;
+  gap:6px;
   align-items:center;
-  padding:10px 13px;
+  justify-content:center;
+  padding:9px 13px;
   width:auto;
+  min-width:48px !important;
 }
 
 .dot{
@@ -508,26 +511,45 @@
   height:7px;
   background:#98A2B3;
   border-radius:50%;
-  display:inline-block;
-  animation:thinkingBounce 1.2s infinite ease-in-out;
+  display:block;
+  animation:dotPulse .9s infinite ease-in-out;
+  -webkit-animation:dotPulse .9s infinite ease-in-out;
+}
+
+.dot:nth-child(1){
+  animation-delay:0s;
+  -webkit-animation-delay:0s;
 }
 
 .dot:nth-child(2){
   animation-delay:.15s;
+  -webkit-animation-delay:.15s;
 }
 
 .dot:nth-child(3){
   animation-delay:.3s;
+  -webkit-animation-delay:.3s;
 }
 
-@keyframes thinkingBounce{
-  0%, 80%, 100%{
-    transform:translateY(0);
-    opacity:.35;
+@keyframes dotPulse{
+  0%, 100%{
+    opacity:.3;
+    transform:scale(.75);
   }
-  40%{
-    transform:translateY(-5px);
+  50%{
     opacity:1;
+    transform:scale(1.25);
+  }
+}
+
+@-webkit-keyframes dotPulse{
+  0%, 100%{
+    opacity:.3;
+    -webkit-transform:scale(.75);
+  }
+  50%{
+    opacity:1;
+    -webkit-transform:scale(1.25);
   }
 }
 
@@ -2439,6 +2461,7 @@ function showThinking() {
 
   const bubble = document.createElement("div");
   bubble.className = "bubble thinking-bubble";
+bubble.setAttribute("aria-label", "Medora is thinking");
   bubble.innerHTML = `
     <span class="dot"></span>
     <span class="dot"></span>
