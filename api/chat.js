@@ -1,3 +1,9 @@
+// ======================================================
+// MEDORA 2.0 — CORE UTILITIES + SAFETY FOUNDATION
+// Level: Advanced Foundation
+// Purpose: Stable structure, clean defaults, safe JSON output
+// ======================================================
+
 // ---------- TEXT NORMALIZATION ----------
 function normalizeText(message) {
   return String(message || "")
@@ -8,6 +14,120 @@ function normalizeText(message) {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+// ---------- BASIC TEXT HELPERS ----------
+function hasAnyPhrase(message, phrases = []) {
+  const text = normalizeText(message);
+  return phrases.some(phrase => text.includes(normalizeText(phrase)));
+}
+
+function combineMessageContext(message, memory = [], limit = 6) {
+  const recent = Array.isArray(memory) ? memory.slice(-limit) : [];
+
+  return [
+    message,
+    ...recent.map(m => m?.content || "")
+  ].join(" ");
+}
+
+// ---------- SHARED HEALTH UPDATE DEFAULT ----------
+function emptyHealthUpdate(riskLevel = "none", notes = null) {
+  return {
+    sleep: null,
+    mood: null,
+    anxiety: null,
+    stress: null,
+    symptoms: null,
+    pain: null,
+    food: null,
+    hydration: null,
+    activity: null,
+    medication: null,
+    menstrualCycle: null,
+    substances: null,
+    social: null,
+    environment: null,
+    goals: null,
+    notes,
+    riskLevel
+  };
+}
+
+// ---------- SHARED PLAN DEFAULT ----------
+function emptyPlanSuggestion() {
+  return {
+    goal: null,
+    mainDriver: null,
+    nextStep: null,
+    trackingMetric: null,
+    reviewWindow: null
+  };
+}
+
+// ---------- RESPONSE BUILDER ----------
+function buildResponse({
+  reply,
+  healthUpdate = {},
+  planSuggestion = {}
+}) {
+  const fallback = fallbackResponse();
+
+  return {
+    reply: reply || fallback.reply,
+    healthUpdate: {
+      ...emptyHealthUpdate("none"),
+      ...healthUpdate
+    },
+    planSuggestion: {
+      ...emptyPlanSuggestion(),
+      ...planSuggestion
+    }
+  };
+}
+
+// ---------- SAFE FALLBACK OBJECT ----------
+function fallbackResponse() {
+  return {
+    reply: "I’m here with you. Tell me what’s happening right now, and we’ll take it one step at a time.",
+    healthUpdate: emptyHealthUpdate("none"),
+    planSuggestion: emptyPlanSuggestion()
+  };
+}
+
+// ---------- CRISIS / EMERGENCY HEALTH UPDATE ----------
+function crisisHealthUpdate(type) {
+  return emptyHealthUpdate("urgent", type);
+}
+
+// ---------- SAFE JSON PARSER ----------
+function safeJsonParse(raw) {
+  try {
+    if (!raw || typeof raw !== "string") return fallbackResponse();
+
+    const parsed = JSON.parse(raw);
+
+    return buildResponse({
+      reply: parsed.reply,
+      healthUpdate: parsed.healthUpdate,
+      planSuggestion: parsed.planSuggestion
+    });
+  } catch (error) {
+    console.error("Medora JSON parse failed:", error);
+    return fallbackResponse();
+  }
+}
+
+// ---------- OUTPUT VALIDATOR ----------
+function validateMedoraOutput(output) {
+  if (!output || typeof output !== "object") return fallbackResponse();
+
+  return buildResponse({
+    reply: typeof output.reply === "string" ? output.reply : null,
+    healthUpdate: output.healthUpdate || {},
+    planSuggestion: output.planSuggestion || {}
+  });
+}
+
 
 // ---------- EMERGENCY / CRISIS DETECTION ----------
 function detectMedicalEmergency(message) {
@@ -2115,61 +2235,6 @@ Respond as Medora in the normal JSON format.
 `;
 
 
-// ---------- SAFE FALLBACK OBJECT ----------
-function fallbackResponse() {
-  return {
-    reply: "I’m here with you. Tell me a little more about what you’re noticing right now.",
-    healthUpdate: {
-      sleep: null,
-      mood: null,
-      anxiety: null,
-      stress: null,
-      symptoms: null,
-      pain: null,
-      food: null,
-      hydration: null,
-      activity: null,
-      medication: null,
-      menstrualCycle: null,
-      substances: null,
-      social: null,
-      environment: null,
-      goals: null,
-      notes: null,
-      riskLevel: "none"
-    },
-    planSuggestion: {
-      goal: null,
-      mainDriver: null,
-      nextStep: null,
-      trackingMetric: null,
-      reviewWindow: null
-    }
-  };
-}
-
-function crisisHealthUpdate(type) {
-  return {
-    sleep: null,
-    mood: null,
-    anxiety: null,
-    stress: null,
-    symptoms: null,
-    pain: null,
-    food: null,
-    hydration: null,
-    activity: null,
-    medication: null,
-    menstrualCycle: null,
-    substances: null,
-    social: null,
-    environment: null,
-    goals: null,
-    notes: type,
-    riskLevel: "urgent"
-  };
-}
-
 // ---------- API HANDLER ----------
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -2428,31 +2493,11 @@ const woundState = detectHumanWound(
       });
     }
 
-let parsed;
+const raw = data.choices?.[0]?.message?.content || "{}";
+const parsed = safeJsonParse(raw);
 
-try {
-  const raw = data.choices?.[0]?.message?.content || "{}";
-
-  parsed = JSON.parse(raw);
-} catch (err) {
-  console.error("JSON parse failed:", data);
-  parsed = fallbackResponse();
-}
-    const fallback = fallbackResponse();
-
-    return res.status(200).json({
-  reply: parsed.reply || fallback.reply,
-
-  healthUpdate: {
-    ...fallback.healthUpdate,
-    ...(parsed.healthUpdate || {})
-  },
-
-  planSuggestion: {
-    ...fallback.planSuggestion,
-    ...(parsed.planSuggestion || {})
-  },
-
+return res.status(200).json({
+  ...validateMedoraOutput(parsed),
   healthProfile: userHealthProfile
 });
 
