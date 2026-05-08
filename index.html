@@ -486,6 +486,38 @@
   border-bottom-left-radius:5px;
 }
 
+.bubble.research-report{
+  max-width:78%;
+  padding:0;
+  overflow:hidden;
+  border:1px solid #CFE1FF;
+  background:linear-gradient(180deg,#F8FBFF 0%,#FFFFFF 100%);
+  box-shadow:0 10px 26px rgba(47,128,237,.10);
+}
+
+.research-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 13px;
+  background:#EAF3FF;
+  color:#1C64D8;
+  font-size:13px;
+  font-weight:900;
+  border-bottom:1px solid #D7E7FF;
+}
+
+.research-body{
+  padding:13px 14px;
+  font-size:15px;
+  line-height:1.38;
+  color:#101828;
+}
+
+.research-body .time{
+  margin-top:10px;
+}
+
 .time{
   display:block;
   font-size:10px;
@@ -1440,17 +1472,17 @@ body.keyboard-open .messages{
       }));
 
       data.chat = data.chat.map((item, index) => ({
-        id: item.id || `chat-${Date.now()}-${index}`,
-        date: item.date || new Date().toLocaleString(),
-        role: item.role === "bot" ? "medora" : (item.role || "user"),
-        text: item.text || "",
-        preview: item.preview || null,
-        fileName: item.fileName || "",
-        fileType: item.fileType || "",
-        uploadId: item.uploadId || "",
-        insightTags: Array.isArray(item.insightTags) ? item.insightTags : []
-      }));
-
+  id: item.id || `chat-${Date.now()}-${index}`,
+  date: item.date || new Date().toLocaleString(),
+  role: item.role === "bot" ? "medora" : (item.role || "user"),
+  text: item.text || "",
+  preview: item.preview || null,
+  fileName: item.fileName || "",
+  fileType: item.fileType || "",
+  uploadId: item.uploadId || "",
+  researchUsed: Boolean(item.researchUsed),
+  insightTags: Array.isArray(item.insightTags) ? item.insightTags : []
+}));
       data.updatedAt = new Date().toISOString();
 
       try {
@@ -2103,7 +2135,8 @@ if (result.healthProfile) {
 freshData.chat.push({
   date: today(),
   role: "medora",
-  text: reply
+  text: reply,
+  researchUsed: Boolean(result.researchUsed)
 });
 
 // Save AI-extracted health data into logs
@@ -2159,10 +2192,9 @@ if (nextStep) {
 }
 saveData(freshData);
 removeThinking();
-addMessage(
-  result.researchUsed ? "🔎 Research used\n\n" + reply : reply,
-  "medora"
-);
+addMessage(reply, "medora", {
+  research: Boolean(result.researchUsed)
+});
 
 scrollChatToBottom();
 updateHomeMetrics();
@@ -2472,15 +2504,30 @@ Tell me what this file represents so I can connect it to your health patterns.`;
       }
 
       const bubble = document.createElement("div");
-      bubble.className = "bubble";
+bubble.className = "bubble";
 
-      bubble.innerHTML = `
-        ${escapeHTML(text)}
-        ${options.preview ? `<img class="upload-preview" src="${options.preview}" alt="Uploaded image">` : ""}
-        ${options.fileName && !options.preview ? `<span class="file-pill">📎 ${escapeHTML(options.fileName)}</span>` : ""}
-        <span class="time">${options.date || new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}</span>
-      `;
+const isResearch = Boolean(options.research);
 
+if (isResearch) {
+  bubble.classList.add("research-report");
+}
+
+const researchHeader = isResearch
+  ? `<div class="research-header">🔎 Research used</div>`
+  : "";
+
+const bodyOpen = isResearch ? `<div class="research-body">` : "";
+const bodyClose = isResearch ? `</div>` : "";
+
+bubble.innerHTML = `
+  ${researchHeader}
+  ${bodyOpen}
+    ${escapeHTML(text)}
+    ${options.preview ? `<img class="upload-preview" src="${options.preview}" alt="Uploaded image">` : ""}
+    ${options.fileName && !options.preview ? `<span class="file-pill">📎 ${escapeHTML(options.fileName)}</span>` : ""}
+    <span class="time">${options.date || new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}</span>
+  ${bodyClose}
+`;
       row.appendChild(bubble);
       box.appendChild(row);
       box.scrollTop = box.scrollHeight;
@@ -2613,12 +2660,12 @@ function removeThinking(){
       data.chat.forEach(msg => {
         const type = msg.role === "user" ? "user" : "medora";
 
-        addMessage(msg.text, type, {
-          date: msg.date || "",
-          preview: msg.preview || null,
-          fileName: msg.fileName || ""
-        });
-      });
+addMessage(msg.text, type, {
+  date: msg.date || "",
+  preview: msg.preview || null,
+  fileName: msg.fileName || "",
+  research: Boolean(msg.researchUsed)
+});
 
       scrollChatToBottom();
     }
