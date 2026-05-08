@@ -2142,7 +2142,10 @@ if (nextStep) {
 }
 saveData(freshData);
 removeThinking();
-addMessage(reply, "medora");
+addMessage(
+  result.researchUsed ? "🔎 Research used\n\n" + reply : reply,
+  "medora"
+);
 
 scrollChatToBottom();
 updateHomeMetrics();
