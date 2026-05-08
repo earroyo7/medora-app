@@ -2591,8 +2591,12 @@ const response = await fetch("https://api.openai.com/v1/responses", {
 input: toResponsesInput(systemMessages),
 
 tools: researchNeeded
-  ? [{ type: "web_search_preview" }]
+  tools: researchNeeded
+  ? [{ type: "web_search" }]
   : [],
+
+const data = await response.json();
+console.log("OPENAI RESPONSE:", JSON.stringify(data, null, 2));
 
 tool_choice: researchNeeded ? "auto" : undefined,
 
