@@ -2366,11 +2366,10 @@ function cleanMedoraReply(reply = "", { researchUsed = false } = {}) {
   text = text.replace(/(^|\n)\s*#{1,6}\s*/g, "$1");
 
   // Convert markdown links: [CDC](https://...) -> CDC
-  text = text.replace(/$begin:math:display$\(\[\^$end:math:display$]+)\]$begin:math:text$\(https\?\:\\\/\\\/\[\^\)\]\+\)$end:math:text$/g, "$1");
+text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, "$1");
 
-  // Remove raw URLs.
-  text = text.replace(/$begin:math:text$\\s\*https\?\:\\\/\\\/\[\^\\s\)\]\+\\s\*$end:math:text$/g, "");
-  text = text.replace(/https?:\/\/\S+/g, "");
+// Remove raw URLs.
+text = text.replace(/https?:\/\/\S+/g, "");
 
   // Convert dash bullets to clean bullets.
   text = text.replace(/^\s*-\s+/gm, "• ");
