@@ -2586,7 +2586,7 @@ const response = await fetch("https://api.openai.com/v1/responses", {
   },
 
   body: JSON.stringify({
-    model: "gpt-5.5",
+    model: "gpt-4.1-mini",
 
     input: toResponsesInput(systemMessages),
 
