@@ -572,42 +572,50 @@
   letter-spacing:0;
 }
 
-    .composer{
-      position:fixed;
-      bottom:78px;
-      left:50%;
-      transform:translateX(-50%);
-      max-width:430px;
-      width:100%;
-      padding:10px 14px;
-      background:#fff;
-      box-shadow:0 -6px 18px rgba(24,39,75,0.06);
-      z-index:26;
-    }
-    
-    .composer{
-  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+.composer{
+  position:fixed;
+  bottom:78px;
+  left:50%;
+  transform:translateX(-50%);
+  max-width:430px;
+  width:100%;
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  background:#fff;
+  box-shadow:0 -6px 18px rgba(24,39,75,0.06);
+  z-index:26;
+  transition:bottom .18s ease;
 }
 
-    .inputbar{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:999px;
-      padding:8px;
-      box-shadow:0 6px 16px rgba(24,39,75,.06);
-    }
+  .inputbar{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:26px;
+  padding:8px;
+  box-shadow:0 6px 16px rgba(24,39,75,.06);
+}
 
-    .inputbar input{
-      border:0;
-      outline:0;
-      flex:1;
-      font-size:15px;
-      padding:10px;
-      background:transparent;
-    }
+.inputbar input,
+.inputbar textarea{
+  border:0;
+  outline:0;
+  flex:1;
+  font-size:15px;
+  padding:10px 4px;
+  background:transparent;
+  font-family:inherit;
+  color:var(--text);
+}
+
+.inputbar textarea{
+  resize:none;
+  min-height:42px !important;
+  max-height:120px;
+  line-height:1.35;
+  overflow-y:auto;
+}
 
     .round{
       width:42px;
@@ -830,13 +838,13 @@
 }
 
 body.keyboard-open .composer{
-  bottom:0;
+  bottom:calc(var(--keyboard-height, 0px) + 8px);
   z-index:999;
 }
 
 body.keyboard-open .messages{
   height:calc(100vh - 76px);
-  padding-bottom:180px;
+  padding-bottom:calc(150px + var(--keyboard-height, 0px));
 }
   </style>
 </head>
@@ -1045,21 +1053,26 @@ body.keyboard-open .messages{
             onchange="handleUpload(event)" 
           />
 
-          <input 
-            id="messageInput" 
-            placeholder="Type a message..."
-            autocomplete="off"
-            autocorrect="on"
-            autocapitalize="sentences"
-            spellcheck="true"
-            inputmode="text"
-            data-lpignore="true"
-            data-form-type="other"
-            onfocus="handleInputFocus()"
-            onblur="handleInputBlur()"
-            oninput="handleTyping()"
-            onkeydown="if(event.key === 'Enter' && !event.shiftKey){event.preventDefault();sendMessage();}"
-          />
+          <textarea
+  id="messageInput"
+  rows="1"
+  placeholder="Type a message..."
+  autocomplete="off"
+  autocorrect="on"
+  autocapitalize="sentences"
+  spellcheck="true"
+  inputmode="text"
+  enterkeyhint="send"
+  data-lpignore="true"
+  data-form-type="other"
+  data-gramm="false"
+  data-gramm_editor="false"
+  data-enable-grammarly="false"
+  onfocus="handleInputFocus()"
+  onblur="handleInputBlur()"
+  oninput="handleTyping(); resizeComposer();"
+  onkeydown="if(event.key === 'Enter' && !event.shiftKey){event.preventDefault();sendMessage();}"
+></textarea>
 
           <button class="round send" onclick="sendMessage()">➤</button>
         </div>
@@ -1969,6 +1982,7 @@ Are you safe right now, and are you at risk of hurting yourself today?`;
         saveData(crisisData);
 
         input.value = "";
+        resizeComposer();
         scrollChatToBottom();
         return;
       }
@@ -1998,13 +2012,15 @@ Are you safe right now, and are you at risk of hurting yourself today?`;
         saveData(crisisData);
 
         input.value = "";
+        resizeComposer();
         scrollChatToBottom();
         return;
       }
 
-      addMessage(text, "user");
+     addMessage(text, "user");
       scrollChatToBottom();
       input.value = "";
+      resizeComposer();
 
       showThinking(text);
 
@@ -2704,26 +2720,75 @@ function removeThinking(){
       if (backdrop) backdrop.classList.remove("show");
     }
 
+function resizeComposer() {
+  const input = document.getElementById("messageInput");
+  if (!input) return;
+
+  input.style.height = "auto";
+
+  const nextHeight = Math.min(input.scrollHeight, 120);
+  input.style.height = `${Math.max(nextHeight, 42)}px`;
+}
+
 function fixKeyboardView() {
   const input = document.getElementById("messageInput");
-  const composer = document.querySelector(".composer");
   const messages = document.getElementById("messages");
 
-  if (!input || !composer || !messages) return;
+  if (!input || !messages) return;
+
+  function updateKeyboardOffset() {
+    const vv = window.visualViewport;
+
+    let keyboardHeight = 0;
+
+    if (vv) {
+      keyboardHeight = Math.max(
+        0,
+        window.innerHeight - vv.height - vv.offsetTop
+      );
+    }
+
+    document.documentElement.style.setProperty(
+      "--keyboard-height",
+      `${keyboardHeight}px`
+    );
+
+    if (document.activeElement === input) {
+      document.body.classList.add("keyboard-open");
+      scrollChatToBottom();
+    }
+  }
 
   input.addEventListener("focus", () => {
     document.body.classList.add("keyboard-open");
 
     setTimeout(() => {
-      composer.scrollIntoView({ behavior: "smooth", block: "end" });
-      messages.scrollTop = messages.scrollHeight;
-    }, 300);
+      updateKeyboardOffset();
+      resizeComposer();
+      scrollChatToBottom();
+    }, 80);
+
+    setTimeout(() => {
+      updateKeyboardOffset();
+      scrollChatToBottom();
+    }, 350);
   });
 
   input.addEventListener("blur", () => {
     setTimeout(() => {
       document.body.classList.remove("keyboard-open");
-    }, 200);
+      document.documentElement.style.setProperty("--keyboard-height", "0px");
+      resizeComposer();
+    }, 180);
+  });
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", updateKeyboardOffset);
+    window.visualViewport.addEventListener("scroll", updateKeyboardOffset);
+  }
+
+  window.addEventListener("orientationchange", () => {
+    setTimeout(updateKeyboardOffset, 300);
   });
 }
     window.onload = function() {
