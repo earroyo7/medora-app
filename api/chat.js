@@ -2543,7 +2543,7 @@ const researchNeeded = false;
   properties: {
     reply: { type: "string" },
 
-    healthUpdate: {
+   healthUpdate: {
   type: "object",
   properties: {
     sleep: { type: ["string", "null"] },
@@ -2565,12 +2565,12 @@ const researchNeeded = false;
     riskLevel: { type: "string" }
   },
   required: [
-    "sleep","mood","anxiety","stress","symptoms","pain",
-    "food","hydration","activity","medication","menstrualCycle",
-    "substances","social","environment","goals","notes","riskLevel"
+    "sleep", "mood", "anxiety", "stress", "symptoms", "pain",
+    "food", "hydration", "activity", "medication", "menstrualCycle",
+    "substances", "social", "environment", "goals", "notes", "riskLevel"
   ],
   additionalProperties: false
-}
+},
 
     planSuggestion: {
       type: "object",
