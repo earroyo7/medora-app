@@ -2591,7 +2591,6 @@ const response = await fetch("https://api.openai.com/v1/responses", {
 input: toResponsesInput(systemMessages),
 
 tools: researchNeeded
-  tools: researchNeeded
   ? [{ type: "web_search" }]
   : [],
 
