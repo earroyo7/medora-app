@@ -2622,8 +2622,8 @@ const response = await fetch("https://api.openai.com/v1/responses", {
   body: JSON.stringify({
     model: "gpt-4.1-mini",
     input: toResponsesInput(systemMessages),
-    tools: researchNeeded ? [{ type: "web_search_preview" }] : undefined,
-    tool_choice: researchNeeded ? "auto" : undefined,
+    tools: researchNeeded ? [{ type: "web_search" }] : undefined,
+tool_choice: researchNeeded ? "required" : undefined,
     text: {
       format: {
         type: "json_schema",
