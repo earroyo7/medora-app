@@ -2601,6 +2601,10 @@ const response = await fetch("https://api.openai.com/v1/responses", {
 });
 
 const data = await response.json();
+
+console.log("OPENAI STATUS:", response.status);
+console.log("OPENAI ERROR:", JSON.stringify(data, null, 2));
+
     if (!response.ok) {
       return res.status(response.status).json({
         reply: "Sorry, I could not connect to Medora right now.",
