@@ -870,7 +870,7 @@
 }
 
 body.keyboard-open .composer{
-  bottom:calc(var(--keyboard-height, 0px) + 82px);
+  bottom:calc(var(--keyboard-height, 0px) + 12px);
   z-index:9999;
 }
 
@@ -2645,30 +2645,34 @@ function removeThinking(){
   if (thinking) thinking.remove();
 }
     function renderChat() {
-      const box = document.getElementById("messages");
-      const data = getData();
+  const box = document.getElementById("messages");
+  const data = getData();
 
-      if (!box) return;
+  if (!box) return;
 
-      box.innerHTML = "";
+  box.innerHTML = "";
 
-      if (data.chat.length === 0) {
-        addMessage("Hi, I’m Medora. Tell me how you’re feeling, and I’ll help you reflect and track patterns.", "medora");
-        return;
-      }
+  if (data.chat.length === 0) {
+    addMessage(
+      "Hi, I’m Medora. Tell me how you’re feeling, and I’ll help you reflect and track patterns.",
+      "medora"
+    );
+    return;
+  }
 
-      data.chat.forEach(msg => {
-        const type = msg.role === "user" ? "user" : "medora";
+  data.chat.forEach(msg => {
+    const type = msg.role === "user" ? "user" : "medora";
 
-addMessage(msg.text, type, {
-  date: msg.date || "",
-  preview: msg.preview || null,
-  fileName: msg.fileName || "",
-  research: Boolean(msg.researchUsed)
-});
+    addMessage(msg.text, type, {
+      date: msg.date || "",
+      preview: msg.preview || null,
+      fileName: msg.fileName || "",
+      research: Boolean(msg.researchUsed)
+    });
+  });
 
-      scrollChatToBottom();
-    }
+  scrollChatToBottom();
+}
 
     function escapeHTML(str) {
       return String(str || "")
@@ -2872,6 +2876,7 @@ window.sendMessage = sendMessage;
 window.sendChip = sendChip;
 window.handleUpload = handleUpload;
 window.handleMessageKeydown = handleMessageKeydown;
+window.resizeComposer = resizeComposer; 
       migrateBotRoleToMedora();
       loadProfileFields();
       updateHomeMetrics();
