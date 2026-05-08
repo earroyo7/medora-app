@@ -2049,6 +2049,10 @@ healthProfile: {
 
         const result = await response.json();
 
+if (result.researchUsed) {
+  console.log("Medora used research mode for this response.");
+}
+
 const reply = result.reply && result.reply.length > 10
   ? result.reply
   : "I’m here with you. Tell me what you’re noticing right now.";
@@ -2467,6 +2471,22 @@ function getThinkingMode(text){
       stages: ["checking safety", "slowing down", "protecting you"]
     };
   }
+if (
+  t.includes("research") ||
+  t.includes("study") ||
+  t.includes("studies") ||
+  t.includes("scientific") ||
+  t.includes("evidence") ||
+  t.includes("latest") ||
+  t.includes("current") ||
+  t.includes("source") ||
+  t.includes("guidelines")
+) {
+  return {
+    mode: "health",
+    stages: ["checking sources", "reading evidence", "building answer"]
+  };
+}
 
   if (t.includes("anxious") || t.includes("sad") || t.includes("lonely") || t.includes("trust") || t.includes("care") || t.includes("fake") || t.includes("robotic")) {
     return {
