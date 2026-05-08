@@ -2477,7 +2477,7 @@ const woundState = detectHumanWound(
   message + " " + recentMemory.slice(-6).map(m => m.content).join(" ")
 );
 
-const researchNeeded = false;
+const researchNeeded = detectResearchNeed(message);
 
     const systemMessages = [
       {
