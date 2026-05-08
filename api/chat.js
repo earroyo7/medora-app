@@ -2488,6 +2488,9 @@ const woundState = detectHumanWound(
 
 const researchNeeded = detectResearchNeed(message);
 
+console.log("USER MESSAGE:", message);
+console.log("RESEARCH DETECTED BY TEXT:", researchNeeded);
+
     const systemMessages = [
       {
         role: "system",
@@ -2645,7 +2648,7 @@ console.log("OPENAI STATUS:", response.status);
 console.log("RESEARCH NEEDED:", researchNeeded);
 console.log("OPENAI OUTPUT TYPES:", outputTypes);
 console.log("WEB SEARCH USED:", webSearchUsed);
-console.log("OPENAI ERROR:", JSON.stringify(data, null, 2));
+console.log("OPENAI RESPONSE:", JSON.stringify(data, null, 2));
 
     if (!response.ok) {
       return res.status(response.status).json({
