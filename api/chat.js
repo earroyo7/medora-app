@@ -2189,7 +2189,6 @@ Use credible sources first:
 
 Medora must:
 - separate evidence from uncertainty
-- cite sources when web research was used
 - never diagnose
 - never prescribe
 - never replace a clinician
@@ -2197,14 +2196,35 @@ Medora must:
 - explain findings in plain language
 - recommend professional care for severe, worsening, unusual, persistent, or urgent symptoms
 
+PROFESSIONAL MOBILE REPORT FORMAT:
+When answering a researched health question, use this clean format:
+
+Title
+Summary:
+Write 1 to 2 short sentences with the main answer.
+
+Key guidance:
+• Use simple bullets.
+• Keep each bullet short.
+• Include only the most relevant details.
+
+Why it matters:
+Write 1 short paragraph.
+
+Next step:
+Give one practical next step.
+
+Source:
+Write the source name only, for example:
+Source: CDC
+
 APP DISPLAY RULE:
 Use plain text only.
-Do not use Markdown symbols like **, #, or markdown links.
-Use simple bullets with • only.
-Keep researched answers short for mobile.
-For sources, write one short line at the end like:
-Source: CDC
+Do not use Markdown symbols like **, #, ###, or markdown links.
 Do not paste full URLs unless the user asks.
+Do not create long walls of text.
+Do not include every age group unless the user asks for all ages.
+For CDC sleep questions, prioritize adults first unless the user asks about children.
 
 If web research is not actually used, Medora must not claim that she searched online.
 `;
@@ -2330,6 +2350,38 @@ function extractResponsesText(data) {
 
   return textParts.join("\n").trim();
 }
+
+function cleanMedoraReply(reply = "", { researchUsed = false } = {}) {
+  let text = String(reply || "");
+
+  // Remove duplicate research label if the frontend is adding the badge.
+  if (researchUsed) {
+    text = text.replace(/^🔎\s*Research used\s*/i, "").trim();
+  }
+
+  // Convert markdown-style bold into plain text.
+  text = text.replace(/\*\*(.*?)\*\*/g, "$1");
+
+  // Remove markdown headings.
+  text = text.replace(/(^|\n)\s*#{1,6}\s*/g, "$1");
+
+  // Convert markdown links: [CDC](https://...) -> CDC
+  text = text.replace(/$begin:math:display$\(\[\^$end:math:display$]+)\]$begin:math:text$\(https\?\:\\\/\\\/\[\^\)\]\+\)$end:math:text$/g, "$1");
+
+  // Remove raw URLs.
+  text = text.replace(/$begin:math:text$\\s\*https\?\:\\\/\\\/\[\^\\s\)\]\+\\s\*$end:math:text$/g, "");
+  text = text.replace(/https?:\/\/\S+/g, "");
+
+  // Convert dash bullets to clean bullets.
+  text = text.replace(/^\s*-\s+/gm, "• ");
+
+  // Clean spacing.
+  text = text.replace(/[ \t]+\n/g, "\n");
+  text = text.replace(/\n{3,}/g, "\n\n");
+
+  return text.trim();
+}
+
 // ---------- API HANDLER ----------
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -2660,12 +2712,17 @@ console.log("OPENAI RESPONSE:", JSON.stringify(data, null, 2));
 const raw = extractResponsesText(data) || "{}";
 const parsed = safeJsonParse(raw);
 
-return res.status(200).json({
-  ...validateMedoraOutput(parsed),
-  healthProfile: userHealthProfile,
+const validated = validateMedoraOutput(parsed);
+
+validated.reply = cleanMedoraReply(validated.reply, {
   researchUsed: webSearchUsed
 });
 
+return res.status(200).json({
+  ...validated,
+  healthProfile: userHealthProfile,
+  researchUsed: webSearchUsed
+});
   } catch (error) {
     return res.status(500).json({
       reply: "Something went wrong. Please try again.",
