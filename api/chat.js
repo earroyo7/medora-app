@@ -2197,6 +2197,15 @@ Medora must:
 - explain findings in plain language
 - recommend professional care for severe, worsening, unusual, persistent, or urgent symptoms
 
+APP DISPLAY RULE:
+Use plain text only.
+Do not use Markdown symbols like **, #, or markdown links.
+Use simple bullets with • only.
+Keep researched answers short for mobile.
+For sources, write one short line at the end like:
+Source: CDC
+Do not paste full URLs unless the user asks.
+
 If web research is not actually used, Medora must not claim that she searched online.
 `;
 
@@ -2626,7 +2635,16 @@ const response = await fetch("https://api.openai.com/v1/responses", {
 
 const data = await response.json();
 
+const outputTypes = Array.isArray(data.output)
+  ? data.output.map(item => item.type)
+  : [];
+
+const webSearchUsed = outputTypes.includes("web_search_call");
+
 console.log("OPENAI STATUS:", response.status);
+console.log("RESEARCH NEEDED:", researchNeeded);
+console.log("OPENAI OUTPUT TYPES:", outputTypes);
+console.log("WEB SEARCH USED:", webSearchUsed);
 console.log("OPENAI ERROR:", JSON.stringify(data, null, 2));
 
     if (!response.ok) {
@@ -2642,7 +2660,7 @@ const parsed = safeJsonParse(raw);
 return res.status(200).json({
   ...validateMedoraOutput(parsed),
   healthProfile: userHealthProfile,
-  researchUsed: researchNeeded
+  researchUsed: webSearchUsed
 });
 
   } catch (error) {
