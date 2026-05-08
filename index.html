@@ -838,14 +838,15 @@
 }
 
 body.keyboard-open .composer{
-  bottom:calc(var(--keyboard-height, 0px) + 8px);
-  z-index:999;
+  bottom:calc(var(--keyboard-height, 0px) + 82px);
+  z-index:9999;
 }
 
 body.keyboard-open .messages{
   height:calc(100vh - 76px);
-  padding-bottom:calc(150px + var(--keyboard-height, 0px));
+  padding-bottom:calc(250px + var(--keyboard-height, 0px));
 }
+
   </style>
 </head>
 
@@ -1053,7 +1054,7 @@ body.keyboard-open .messages{
             onchange="handleUpload(event)" 
           />
 
-          <textarea
+         <textarea
   id="messageInput"
   rows="1"
   placeholder="Type a message..."
@@ -1062,7 +1063,7 @@ body.keyboard-open .messages{
   autocapitalize="sentences"
   spellcheck="true"
   inputmode="text"
-  enterkeyhint="send"
+  enterkeyhint="enter"
   data-lpignore="true"
   data-form-type="other"
   data-gramm="false"
@@ -1071,7 +1072,7 @@ body.keyboard-open .messages{
   onfocus="handleInputFocus()"
   onblur="handleInputBlur()"
   oninput="handleTyping(); resizeComposer();"
-  onkeydown="if(event.key === 'Enter' && !event.shiftKey){event.preventDefault();sendMessage();}"
+  onkeydown="handleMessageKeydown(event)"
 ></textarea>
 
           <button class="round send" onclick="sendMessage()">➤</button>
@@ -2720,6 +2721,21 @@ function removeThinking(){
       if (backdrop) backdrop.classList.remove("show");
     }
 
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function handleMessageKeydown(event) {
+  if (
+    event.key === "Enter" &&
+    !event.shiftKey &&
+    !isMobileDevice()
+  ) {
+    event.preventDefault();
+    sendMessage();
+  }
+}
+
 function resizeComposer() {
   const input = document.getElementById("messageInput");
   if (!input) return;
@@ -2808,6 +2824,7 @@ window.closeQuickMenu = closeQuickMenu;
 window.sendMessage = sendMessage;
 window.sendChip = sendChip;
 window.handleUpload = handleUpload;
+window.handleMessageKeydown = handleMessageKeydown;
       migrateBotRoleToMedora();
       loadProfileFields();
       updateHomeMetrics();
