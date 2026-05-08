@@ -2579,39 +2579,28 @@ const researchNeeded = detectResearchNeed(message);
 
 const response = await fetch("https://api.openai.com/v1/responses", {
   method: "POST",
-
   headers: {
     Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
     "Content-Type": "application/json"
   },
-
   body: JSON.stringify({
     model: "gpt-4.1-mini",
-
-input: toResponsesInput(systemMessages),
-
-tools: researchNeeded
-  ? [{ type: "web_search" }]
-  : [],
+    input: toResponsesInput(systemMessages),
+    tools: researchNeeded ? [{ type: "web_search_preview" }] : undefined,
+    tool_choice: researchNeeded ? "auto" : undefined,
+    text: {
+      format: {
+        type: "json_schema",
+        name: "medora_response",
+        strict: true,
+        schema: medoraJsonSchema
+      }
+    },
+    store: false
+  })
+});
 
 const data = await response.json();
-console.log("OPENAI RESPONSE:", JSON.stringify(data, null, 2));
-
-tool_choice: researchNeeded ? "auto" : undefined,
-
-text: {
-  format: {
-    type: "json_schema",
-    name: "medora_response",
-    strict: true,
-    schema: medoraJsonSchema
-  }
-},
-
-store: false
-
-    const data = await response.json();
-
     if (!response.ok) {
       return res.status(response.status).json({
         reply: "Sorry, I could not connect to Medora right now.",
