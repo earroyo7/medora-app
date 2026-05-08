@@ -2544,9 +2544,33 @@ const researchNeeded = false;
     reply: { type: "string" },
 
     healthUpdate: {
-      type: "object",
-      additionalProperties: true
-    },
+  type: "object",
+  properties: {
+    sleep: { type: ["string", "null"] },
+    mood: { type: ["string", "null"] },
+    anxiety: { type: ["string", "null"] },
+    stress: { type: ["string", "null"] },
+    symptoms: { type: ["string", "null"] },
+    pain: { type: ["string", "null"] },
+    food: { type: ["string", "null"] },
+    hydration: { type: ["string", "null"] },
+    activity: { type: ["string", "null"] },
+    medication: { type: ["string", "null"] },
+    menstrualCycle: { type: ["string", "null"] },
+    substances: { type: ["string", "null"] },
+    social: { type: ["string", "null"] },
+    environment: { type: ["string", "null"] },
+    goals: { type: ["string", "null"] },
+    notes: { type: ["string", "null"] },
+    riskLevel: { type: "string" }
+  },
+  required: [
+    "sleep","mood","anxiety","stress","symptoms","pain",
+    "food","hydration","activity","medication","menstrualCycle",
+    "substances","social","environment","goals","notes","riskLevel"
+  ],
+  additionalProperties: false
+}
 
     planSuggestion: {
       type: "object",
