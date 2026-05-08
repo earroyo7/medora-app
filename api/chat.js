@@ -531,6 +531,36 @@ function detectEmotionConfidence(message) {
   };
 }
 
+// ---------- RESEARCH NEED DETECTION ----------
+function detectResearchNeed(message) {
+  return hasAnyPhrase(message, [
+    "latest",
+    "current",
+    "up to date",
+    "research",
+    "studies",
+    "study",
+    "scientific",
+    "science",
+    "evidence",
+    "guidelines",
+    "clinical guideline",
+    "source",
+    "sources",
+    "credible",
+    "peer reviewed",
+    "medical journal",
+    "what does science say",
+    "new treatment",
+    "recent data",
+    "look this up",
+    "search online",
+    "internet",
+    "web"
+  ]);
+}
+
+
 // ---------- MASTER MEDORA SYSTEM PROMPT ----------
 const medoraSystemPrompt = `
 You are Medora, an empathetic AI Health Companion for the global population.
@@ -2145,6 +2175,31 @@ How it works: every message is tagged → system clusters triggers → shows ins
 Return ONLY JSON.
 `;
 
+const researchGuardrailPrompt = `
+RESEARCH MODE IS ACTIVE.
+
+Medora may use internet research only when current, sourced, or scientific information is needed.
+
+Use credible sources first:
+1. Government or public health sources
+2. Major medical organizations
+3. Peer-reviewed journals
+4. Academic institutions
+5. Recognized clinical guidelines
+
+Medora must:
+- separate evidence from uncertainty
+- cite sources when web research was used
+- never diagnose
+- never prescribe
+- never replace a clinician
+- avoid random blogs, forums, influencer posts, and unsupported claims
+- explain findings in plain language
+- recommend professional care for severe, worsening, unusual, persistent, or urgent symptoms
+
+If web research is not actually used, Medora must not claim that she searched online.
+`;
+
 const humanWoundPrompt = `
 HUMAN WOUND INTELLIGENCE MODE IS ACTIVE.
 
@@ -2234,7 +2289,38 @@ OUTPUT:
 Respond as Medora in the normal JSON format.
 `;
 
+// ---------- RESPONSE API INPUT BUILDER ----------
+function toResponsesInput(messages = []) {
+  return messages
+    .filter(m => m && m.content !== "")
+    .map(m => ({
+      role: m.role,
+      content: [
+        {
+          type: "input_text",
+          text: m.content
+        }
+      ]
+    }));
+}
 
+function extractResponsesText(data) {
+  if (typeof data?.output_text === "string") {
+    return data.output_text;
+  }
+
+  const textParts = [];
+
+  for (const item of data?.output || []) {
+    for (const content of item?.content || []) {
+      if (content?.type === "output_text" && typeof content.text === "string") {
+        textParts.push(content.text);
+      }
+    }
+  }
+
+  return textParts.join("\n").trim();
+}
 // ---------- API HANDLER ----------
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -2390,6 +2476,9 @@ const emotionState = detectEmotionConfidence(message);
 const woundState = detectHumanWound(
   message + " " + recentMemory.slice(-6).map(m => m.content).join(" ")
 );
+
+const researchNeeded = detectResearchNeed(message);
+
     const systemMessages = [
       {
         role: "system",
@@ -2410,6 +2499,14 @@ const woundState = detectHumanWound(
       {
         role: "system",
         content: `WOUND STATE:\n${JSON.stringify(woundState)}`
+      },
+      {
+        role: "system",
+        content: researchNeeded ? researchGuardrailPrompt : ""
+      },
+      {
+        role: "system",
+        content: `RESEARCH NEEDED:\n${researchNeeded}`
       },
       {
         role: "system",
@@ -2441,48 +2538,86 @@ const woundState = detectHumanWound(
       }
     ];
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        response_format: {
-  type: "json_schema",
-  json_schema: {
-    name: "medora_response",
-    schema: {
+    const medoraJsonSchema = {
+  type: "object",
+  properties: {
+    reply: { type: "string" },
+
+    healthUpdate: {
+      type: "object",
+      additionalProperties: true
+    },
+
+    planSuggestion: {
       type: "object",
       properties: {
-        reply: { type: "string" },
-        healthUpdate: {
-          type: "object",
-          additionalProperties: true
-        },
-        planSuggestion: {
-          type: "object",
-          properties: {
-            goal: { type: ["string", "null"] },
-            mainDriver: { type: ["string", "null"] },
-            nextStep: { type: ["string", "null"] },
-            trackingMetric: { type: ["string", "null"] },
-            reviewWindow: { type: ["string", "null"] }
-          },
-          required: ["goal", "mainDriver", "nextStep", "trackingMetric", "reviewWindow"],
-          additionalProperties: false
-        }
+        goal: { type: ["string", "null"] },
+        mainDriver: { type: ["string", "null"] },
+        nextStep: { type: ["string", "null"] },
+        trackingMetric: { type: ["string", "null"] },
+        reviewWindow: { type: ["string", "null"] }
       },
-      required: ["reply", "healthUpdate", "planSuggestion"],
+      required: [
+        "goal",
+        "mainDriver",
+        "nextStep",
+        "trackingMetric",
+        "reviewWindow"
+      ],
       additionalProperties: false
     }
-  }
-},
-        temperature: 0.50,
-        messages: systemMessages
-      })
-    });
+  },
+
+  required: [
+    "reply",
+    "healthUpdate",
+    "planSuggestion"
+  ],
+
+  additionalProperties: false
+};
+
+const response = await fetch("https://api.openai.com/v1/responses", {
+  method: "POST",
+
+  headers: {
+    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+
+  body: JSON.stringify({
+    model: "gpt-5.5",
+
+    input: toResponsesInput(systemMessages),
+
+    tools: researchNeeded
+      ? [
+          {
+            type: "web_search"
+          }
+        ]
+      : [],
+
+    tool_choice: researchNeeded ? "auto" : "none",
+
+    reasoning: {
+      effort: researchNeeded ? "medium" : "low"
+    },
+
+    text: {
+      verbosity: "medium",
+
+      format: {
+        type: "json_schema",
+        name: "medora_response",
+        strict: true,
+        schema: medoraJsonSchema
+      }
+    },
+
+    store: false
+  })
+});
 
     const data = await response.json();
 
@@ -2493,12 +2628,13 @@ const woundState = detectHumanWound(
       });
     }
 
-const raw = data.choices?.[0]?.message?.content || "{}";
+const raw = extractResponsesText(data) || "{}";
 const parsed = safeJsonParse(raw);
 
 return res.status(200).json({
   ...validateMedoraOutput(parsed),
-  healthProfile: userHealthProfile
+  healthProfile: userHealthProfile,
+  researchUsed: researchNeeded
 });
 
   } catch (error) {
