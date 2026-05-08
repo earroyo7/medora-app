@@ -2588,36 +2588,24 @@ const response = await fetch("https://api.openai.com/v1/responses", {
   body: JSON.stringify({
     model: "gpt-4.1-mini",
 
-    input: toResponsesInput(systemMessages),
+input: toResponsesInput(systemMessages),
 
-    tools: researchNeeded
-  ? [
-      {
-        type: "web_search_preview"
-      }
-    ]
+tools: researchNeeded
+  ? [{ type: "web_search_preview" }]
   : [],
 
-    tool_choice: researchNeeded ? "auto" : undefined,
+tool_choice: researchNeeded ? "auto" : undefined,
 
-    reasoning: {
-      effort: researchNeeded ? "medium" : "low"
-    },
+text: {
+  format: {
+    type: "json_schema",
+    name: "medora_response",
+    strict: true,
+    schema: medoraJsonSchema
+  }
+},
 
-    text: {
-      verbosity: "medium",
-
-      format: {
-        type: "json_schema",
-        name: "medora_response",
-        strict: true,
-        schema: medoraJsonSchema
-      }
-    },
-
-    store: false
-  })
-});
+store: false
 
     const data = await response.json();
 
