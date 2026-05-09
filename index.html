@@ -4031,24 +4031,25 @@ function openScreen(id) {
     }
 
     function saveProfile() {
-      const data = getData();
+  const data = getData();
 
-      data.profile = {
-        ...data.profile,
-        name: document.getElementById("name").value,
-        age: document.getElementById("age").value,
-        gender: document.getElementById("gender").value,
-        height: document.getElementById("height").value,
-        weight: document.getElementById("weight").value,
-        goals: document.getElementById("goals").value
-      };
+  data.profile = {
+    ...data.profile,
+    name: document.getElementById("name").value,
+    age: document.getElementById("age").value,
+    gender: document.getElementById("gender").value,
+    height: document.getElementById("height").value,
+    weight: document.getElementById("weight").value,
+    goals: document.getElementById("goals").value
+  };
 
-      saveData(data);
-      alert("Profile saved.");
-      updateHomeMetrics();
-      
-      if (document.getElementById("visualization")?.classList.contains("active")) {
-  updateDataVisualizationFromApp();
+  saveData(data);
+  alert("Profile saved.");
+  updateHomeMetrics();
+
+  if (document.getElementById("visualization")?.classList.contains("active")) {
+    updateDataVisualizationFromApp();
+  }
 }
 
 function getCheckedValues(name) {
@@ -4294,6 +4295,10 @@ function saveFood() {
   });
 
   saveData(data);
+
+if (document.getElementById("visualization")?.classList.contains("active")) {
+  updateDataVisualizationFromApp();
+}
 
   clearCheckedValues("foodCategoryChips");
   clearCheckedValues("foodReactionChips");
