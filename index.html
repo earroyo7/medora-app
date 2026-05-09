@@ -2396,6 +2396,97 @@ body.keyboard-open .messages{
   }
 }
 
+.viz-detail-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 5, 12, .78);
+  backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.viz-detail-modal.open {
+  display: flex;
+}
+
+.viz-detail-box {
+  width: min(92vw, 720px);
+  max-height: 82vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #071f33, #020b14);
+  border: 1px solid rgba(0, 217, 255, .35);
+  border-radius: 24px;
+  box-shadow: 0 0 40px rgba(0, 217, 255, .25);
+  padding: 18px;
+  color: #e8fbff;
+}
+
+.viz-detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.viz-detail-head h3 {
+  margin: 0;
+  color: #2eeaff;
+  font-size: 22px;
+}
+
+.viz-detail-head button {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 217, 255, .25);
+  background: rgba(255,255,255,.06);
+  color: white;
+  font-size: 24px;
+}
+
+.viz-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.viz-detail-stat {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(0,217,255,.13);
+}
+
+.viz-detail-stat strong {
+  display: block;
+  color: white;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.viz-detail-stat small {
+  color: #90aabc;
+}
+
+.viz-detail-list {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(0,217,255,.1);
+  color: #bcd4e3;
+  line-height: 1.55;
+}
+
+@media (max-width: 600px) {
+  .viz-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
   </style>
 </head>
 
@@ -3263,13 +3354,13 @@ body.keyboard-open .messages{
       <aside class="viz-left-menu">
         <div class="viz-logo">💙 Medora</div>
 
-        <button>▦ Overview</button>
-        <button>▣ Timeline</button>
-        <button class="active">🧬 Data Visualization</button>
-        <button>⌁ Insights <span>NEW</span></button>
-        <button>✉ Messages</button>
-        <button>♙ Care Team</button>
-        <button>⚙ Settings</button>
+       <button onclick="openScreen('home')">▦ Overview</button>
+       <button onclick="openScreen('insights')">▣ Timeline</button>
+       <button class="active" onclick="openScreen('visualization')">🧬 Data Visualization</button>
+       <button onclick="openScreen('insights')">⌁ Insights <span>NEW</span></button>
+       <button onclick="openScreen('chat')">✉ Messages</button>
+       <button onclick="openScreen('doctor')">♙ Care Team</button>
+       <button onclick="openScreen('profile')">⚙ Settings</button>
 
         <div class="viz-premium-card">
           <strong>⭐ Medora Premium</strong>
@@ -3287,16 +3378,16 @@ body.keyboard-open .messages{
         </div>
 
         <div class="viz-header-actions">
-          <button class="viz-assistant-btn">✦ AI Health Assistant ›</button>
+          <button class="viz-assistant-btn" onclick="openScreen('chat')">✦ AI Health Assistant ›</button>
           <button class="viz-bell">♧</button>
-          <div class="viz-profile-chip">
+          <div class="viz-profile-chip" onclick="openScreen('profile')">
             <div class="viz-profile-avatar"></div>
             <div>
-              <small>Good morning,</small>
-              <strong>Alexandra</strong>
+               <small id="vizGreeting">Good morning,</small>
+               <strong id="vizProfileName">Profile</strong>
             </div>
             <span>⌄</span>
-          </div>
+         </div>
         </div>
       </header>
 
@@ -3308,7 +3399,7 @@ body.keyboard-open .messages{
               <h3>🌙 Sleep Trend</h3>
               <small>7-Day Overview</small>
             </div>
-            <button>Tap to expand ›</button>
+            <button onclick="openVizDetail('sleep')">Tap to expand ›</button>
           </div>
 
           <div class="viz-card-body two-col">
@@ -3335,7 +3426,7 @@ body.keyboard-open .messages{
               <h3>💧 Anxiety Level</h3>
               <small>7-Day Trend</small>
             </div>
-            <button>Tap to expand ›</button>
+            <button onclick="openVizDetail('anxiety')">Tap to expand ›</button>
           </div>
 
           <div class="viz-card-body two-col">
@@ -3359,7 +3450,7 @@ body.keyboard-open .messages{
               <h3>💧 Hydration</h3>
               <small>Today</small>
             </div>
-            <button>Tap to expand ›</button>
+            <button onclick="openVizDetail('hydration')">Tap to expand ›</button>
           </div>
 
           <div class="viz-card-body hydration-layout">
@@ -3389,7 +3480,7 @@ body.keyboard-open .messages{
               <h3>☘ Nutrition · Correlation</h3>
               <small>Food vs Symptoms</small>
             </div>
-            <button>Tap to expand ›</button>
+            <button onclick="openVizDetail('nutrition')">Tap to expand ›</button>
           </div>
 
           <div class="viz-card-body nutrition-layout">
@@ -3443,10 +3534,10 @@ body.keyboard-open .messages{
         </div>
 
         <div class="human-tabs">
-          <button class="active">Front</button>
-          <button>Back</button>
-          <button>Left</button>
-          <button>Right</button>
+            <button class="active" onclick="setHumanView(this, 'front')">Front</button>
+            <button onclick="setHumanView(this, 'back')">Back</button>
+            <button onclick="setHumanView(this, 'left')">Left</button>
+            <button onclick="setHumanView(this, 'right')">Right</button>
         </div>
       </section>
 
@@ -3457,7 +3548,7 @@ body.keyboard-open .messages{
             <div>
               <h3>🫀 Vital Signs · <span>Live</span></h3>
             </div>
-            <button>Tap to expand ›</button>
+            <button onclick="openVizDetail('vitals')">Tap to expand ›</button>
           </div>
 
           <div class="vital-row">
@@ -3481,7 +3572,7 @@ body.keyboard-open .messages{
             <div>
               <h3>🧬 Symptom / Pain Map</h3>
             </div>
-            <button>Tap to expand ›</button>
+            <button onclick="openVizDetail('pain')">Tap to expand ›</button>
           </div>
 
           <div class="pain-map-layout">
@@ -3506,7 +3597,7 @@ body.keyboard-open .messages{
               <h3>🏃 Activity Summary</h3>
               <small>Today</small>
             </div>
-            <button>Tap to expand ›</button>
+            <button onclick="openVizDetail('activity')">Tap to expand ›</button>
           </div>
 
           <div class="activity-layout">
@@ -3527,7 +3618,7 @@ body.keyboard-open .messages{
               <h3>▦ Logs Summary</h3>
               <small>This Week</small>
             </div>
-            <button>Tap to expand ›</button>
+            <button onclick="openVizDetail('logs')">Tap to expand ›</button>
           </div>
 
           <div class="logs-grid">
@@ -3547,7 +3638,7 @@ body.keyboard-open .messages{
           <div>
             <h3>Advanced Pattern Analysis <span class="insight-pill">TOP-TIER INSIGHT</span></h3>
           </div>
-          <button>Tap to expand ›</button>
+          <button onclick="openVizDetail('analysis')">Tap to expand ›</button>
         </div>
 
         <div class="analysis-layout">
@@ -3604,8 +3695,18 @@ body.keyboard-open .messages{
 
     </div>
   </div>
-</section>
 
+  <div class="viz-detail-modal" id="vizDetailModal" onclick="closeVizDetail()">
+    <div class="viz-detail-box" onclick="event.stopPropagation()">
+      <div class="viz-detail-head">
+        <h3 id="vizDetailTitle">Details</h3>
+        <button onclick="closeVizDetail()">×</button>
+      </div>
+
+      <div id="vizDetailContent"></div>
+    </div>
+  </div>
+</section>
 
     <nav class="nav">
       <button id="tab-home" class="active-tab" onclick="openScreen('home')"><span class="nav-icon">⌂</span>Home</button>
@@ -3904,9 +4005,9 @@ function openScreen(id) {
   closeQuickMenu();
 
   if (id === "insights") renderPatterns();
-if (id === "visualization") renderVisualization();
-if (id === "doctor") generateDoctorReport();
-if (id === "home") updateHomeMetrics();
+  if (id === "visualization") updateDataVisualizationFromApp();
+  if (id === "doctor") generateDoctorReport();
+  if (id === "home") updateHomeMetrics();
 
   if (id === "chat") {
     renderChat();
@@ -3945,7 +4046,10 @@ if (id === "home") updateHomeMetrics();
       saveData(data);
       alert("Profile saved.");
       updateHomeMetrics();
-    }
+      
+      if (document.getElementById("visualization")?.classList.contains("active")) {
+  updateDataVisualizationFromApp();
+}
 
 function getCheckedValues(name) {
   return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
@@ -4047,6 +4151,10 @@ function saveHealth() {
   });
 
   saveData(data);
+  
+  if (document.getElementById("visualization")?.classList.contains("active")) {
+  updateDataVisualizationFromApp();
+}
 
   clearCheckedValues("moodChips");
   clearCheckedValues("symptomChips");
@@ -4122,6 +4230,10 @@ function saveHealth() {
   });
 
   saveData(data);
+  
+  if (document.getElementById("visualization")?.classList.contains("active")) {
+  updateDataVisualizationFromApp();
+}
 
   clearCheckedValues("anxietyTriggerChips");
   clearCheckedValues("bodySymptomChips");
@@ -4234,6 +4346,10 @@ function saveFluids() {
   });
 
   saveData(data);
+  
+  if (document.getElementById("visualization")?.classList.contains("active")) {
+  updateDataVisualizationFromApp();
+}
 
   clearCheckedValues("hydrationSymptomChips");
   clearCheckedValues("caffeineTypeChips");
@@ -5966,6 +6082,400 @@ function closeVizModal() {
   }
 }
 
+function getVizData() {
+  const data = getData();
+
+  return {
+    profile: data.profile || {},
+    health: Array.isArray(data.health) ? data.health : [],
+    anxiety: Array.isArray(data.anxiety) ? data.anxiety : [],
+    food: Array.isArray(data.food) ? data.food : [],
+    fluids: Array.isArray(data.fluids) ? data.fluids : [],
+    chat: Array.isArray(data.chat) ? data.chat : [],
+    uploads: Array.isArray(data.uploads) ? data.uploads : []
+  };
+}
+
+function vizNumber(value) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function vizAverage(values) {
+  const nums = values.map(vizNumber).filter(n => n > 0);
+  if (!nums.length) return 0;
+  return nums.reduce((sum, n) => sum + n, 0) / nums.length;
+}
+
+function vizLatest(array) {
+  return array && array.length ? array[array.length - 1] : null;
+}
+
+function vizCountTextMatches(items, fields, keywords) {
+  return items.filter(item => {
+    const text = fields.map(field => item[field] || "").join(" ").toLowerCase();
+    return keywords.some(word => text.includes(word.toLowerCase()));
+  }).length;
+}
+
+function formatVizName(name) {
+  const clean = String(name || "").trim();
+  return clean || "Profile";
+}
+
+function getTimeGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning,";
+  if (hour < 18) return "Good afternoon,";
+  return "Good evening,";
+}
+
+function updateDataVisualizationFromApp() {
+  const data = getVizData();
+
+  const profileName = document.getElementById("vizProfileName");
+  const greeting = document.getElementById("vizGreeting");
+
+  if (profileName) profileName.textContent = formatVizName(data.profile.name);
+  if (greeting) greeting.textContent = getTimeGreeting();
+
+  const lastHealth = vizLatest(data.health);
+  const lastAnxiety = vizLatest(data.anxiety);
+  const lastFluid = vizLatest(data.fluids);
+
+  const avgSleep = vizAverage(data.health.map(log => log.sleep));
+  const avgAnxietyFromHealth = vizAverage(data.health.map(log => log.anxiety));
+  const avgAnxietyFromCheckIns = vizAverage(data.anxiety.map(log => log.level));
+  const avgAnxiety = avgAnxietyFromHealth || avgAnxietyFromCheckIns;
+
+  const latestWater =
+    vizNumber(lastHealth?.water) ||
+    vizNumber(lastFluid?.water) ||
+    0;
+
+  const symptomCount = vizCountTextMatches(
+    data.health,
+    ["symptoms", "notes", "bodyLocation", "possibleTriggers"],
+    ["headache", "pain", "neck", "back", "nausea", "dizzy", "fatigue", "cramp", "tight"]
+  );
+
+  const foodReactionCount = vizCountTextMatches(
+    data.food,
+    ["reaction", "notes", "cravings"],
+    ["bloat", "nausea", "pain", "reflux", "tired", "anxious", "craving"]
+  );
+
+  const totalLogs =
+    data.health.length +
+    data.anxiety.length +
+    data.food.length +
+    data.fluids.length +
+    data.uploads.length;
+
+  updateTextInCard(".sleep-card .big-number strong", `${avgSleep ? avgSleep.toFixed(1) : "--"}<span>h</span>`);
+  updateTextInCard(".anxiety-card .big-number strong", avgAnxiety ? avgAnxiety.toFixed(1) : "--");
+  updateTextInCard(".hydration-card .big-number strong", `${latestWater || "--"}<span> cups</span>`);
+
+  updateHumanLabels({
+    sleep: avgSleep,
+    anxiety: avgAnxiety,
+    symptoms: symptomCount,
+    foodReactions: foodReactionCount,
+    lastHealth
+  });
+
+  updateLogSummaryNumbers(data);
+  updateMiniChartBars(data.health);
+  updateHydrationList(data);
+  updateAnalysisText(data);
+}
+
+function updateTextInCard(selector, html) {
+  const el = document.querySelector(selector);
+  if (el) el.innerHTML = html;
+}
+
+function updateHumanLabels(info) {
+  const sleepStatus = document.querySelector(".organ-tag.sleep b");
+  const brainStatus = document.querySelector(".organ-tag.brain b");
+  const stomachStatus = document.querySelector(".organ-tag.stomach b");
+  const jointsStatus = document.querySelector(".organ-tag.joints b");
+  const heartStatus = document.querySelector(".organ-tag.heart b");
+
+  if (sleepStatus) sleepStatus.textContent = info.sleep >= 7 ? "Good" : info.sleep > 0 ? "Low" : "No data";
+  if (brainStatus) brainStatus.textContent = info.anxiety >= 7 ? "High stress" : info.anxiety > 0 ? "Normal" : "No data";
+  if (stomachStatus) stomachStatus.textContent = info.foodReactions > 0 ? "Watch" : "Good";
+  if (jointsStatus) jointsStatus.textContent = info.symptoms > 0 ? "Symptoms" : "Fine";
+  if (heartStatus) heartStatus.textContent = info.lastHealth?.stress >= 7 ? "Stress ↑" : "72 bpm";
+}
+
+function updateLogSummaryNumbers(data) {
+  const boxes = document.querySelectorAll(".logs-grid div strong");
+
+  if (boxes[0]) boxes[0].textContent = data.food.length;
+  if (boxes[1]) boxes[1].textContent = data.uploads.length;
+  if (boxes[2]) boxes[2].textContent = data.health.filter(log => String(log.symptoms || "").trim()).length;
+  if (boxes[3]) boxes[3].textContent = data.health.filter(log => String(log.mood || "").trim()).length;
+  if (boxes[4]) boxes[4].textContent = data.health.filter(log => String(log.activity || "").trim()).length;
+  if (boxes[5]) boxes[5].textContent = data.health.filter(log => vizNumber(log.sleep) > 0).length;
+}
+
+function updateMiniChartBars(health) {
+  const bars = document.querySelectorAll(".sleep-card .bar-chart-demo i");
+  const latest = health.slice(-6);
+
+  bars.forEach((bar, index) => {
+    const value = vizNumber(latest[index]?.sleep);
+    const height = value ? Math.min(92, Math.max(18, value * 11)) : 18;
+    bar.style.height = `${height}%`;
+  });
+}
+
+function updateHydrationList(data) {
+  const list = document.querySelector(".drink-list");
+  if (!list) return;
+
+  const recent = data.fluids.slice(-5);
+
+  if (!recent.length) {
+    list.innerHTML = `
+      <li>No fluid logs yet <b>--</b></li>
+      <li>Add water logs <b>Track</b></li>
+    `;
+    return;
+  }
+
+  list.innerHTML = recent.map(log => {
+    const time = log.date
+      ? new Date(log.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      : "Logged";
+    return `<li>${time} <b>${escapeHTML(log.water || "--")} cups</b></li>`;
+  }).join("");
+}
+
+function updateAnalysisText(data) {
+  const analysisText = document.querySelector(".viz-analysis-card .analysis-layout p");
+  if (!analysisText) return;
+
+  const lowSleepHighAnxiety = data.health.filter(log =>
+    vizNumber(log.sleep) > 0 &&
+    vizNumber(log.sleep) < 6 &&
+    vizNumber(log.anxiety) >= 6
+  ).length;
+
+  const caffeineAnxiety = data.health.filter(log =>
+    String(log.caffeine || "").trim() &&
+    vizNumber(log.anxiety) >= 6
+  ).length;
+
+  if (lowSleepHighAnxiety >= 2) {
+    analysisText.textContent = "Low sleep appears multiple times on higher-anxiety days.";
+  } else if (caffeineAnxiety >= 2) {
+    analysisText.textContent = "Caffeine and higher anxiety appear together in multiple logs.";
+  } else if (data.health.length < 2) {
+    analysisText.textContent = "Add at least two detailed health logs to unlock stronger correlation insights.";
+  } else {
+    analysisText.textContent = "Medora is watching sleep, anxiety, stress, pain, hydration, caffeine, food, and symptoms for possible patterns.";
+  }
+}
+
+function openVizDetail(type) {
+  const data = getVizData();
+  const modal = document.getElementById("vizDetailModal");
+  const title = document.getElementById("vizDetailTitle");
+  const content = document.getElementById("vizDetailContent");
+
+  if (!modal || !title || !content) return;
+
+  const lastHealth = vizLatest(data.health);
+  const lastAnxiety = vizLatest(data.anxiety);
+  const lastFood = vizLatest(data.food);
+  const lastFluid = vizLatest(data.fluids);
+
+  const map = {
+    sleep: {
+      title: "Sleep Trend",
+      html: `
+        <div class="viz-detail-grid">
+          <div class="viz-detail-stat"><strong>${vizAverage(data.health.map(l => l.sleep)).toFixed(1)}h</strong><small>Average sleep</small></div>
+          <div class="viz-detail-stat"><strong>${lastHealth?.sleep || "--"}h</strong><small>Latest sleep log</small></div>
+        </div>
+        <div class="viz-detail-list">
+          Sleep logs found: ${data.health.filter(l => vizNumber(l.sleep) > 0).length}<br>
+          Medora compares sleep with anxiety, energy, pain, stress, caffeine, and symptoms.
+        </div>
+      `
+    },
+    anxiety: {
+      title: "Anxiety Level",
+      html: `
+        <div class="viz-detail-grid">
+          <div class="viz-detail-stat"><strong>${vizAverage(data.anxiety.map(l => l.level)).toFixed(1)}/10</strong><small>Average anxiety check-in</small></div>
+          <div class="viz-detail-stat"><strong>${lastAnxiety?.level || "--"}/10</strong><small>Latest anxiety level</small></div>
+        </div>
+        <div class="viz-detail-list">
+          Latest trigger: ${escapeHTML(lastAnxiety?.trigger || "Not entered")}<br>
+          Body symptoms: ${escapeHTML(lastAnxiety?.bodySymptoms || "Not entered")}<br>
+          What helped: ${escapeHTML(lastAnxiety?.coping || "Not entered")}
+        </div>
+      `
+    },
+    hydration: {
+      title: "Hydration",
+      html: `
+        <div class="viz-detail-grid">
+          <div class="viz-detail-stat"><strong>${lastFluid?.water || lastHealth?.water || "--"}</strong><small>Latest water entry</small></div>
+          <div class="viz-detail-stat"><strong>${data.fluids.length}</strong><small>Fluid logs</small></div>
+        </div>
+        <div class="viz-detail-list">
+          Caffeine: ${escapeHTML(lastFluid?.caffeine || lastHealth?.caffeine || "Not entered")}<br>
+          Hydration symptoms: ${escapeHTML(lastFluid?.symptoms || "Not entered")}
+        </div>
+      `
+    },
+    nutrition: {
+      title: "Nutrition Correlation",
+      html: `
+        <div class="viz-detail-grid">
+          <div class="viz-detail-stat"><strong>${data.food.length}</strong><small>Food logs</small></div>
+          <div class="viz-detail-stat"><strong>${data.food.filter(l => String(l.reaction || "").trim()).length}</strong><small>Reaction logs</small></div>
+        </div>
+        <div class="viz-detail-list">
+          Latest meal: ${escapeHTML(lastFood?.meal || "Not entered")}<br>
+          Food: ${escapeHTML(lastFood?.food || "Not entered")}<br>
+          Reaction: ${escapeHTML(lastFood?.reaction || "Not entered")}
+        </div>
+      `
+    },
+    vitals: {
+      title: "Vital Signs",
+      html: `
+        <div class="viz-detail-grid">
+          <div class="viz-detail-stat"><strong>${lastHealth?.stress || "--"}/10</strong><small>Latest stress</small></div>
+          <div class="viz-detail-stat"><strong>${lastHealth?.energy || "--"}/10</strong><small>Latest energy</small></div>
+          <div class="viz-detail-stat"><strong>${lastHealth?.pain || "--"}/10</strong><small>Latest pain</small></div>
+          <div class="viz-detail-stat"><strong>${lastHealth?.sleep || "--"}h</strong><small>Latest sleep</small></div>
+        </div>
+      `
+    },
+    pain: {
+      title: "Symptom / Pain Map",
+      html: `
+        <div class="viz-detail-grid">
+          <div class="viz-detail-stat"><strong>${data.health.filter(l => String(l.symptoms || "").trim()).length}</strong><small>Symptom logs</small></div>
+          <div class="viz-detail-stat"><strong>${lastHealth?.pain || "--"}/10</strong><small>Latest pain</small></div>
+        </div>
+        <div class="viz-detail-list">
+          Latest symptoms: ${escapeHTML(lastHealth?.symptoms || "None entered")}<br>
+          Body location: ${escapeHTML(lastHealth?.bodyLocation || "Not entered")}<br>
+          Possible triggers: ${escapeHTML(lastHealth?.possibleTriggers || "Not entered")}
+        </div>
+      `
+    },
+    activity: {
+      title: "Activity Summary",
+      html: `
+        <div class="viz-detail-grid">
+          <div class="viz-detail-stat"><strong>${data.health.filter(l => String(l.activity || "").trim()).length}</strong><small>Activity logs</small></div>
+          <div class="viz-detail-stat"><strong>${escapeHTML(lastHealth?.activity || "--")}</strong><small>Latest activity</small></div>
+        </div>
+        <div class="viz-detail-list">
+          Medora can compare activity with sleep, energy, pain, mood, and stress over time.
+        </div>
+      `
+    },
+    logs: {
+      title: "Logs Summary",
+      html: `
+        <div class="viz-detail-grid">
+          <div class="viz-detail-stat"><strong>${data.health.length}</strong><small>Health logs</small></div>
+          <div class="viz-detail-stat"><strong>${data.anxiety.length}</strong><small>Anxiety logs</small></div>
+          <div class="viz-detail-stat"><strong>${data.food.length}</strong><small>Food logs</small></div>
+          <div class="viz-detail-stat"><strong>${data.fluids.length}</strong><small>Fluid logs</small></div>
+          <div class="viz-detail-stat"><strong>${data.chat.length}</strong><small>Chat messages</small></div>
+          <div class="viz-detail-stat"><strong>${data.uploads.length}</strong><small>Uploaded files</small></div>
+        </div>
+      `
+    },
+    analysis: {
+      title: "Advanced Pattern Analysis",
+      html: `
+        <div class="viz-detail-list">
+          ${generateVizPatternSummary(data)}
+        </div>
+      `
+    }
+  };
+
+  const selected = map[type] || map.logs;
+
+  title.textContent = selected.title;
+  content.innerHTML = selected.html;
+  modal.classList.add("open");
+}
+
+function closeVizDetail() {
+  const modal = document.getElementById("vizDetailModal");
+  if (modal) modal.classList.remove("open");
+}
+
+function generateVizPatternSummary(data) {
+  const patterns = [];
+
+  const lowSleepHighAnxiety = data.health.filter(log =>
+    vizNumber(log.sleep) > 0 &&
+    vizNumber(log.sleep) < 6 &&
+    vizNumber(log.anxiety) >= 6
+  ).length;
+
+  const stressPain = data.health.filter(log =>
+    vizNumber(log.stress) >= 7 &&
+    vizNumber(log.pain) >= 5
+  ).length;
+
+  const caffeineAnxiety = data.health.filter(log =>
+    String(log.caffeine || "").trim() &&
+    vizNumber(log.anxiety) >= 6
+  ).length;
+
+  const hydrationSymptoms = data.health.filter(log =>
+    vizNumber(log.water) > 0 &&
+    vizNumber(log.water) <= 3 &&
+    String(log.symptoms || "").trim()
+  ).length;
+
+  if (lowSleepHighAnxiety) patterns.push("Low sleep and higher anxiety appear together.");
+  if (stressPain) patterns.push("High stress and pain appear together.");
+  if (caffeineAnxiety) patterns.push("Caffeine appears near higher anxiety logs.");
+  if (hydrationSymptoms) patterns.push("Lower hydration appears near symptom logs.");
+
+  if (!patterns.length) {
+    patterns.push("No strong pattern yet. Keep logging consistently across sleep, anxiety, stress, hydration, food, symptoms, and activity.");
+  }
+
+  return patterns.map(p => `• ${escapeHTML(p)}`).join("<br>");
+}
+
+function setHumanView(button, view) {
+  document.querySelectorAll(".human-tabs button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
+
+  const human = document.querySelector(".human-glow");
+  if (!human) return;
+
+  const rotations = {
+    front: "rotateY(0deg)",
+    back: "rotateY(180deg)",
+    left: "rotateY(-55deg)",
+    right: "rotateY(55deg)"
+  };
+
+  human.style.transform = rotations[view] || "rotateY(0deg)";
+}
+
     window.onload = function() {
       window.openScreen = openScreen;
 window.toggleMenu = toggleMenu;
@@ -5978,10 +6488,10 @@ window.saveFood = saveFood;
 window.saveFluids = saveFluids;
 window.generateDoctorReport = generateDoctorReport;
 window.renderPatterns = renderPatterns;
-window.renderPatterns = renderPatterns;
-window.renderVisualization = renderVisualization;
-window.openVizModal = openVizModal;
-window.closeVizModal = closeVizModal;
+window.updateDataVisualizationFromApp = updateDataVisualizationFromApp;
+window.openVizDetail = openVizDetail;
+window.closeVizDetail = closeVizDetail;
+window.setHumanView = setHumanView;
 window.rotateMedoraBody = rotateMedoraBody;
 window.toggleQuickMenu = toggleQuickMenu;
 window.closeQuickMenu = closeQuickMenu;
