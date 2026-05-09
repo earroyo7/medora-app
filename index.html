@@ -37,22 +37,30 @@
   max-width:430px;
   width:100%;
   margin:0 auto;
-  height:100vh;
+  min-height:100vh;
   background:#fff;
   position:relative;
-  overflow:hidden;
+  overflow-x:hidden;
   border-left:1px solid var(--border);
   border-right:1px solid var(--border);
 }
 
-    .screen{
+   .screen{
   display:none;
+  min-height:100vh;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-bottom:120px;
+  animation:fade .2s ease;
+  -webkit-overflow-scrolling:touch;
+}
+    .screen.active{display:block}
+    
+    #chat.screen{
   height:100vh;
   overflow:hidden;
   padding-bottom:0;
-  animation:fade .2s ease;
 }
-    .screen.active{display:block}
 
     @keyframes fade{
       from{opacity:0;transform:translateY(5px)}
@@ -1187,9 +1195,39 @@ body.keyboard-open .messages{
           <input id="pain" type="number" min="1" max="10">
 
           <label>Symptoms</label>
-          <textarea id="symptoms" placeholder="Headache, nausea, dizziness, cramps..."></textarea>
+<textarea id="symptoms" placeholder="Headache, nausea, dizziness, cramps..."></textarea>
 
-          <button class="primary" onclick="saveHealth()">Save Health Log</button>
+<label>Anxiety level 1-10</label>
+<input id="healthAnxiety" type="number" min="1" max="10" placeholder="Example: 7">
+
+<label>Stress level 1-10</label>
+<input id="healthStress" type="number" min="1" max="10" placeholder="Example: 6">
+
+<label>Water cups today</label>
+<input id="healthWater" type="number" min="0" placeholder="Example: 4">
+
+<label>Caffeine today</label>
+<input id="healthCaffeine" placeholder="Example: 2 coffees, energy drink, tea">
+
+<label>Food notes</label>
+<textarea id="healthFood" placeholder="What did you eat? Any bloating, nausea, cravings, stomach pain?"></textarea>
+
+<label>Activity / movement</label>
+<input id="healthActivity" placeholder="Example: 20 min walk, gym, none">
+
+<label>Medication / supplements</label>
+<input id="healthMedication" placeholder="Taken, skipped, changed, side effects...">
+
+<label>Menstrual cycle</label>
+<input id="healthCycle" placeholder="Period, cramps, ovulation, PMS, not applicable">
+
+<label>Environment</label>
+<input id="healthEnvironment" placeholder="Weather, allergies, heat, noise, work stress, travel...">
+
+<label>Notes</label>
+<textarea id="healthNotes" placeholder="Anything else that might matter today?"></textarea>
+
+<button class="primary" onclick="saveHealth()">Save Health Log</button>
         </div>
       </div>
     </section>
@@ -1432,16 +1470,26 @@ body.keyboard-open .messages{
       }
 
       data.health = data.health.map((item, index) => ({
-        id: item.id || `health-${Date.now()}-${index}`,
-        date: item.date || new Date().toLocaleString(),
-        mood: item.mood || "",
-        sleep: item.sleep || "",
-        energy: item.energy || "",
-        pain: item.pain || "",
-        symptoms: item.symptoms || "",
-        notes: item.notes || ""
-      }));
+  id: item.id || `health-${Date.now()}-${index}`,
+  date: item.date || new Date().toLocaleString(),
 
+  mood: item.mood || "",
+  sleep: item.sleep || "",
+  energy: item.energy || "",
+  pain: item.pain || "",
+  symptoms: item.symptoms || "",
+
+  anxiety: item.anxiety || "",
+  stress: item.stress || "",
+  water: item.water || "",
+  caffeine: item.caffeine || "",
+  food: item.food || "",
+  activity: item.activity || "",
+  medication: item.medication || "",
+  menstrualCycle: item.menstrualCycle || "",
+  environment: item.environment || "",
+  notes: item.notes || ""
+}));
       data.anxiety = data.anxiety.map((item, index) => ({
         id: item.id || `anxiety-${Date.now()}-${index}`,
         date: item.date || new Date().toLocaleString(),
@@ -1563,8 +1611,10 @@ body.keyboard-open .messages{
   setTimeout(scrollChatToBottom, 80);
   setTimeout(scrollChatToBottom, 250);
 }
-      window.scrollTo(0,0);
-    }
+      if (id !== "chat") {
+  const activeScreen = document.getElementById(id);
+  if (activeScreen) activeScreen.scrollTop = 0;
+}
 
     function toggleMenu() {
       document.getElementById("sideMenu").classList.toggle("open");
@@ -1595,23 +1645,35 @@ body.keyboard-open .messages{
     }
 
     function saveHealth() {
-      const data = getData();
+  const data = getData();
 
-      data.health.push({
-        id: `health-${Date.now()}`,
-        date: today(),
-        mood: document.getElementById("mood").value,
-        sleep: document.getElementById("sleep").value,
-        energy: document.getElementById("energy").value,
-        pain: document.getElementById("pain").value,
-        symptoms: document.getElementById("symptoms").value
-      });
+  data.health.push({
+    id: `health-${Date.now()}`,
+    date: today(),
 
-      saveData(data);
-      alert("Health log saved.");
-      updateHomeMetrics();
-      openScreen("insights");
-    }
+    mood: document.getElementById("mood").value,
+    sleep: document.getElementById("sleep").value,
+    energy: document.getElementById("energy").value,
+    pain: document.getElementById("pain").value,
+    symptoms: document.getElementById("symptoms").value,
+
+    anxiety: document.getElementById("healthAnxiety")?.value || "",
+    stress: document.getElementById("healthStress")?.value || "",
+    water: document.getElementById("healthWater")?.value || "",
+    caffeine: document.getElementById("healthCaffeine")?.value || "",
+    food: document.getElementById("healthFood")?.value || "",
+    activity: document.getElementById("healthActivity")?.value || "",
+    medication: document.getElementById("healthMedication")?.value || "",
+    menstrualCycle: document.getElementById("healthCycle")?.value || "",
+    environment: document.getElementById("healthEnvironment")?.value || "",
+    notes: document.getElementById("healthNotes")?.value || ""
+  });
+
+  saveData(data);
+  alert("Health log saved.");
+  updateHomeMetrics();
+  openScreen("insights");
+}
 
     function saveAnxiety() {
       const data = getData();
@@ -1699,6 +1761,68 @@ body.keyboard-open .messages{
       return insights;
     }
 
+function generateCorrelationInsights(data) {
+  const insights = [];
+  const health = Array.isArray(data.health) ? data.health : [];
+
+  if (health.length < 2) {
+    return ["Add at least 2 detailed health logs so Medora can start comparing patterns."];
+  }
+
+  const lowSleepAndAnxiety = health.filter(log =>
+    Number(log.sleep) > 0 &&
+    Number(log.sleep) < 6 &&
+    Number(log.anxiety) >= 6
+  );
+
+  if (lowSleepAndAnxiety.length >= 2) {
+    insights.push("Low sleep appears more than once on days with higher anxiety.");
+  }
+
+  const caffeineAndHeadache = health.filter(log =>
+    String(log.caffeine || "").trim() &&
+    String(log.symptoms || "").toLowerCase().includes("headache")
+  );
+
+  if (caffeineAndHeadache.length >= 2) {
+    insights.push("Headaches appear on multiple days where caffeine was logged.");
+  }
+
+  const lowWaterAndHeadache = health.filter(log =>
+    Number(log.water) > 0 &&
+    Number(log.water) <= 3 &&
+    String(log.symptoms || "").toLowerCase().includes("headache")
+  );
+
+  if (lowWaterAndHeadache.length >= 2) {
+    insights.push("Low hydration may be connected with headache symptoms.");
+  }
+
+  const stressAndPain = health.filter(log =>
+    Number(log.stress) >= 7 &&
+    Number(log.pain) >= 5
+  );
+
+  if (stressAndPain.length >= 2) {
+    insights.push("Higher stress and higher pain are showing up together.");
+  }
+
+  const foodAndSymptoms = health.filter(log =>
+    String(log.food || "").trim() &&
+    String(log.symptoms || "").trim()
+  );
+
+  if (foodAndSymptoms.length >= 2) {
+    insights.push("Food notes and symptoms are both logged on multiple days, so Medora can begin comparing meals with reactions.");
+  }
+
+  if (insights.length === 0) {
+    insights.push("No strong pattern yet. Keep logging sleep, anxiety, stress, hydration, caffeine, food, symptoms, and pain.");
+  }
+
+  return insights;
+}
+
     function renderPatterns() {
       const data = getData();
       const box = document.getElementById("patternData");
@@ -1714,13 +1838,19 @@ body.keyboard-open .messages{
       `;
 
       const autoInsights = generateAutoInsights(data);
+      const correlationInsights = generateCorrelationInsights(data);
 
       box.innerHTML += `
-        <div class="data-row">
-          <strong>Medora Insights:</strong><br>
-          ${autoInsights.map(i => `• ${i}`).join("<br>")}
-        </div>
-      `;
+  <div class="data-row">
+    <strong>Medora Insights:</strong><br>
+    ${autoInsights.map(i => `• ${i}`).join("<br>")}
+  </div>
+
+  <div class="data-row">
+    <strong>Possible Correlations:</strong><br>
+    ${correlationInsights.map(i => `• ${i}`).join("<br>")}
+  </div>
+`;
 
       if (data.health.length > 0) {
         const last = data.health[data.health.length - 1];
