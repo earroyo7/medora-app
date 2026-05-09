@@ -2620,6 +2620,59 @@ body.viz-fit-mode .medora-wide-scroll {
 body.viz-active .nav {
   background: #fff;
 }
+
+/* =========================
+   FIX 3D BODY VIEWER SIZE / LAYERING
+========================= */
+
+.viz-human-section {
+  overflow: visible !important;
+}
+
+/* Make the 3D render box much bigger so the body is not clipped */
+.medora-body-viewer-wrap {
+  position: absolute !important;
+  left: 50% !important;
+  top: -90px !important;
+  transform: translateX(-50%) !important;
+
+  width: 760px !important;
+  height: 760px !important;
+
+  z-index: 2 !important;
+  overflow: visible !important;
+  pointer-events: auto;
+  filter: drop-shadow(0 0 24px rgba(0,217,255,.65));
+}
+
+/* The model-viewer itself fills the bigger box */
+.medora-body-viewer {
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+  --poster-color: transparent;
+}
+
+/* Keep labels and buttons above the character */
+.body-model-toggle,
+.human-tabs,
+.organ-tag {
+  z-index: 10 !important;
+}
+
+/* Optional: make buttons readable above model */
+.body-model-toggle,
+.human-tabs {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Hide model overflow from covering the whole app outside the Data Viz area */
+.medora-dashboard-canvas {
+  overflow: hidden;
+}
+
+
   </style>
 </head>
 
@@ -3664,16 +3717,16 @@ body.viz-active .nav {
   camera-controls
   interaction-prompt="none"
   shadow-intensity="0"
-  exposure="1.05"
+  exposure="1.1"
 
-  camera-orbit="0deg 75deg 7m"
-  camera-target="0m 1.1m 0m"
-  min-camera-orbit="auto auto 2.2m"
-  max-camera-orbit="auto auto 12m"
+  camera-orbit="0deg 76deg 6.2m"
+  min-camera-orbit="auto auto 3.2m"
+  max-camera-orbit="auto auto 10m"
   field-of-view="28deg"
   min-field-of-view="18deg"
-  max-field-of-view="55deg"
+  max-field-of-view="45deg"
 
+  camera-target="0m 1.25m 0m"
   touch-action="pan-y"
 ></model-viewer>
 </div>
@@ -6575,15 +6628,18 @@ function setHumanView(button, view) {
   const viewer = document.getElementById("medoraBodyViewer");
   if (!viewer) return;
 
+  const distance = "6.2m";
+
   const orbits = {
-    front: "0deg 75deg 7m",
-    back: "180deg 75deg 7m",
-    left: "-90deg 75deg 7m",
-    right: "90deg 75deg 7m"
+    front: `0deg 76deg ${distance}`,
+    back: `180deg 76deg ${distance}`,
+    left: `-90deg 76deg ${distance}`,
+    right: `90deg 76deg ${distance}`
   };
 
   viewer.setAttribute("camera-orbit", orbits[view] || orbits.front);
-  viewer.setAttribute("camera-target", "0m 1.1m 0m");
+  viewer.setAttribute("camera-target", "0m 1.25m 0m");
+  viewer.setAttribute("field-of-view", "28deg");
 }
 
 function setBodyModel(button, type) {
