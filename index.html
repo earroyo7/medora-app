@@ -1417,6 +1417,985 @@ body.keyboard-open .messages{
   padding-bottom: 220px;
 }
 
+/* =========================
+   Medora Wide Data Dashboard
+   Desktop canvas inside mobile horizontal scroll
+========================= */
+
+.medora-viz-screen {
+  background: #020b14;
+}
+
+.medora-viz-screen .topbar {
+  background: #fff;
+}
+
+.medora-wide-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #020b14;
+  padding: 0;
+  padding-bottom: 120px;
+}
+
+.medora-dashboard-canvas {
+  width: 1660px;
+  min-height: 930px;
+  position: relative;
+  background:
+    radial-gradient(circle at 48% 35%, rgba(0, 183, 255, .17), transparent 27%),
+    radial-gradient(circle at 78% 60%, rgba(0, 255, 204, .08), transparent 25%),
+    linear-gradient(135deg, #020914 0%, #03101d 55%, #020811 100%);
+  color: #e8faff;
+  font-family: Inter, system-ui, sans-serif;
+  padding: 26px 22px;
+}
+
+/* left menu */
+.viz-left-menu {
+  position: absolute;
+  left: 16px;
+  top: 18px;
+  width: 150px;
+  height: 875px;
+  border: 1px solid rgba(0, 217, 255, .17);
+  border-radius: 22px;
+  background: rgba(4, 17, 31, .72);
+  box-shadow: inset 0 0 40px rgba(0, 174, 255, .05);
+  padding: 18px 12px;
+}
+
+.viz-logo {
+  color: #1ee9ff;
+  font-size: 25px;
+  font-weight: 900;
+  margin-bottom: 34px;
+  text-shadow: 0 0 18px rgba(0, 217, 255, .5);
+}
+
+.viz-left-menu button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #9ab3c7;
+  text-align: left;
+  padding: 14px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.viz-left-menu button.active {
+  color: #e8fbff;
+  background: linear-gradient(135deg, rgba(0, 183, 255, .28), rgba(0, 183, 255, .06));
+  border: 1px solid rgba(0, 217, 255, .35);
+  box-shadow: 0 0 22px rgba(0, 217, 255, .24);
+}
+
+.viz-left-menu button span {
+  background: #315cff;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 9px;
+}
+
+.viz-premium-card {
+  position: absolute;
+  bottom: 74px;
+  left: 12px;
+  right: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 199, 79, .08);
+  border: 1px solid rgba(255, 199, 79, .16);
+  color: #ffd36b;
+  font-size: 12px;
+}
+
+.viz-premium-card small,
+.viz-sync small {
+  display: block;
+  color: #879aac;
+  margin-top: 3px;
+}
+
+.viz-sync {
+  position: absolute;
+  bottom: 22px;
+  left: 18px;
+  color: #92a8ba;
+  font-size: 12px;
+}
+
+/* header */
+.viz-dashboard-header {
+  position: absolute;
+  left: 560px;
+  top: 18px;
+  width: 1050px;
+  height: 62px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.viz-dashboard-header h1 {
+  margin: 0;
+  color: #29e8ff;
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 900;
+  text-shadow: 0 0 18px rgba(0, 217, 255, .38);
+}
+
+.viz-dashboard-header h1 span {
+  display: inline-block;
+  width: 210px;
+  height: 18px;
+  margin-left: 14px;
+  background:
+    linear-gradient(90deg, transparent 0 20%, #22e8ff 20% 21%, transparent 21% 40%, #22e8ff 40% 41%, transparent 41%),
+    linear-gradient(#22e8ff, #22e8ff);
+  background-size: 100% 100%, 100% 2px;
+  background-position: center, center;
+  background-repeat: no-repeat;
+  opacity: .75;
+}
+
+.viz-dashboard-header p {
+  margin: 8px 0 0;
+  color: #8ea7bb;
+  font-size: 13px;
+}
+
+.viz-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.viz-assistant-btn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  color: #dffbff;
+  background: rgba(0, 183, 255, .1);
+  border: 1px solid rgba(0, 217, 255, .28);
+  box-shadow: 0 0 16px rgba(0, 217, 255, .15);
+  font-weight: 800;
+}
+
+.viz-bell {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 0;
+  color: #fff;
+  background: transparent;
+  font-size: 26px;
+}
+
+.viz-profile-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.viz-profile-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f4d1c7, #8f9fb7);
+  border: 2px solid rgba(255,255,255,.16);
+}
+
+.viz-profile-chip small {
+  display: block;
+  color: #9db3c5;
+  font-size: 11px;
+}
+
+.viz-profile-chip strong {
+  font-size: 16px;
+}
+
+/* columns */
+.viz-left-column {
+  position: absolute;
+  left: 184px;
+  top: 78px;
+  width: 360px;
+  display: grid;
+  gap: 14px;
+}
+
+.viz-human-section {
+  position: absolute;
+  left: 560px;
+  top: 92px;
+  width: 430px;
+  height: 550px;
+}
+
+.viz-right-middle {
+  position: absolute;
+  left: 1012px;
+  top: 78px;
+  width: 340px;
+  display: grid;
+  gap: 14px;
+}
+
+.viz-far-right {
+  position: absolute;
+  left: 1364px;
+  top: 78px;
+  width: 280px;
+  display: grid;
+  gap: 14px;
+}
+
+/* cards */
+.viz-card,
+.viz-analysis-card,
+.viz-floating-sleep-card {
+  background: linear-gradient(180deg, rgba(7, 31, 51, .88), rgba(3, 17, 31, .92));
+  border: 1px solid rgba(0, 217, 255, .18);
+  border-radius: 18px;
+  box-shadow:
+    inset 0 0 38px rgba(0, 183, 255, .04),
+    0 0 22px rgba(0, 217, 255, .08);
+  color: #e8fbff;
+}
+
+.viz-card {
+  min-height: 168px;
+  padding: 15px;
+}
+
+.viz-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.viz-card-head h3 {
+  margin: 0;
+  color: #f4fbff;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.viz-card-head h3 span {
+  color: #77bbcf;
+  font-weight: 700;
+}
+
+.viz-card-head small {
+  display: block;
+  color: #7e98ad;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.viz-card-head button {
+  border: 0;
+  background: transparent;
+  color: #8dcde0;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.viz-card-body {
+  margin-top: 16px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.big-number strong {
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.big-number span {
+  font-size: 14px;
+  color: #b7d5e7;
+}
+
+.big-number small,
+.big-number em,
+.big-number p {
+  display: block;
+  color: #83a7bc;
+  font-style: normal;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.big-number em {
+  color: #5eea9f;
+}
+
+/* demo charts */
+.bar-chart-demo {
+  height: 92px;
+  display: flex;
+  align-items: end;
+  gap: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  background:
+    linear-gradient(transparent 32%, rgba(255,255,255,.06) 33%, transparent 34%),
+    linear-gradient(transparent 65%, rgba(255,255,255,.06) 66%, transparent 67%);
+}
+
+.bar-chart-demo i {
+  width: 15px;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, #41f2ff, #4657ff);
+  box-shadow: 0 0 16px rgba(0, 217, 255, .45);
+}
+
+.line-chart-demo {
+  height: 92px;
+  background:
+    linear-gradient(transparent 32%, rgba(255,255,255,.06) 33%, transparent 34%),
+    linear-gradient(transparent 65%, rgba(255,255,255,.06) 66%, transparent 67%);
+}
+
+.line-chart-demo path {
+  stroke: #19f2d3;
+  stroke-width: 5;
+  fill: rgba(0, 255, 204, .17);
+  filter: drop-shadow(0 0 8px rgba(0,255,204,.7));
+}
+
+/* hydration/nutrition */
+.hydration-layout {
+  display: grid;
+  grid-template-columns: 72px 105px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.donut-demo,
+.donut-large,
+.multi-ring {
+  border-radius: 50%;
+  background:
+    conic-gradient(#18e8ff 0 72%, rgba(41, 76, 101, .75) 72% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 18px rgba(0, 217, 255, .23);
+}
+
+.donut-demo {
+  width: 98px;
+  height: 98px;
+}
+
+.donut-demo::before,
+.donut-large::before,
+.multi-ring::before {
+  content: "";
+  position: absolute;
+}
+
+.donut-demo div {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #061d31;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.drink-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #88a6ba;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.drink-list b {
+  color: #bcecff;
+  float: right;
+}
+
+.nutrition-card {
+  min-height: 240px;
+}
+
+.nutrition-layout {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.donut-large {
+  width: 138px;
+  height: 138px;
+  background: conic-gradient(#4ce47d 0 42%, #7276ff 42% 78%, #8e65ff 78% 100%);
+  flex-direction: column;
+}
+
+.donut-large::after {
+  content: "";
+  position: absolute;
+  width: 88px;
+  height: 88px;
+  background: #061d31;
+  border-radius: 50%;
+}
+
+.donut-large strong,
+.donut-large small {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.donut-large strong {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.nutrition-key {
+  font-size: 12px;
+  color: #a7c4d6;
+}
+
+.nutrition-key span,
+.pain-list span {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  margin-right: 8px;
+}
+
+.green { background: #4ce47d; }
+.blue { background: #23beff; }
+.purple { background: #8e65ff; }
+.gray { background: #8796aa; }
+.pink { background: #ff4cc2; }
+.orange { background: #ff8d4d; }
+.yellow { background: #ffd75c; }
+
+.nutrition-key em {
+  color: #5eea9f;
+  font-style: normal;
+  display: block;
+  margin-top: 6px;
+}
+
+/* human center */
+.viz-human-title {
+  text-align: center;
+  color: #cbefff;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.human-glow {
+  position: absolute;
+  left: 112px;
+  top: 48px;
+  width: 210px;
+  height: 420px;
+  filter: drop-shadow(0 0 24px rgba(0,217,255,.65));
+}
+
+.human-head,
+.human-neck,
+.human-torso,
+.human-arm,
+.human-leg {
+  position: absolute;
+  background: linear-gradient(180deg, rgba(65,242,255,.85), rgba(50,89,255,.28));
+  border: 1px solid rgba(138, 246, 255, .75);
+  box-shadow: inset 0 0 32px rgba(255,255,255,.1), 0 0 20px rgba(0,217,255,.38);
+}
+
+.human-head {
+  width: 60px;
+  height: 78px;
+  left: 75px;
+  top: 0;
+  border-radius: 45%;
+}
+
+.human-neck {
+  width: 25px;
+  height: 24px;
+  left: 92px;
+  top: 73px;
+  border-radius: 10px;
+}
+
+.human-torso {
+  width: 92px;
+  height: 150px;
+  left: 59px;
+  top: 90px;
+  border-radius: 42px 42px 34px 34px;
+}
+
+.human-arm {
+  width: 27px;
+  height: 160px;
+  top: 96px;
+  border-radius: 20px;
+}
+
+.human-arm.left {
+  left: 22px;
+  transform: rotate(17deg);
+}
+
+.human-arm.right {
+  right: 22px;
+  transform: rotate(-17deg);
+}
+
+.human-leg {
+  width: 35px;
+  height: 165px;
+  top: 235px;
+  border-radius: 20px;
+}
+
+.human-leg.left {
+  left: 67px;
+}
+
+.human-leg.right {
+  right: 67px;
+}
+
+.human-ring {
+  position: absolute;
+  width: 330px;
+  height: 72px;
+  left: -60px;
+  bottom: 2px;
+  border: 2px solid rgba(0, 225, 255, .85);
+  border-radius: 50%;
+  box-shadow: 0 0 22px rgba(0, 217, 255, .6);
+}
+
+.hotspot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #ff4cc2;
+  border-radius: 50%;
+  box-shadow: 0 0 18px #ff4cc2;
+  z-index: 5;
+}
+
+.shoulder-left { left: 48px; top: 115px; }
+.shoulder-right { right: 48px; top: 115px; }
+.stomach-hot { left: 98px; top: 170px; }
+.knee-left { left: 78px; top: 318px; }
+.knee-right { right: 78px; top: 318px; }
+
+.organ-tag {
+  position: absolute;
+  width: 104px;
+  min-height: 44px;
+  padding: 8px 10px;
+  background: rgba(2, 20, 35, .76);
+  border: 1px solid rgba(0, 217, 255, .2);
+  border-radius: 12px;
+  color: #dffaff;
+  font-size: 18px;
+  box-shadow: 0 0 14px rgba(0, 217, 255, .12);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.organ-tag span {
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.organ-tag b {
+  color: #70f0d2;
+}
+
+.organ-tag::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  background: rgba(100, 220, 255, .45);
+  top: 50%;
+}
+
+.organ-tag.brain { left: 60px; top: 50px; }
+.organ-tag.lungs { left: 20px; top: 155px; }
+.organ-tag.liver { left: 20px; top: 260px; }
+.organ-tag.muscles { left: 55px; top: 380px; }
+
+.organ-tag.sleep { right: 58px; top: 50px; }
+.organ-tag.heart { right: 22px; top: 155px; }
+.organ-tag.stomach { right: 22px; top: 260px; }
+.organ-tag.joints { right: 45px; top: 380px; }
+
+.human-tabs {
+  position: absolute;
+  left: 96px;
+  bottom: 4px;
+  background: rgba(2, 12, 25, .8);
+  border: 1px solid rgba(0, 217, 255, .2);
+  border-radius: 999px;
+  padding: 5px;
+  display: flex;
+  gap: 6px;
+}
+
+.human-tabs button {
+  border: 0;
+  color: #8faabd;
+  background: transparent;
+  padding: 7px 16px;
+  border-radius: 999px;
+}
+
+.human-tabs button.active {
+  background: rgba(0, 183, 255, .18);
+  color: white;
+}
+
+/* right cards */
+.vital-card {
+  min-height: 304px;
+}
+
+.vital-row {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 105px 1fr;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding-bottom: 10px;
+}
+
+.vital-row strong {
+  font-size: 12px;
+  color: #cfeeff;
+}
+
+.vital-row span {
+  display: block;
+  color: white;
+  font-size: 20px;
+  margin-top: 4px;
+}
+
+.mini-wave {
+  height: 45px;
+  border-radius: 6px;
+  background:
+    linear-gradient(transparent 48%, rgba(255,255,255,.09) 49%, transparent 50%),
+    repeating-linear-gradient(90deg, transparent 0 12px, rgba(255,255,255,.04) 12px 13px),
+    linear-gradient(135deg, transparent 10%, rgba(0, 255, 204, .35), transparent 70%);
+  position: relative;
+}
+
+.mini-wave::after {
+  content: "";
+  position: absolute;
+  inset: 9px 0;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  clip-path: polygon(0 55%, 8% 50%, 14% 60%, 20% 42%, 26% 55%, 34% 48%, 42% 62%, 52% 35%, 60% 50%, 68% 45%, 76% 56%, 84% 40%, 92% 50%, 100% 45%);
+  opacity: .9;
+}
+
+.mini-wave.cyan { color: #28e9ff; }
+.mini-wave.purple { color: #a85cff; }
+.mini-wave.green { color: #48f0c7; }
+
+.pain-map-card {
+  min-height: 210px;
+}
+
+.pain-map-layout {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.mini-body-pain {
+  height: 150px;
+  background:
+    radial-gradient(circle at 32% 25%, #ff844d 0 5px, transparent 7px),
+    radial-gradient(circle at 68% 45%, #ff844d 0 6px, transparent 8px),
+    radial-gradient(circle at 48% 74%, #ff844d 0 5px, transparent 7px),
+    linear-gradient(180deg, rgba(65,242,255,.55), rgba(38,84,255,.15));
+  border-radius: 45px 45px 30px 30px;
+  filter: drop-shadow(0 0 18px rgba(0,217,255,.45));
+}
+
+.pain-list {
+  font-size: 12px;
+  color: #aec7d6;
+}
+
+.pain-list p {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* far right */
+.activity-card {
+  min-height: 220px;
+}
+
+.activity-layout {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 16px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.multi-ring {
+  width: 126px;
+  height: 126px;
+  background:
+    radial-gradient(circle, #0af 0 17%, transparent 18%),
+    conic-gradient(#69f0ac 0 72%, rgba(255,255,255,.15) 72%),
+    conic-gradient(from 100deg, #15dfff 0 62%, rgba(255,255,255,.1) 62%),
+    conic-gradient(from 220deg, #3468ff 0 48%, rgba(255,255,255,.1) 48%);
+  box-shadow: 0 0 20px rgba(0,217,255,.2);
+}
+
+.activity-stats p {
+  margin: 0 0 12px;
+  color: #9fb8c8;
+  font-size: 11px;
+}
+
+.activity-stats strong {
+  color: white;
+  font-size: 18px;
+}
+
+.logs-card {
+  min-height: 270px;
+}
+
+.logs-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.logs-grid div {
+  min-height: 72px;
+  border: 1px solid rgba(0, 217, 255, .12);
+  border-radius: 12px;
+  background: rgba(255,255,255,.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #95adbf;
+  font-size: 18px;
+}
+
+.logs-grid strong {
+  color: white;
+  font-size: 19px;
+  margin-top: 4px;
+}
+
+.logs-grid small {
+  font-size: 11px;
+}
+
+/* bottom cards */
+.viz-analysis-card {
+  position: absolute;
+  left: 552px;
+  top: 680px;
+  width: 540px;
+  min-height: 220px;
+  padding: 16px;
+}
+
+.insight-pill {
+  font-size: 10px;
+  color: #ffd36b;
+  border: 1px solid rgba(255,211,107,.25);
+  background: rgba(255,211,107,.1);
+  border-radius: 999px;
+  padding: 4px 8px;
+  margin-left: 10px;
+}
+
+.analysis-layout {
+  display: grid;
+  grid-template-columns: 150px 210px 1fr;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.analysis-layout small {
+  color: #4defff;
+}
+
+.analysis-layout p {
+  font-size: 11px;
+  color: #aec7d6;
+}
+
+.confidence-bar {
+  height: 5px;
+  background: rgba(255,255,255,.12);
+  border-radius: 999px;
+  margin-top: 10px;
+}
+
+.confidence-bar span {
+  display: block;
+  width: 92%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1ee9ff, #8f68ff);
+}
+
+.scatter-demo {
+  height: 120px;
+  border-left: 1px solid rgba(255,255,255,.13);
+  border-bottom: 1px solid rgba(255,255,255,.13);
+  background:
+    radial-gradient(circle at 20% 70%, #1ee9ff 0 2px, transparent 3px),
+    radial-gradient(circle at 35% 55%, #a85cff 0 2px, transparent 3px),
+    radial-gradient(circle at 55% 45%, #1ee9ff 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 35%, #a85cff 0 2px, transparent 3px),
+    radial-gradient(circle at 84% 26%, #1ee9ff 0 2px, transparent 3px),
+    linear-gradient(135deg, transparent 48%, #1ee9ff 49%, transparent 51%);
+}
+
+.view-analysis-btn {
+  margin-top: 12px;
+  border: 1px solid rgba(0, 217, 255, .18);
+  background: rgba(255,255,255,.04);
+  color: white;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.viz-floating-sleep-card {
+  position: absolute;
+  left: 1115px;
+  top: 610px;
+  width: 520px;
+  min-height: 275px;
+  padding: 16px;
+  box-shadow: 0 0 28px rgba(0, 217, 255, .32);
+}
+
+.sleep-detail-layout {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 14px;
+}
+
+.sleep-metrics div {
+  background: rgba(255,255,255,.04);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.sleep-metrics small {
+  color: #86a7bc;
+}
+
+.sleep-metrics strong {
+  display: block;
+  color: white;
+  font-size: 18px;
+  margin-top: 4px;
+}
+
+.sleep-metrics em {
+  color: #5eea9f;
+  font-style: normal;
+  font-size: 11px;
+}
+
+.wide-bar-scroll {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.sleep-bars-wide {
+  width: 470px;
+  height: 150px;
+  display: flex;
+  align-items: end;
+  gap: 7px;
+  background:
+    linear-gradient(transparent 32%, rgba(255,255,255,.06) 33%, transparent 34%),
+    linear-gradient(transparent 65%, rgba(255,255,255,.06) 66%, transparent 67%);
+}
+
+.sleep-bars-wide i {
+  width: 12px;
+  height: 60%;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, #9d5cff 0 35%, #20e4ff 35% 78%, #275dff 78%);
+}
+
+.sleep-bars-wide i:nth-child(3n) { height: 75%; }
+.sleep-bars-wide i:nth-child(4n) { height: 50%; }
+.sleep-bars-wide i:nth-child(5n) { height: 85%; }
+
+.sleep-insight {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 217, 255, .08);
+  color: #b8eafa;
+  font-size: 12px;
+}
+
+/* mobile behavior: keep the dashboard wide, let user scroll left/right */
+@media (max-width: 700px) {
+  .medora-dashboard-canvas {
+    width: 1660px;
+    transform-origin: top left;
+  }
+
+  .medora-wide-scroll {
+    cursor: grab;
+  }
+}
+
   </style>
 </head>
 
@@ -2269,148 +3248,364 @@ body.keyboard-open .messages{
       </div>
     </section>
 
-<section id="visualization" class="screen">
+<section id="visualization" class="screen medora-viz-screen">
   <div class="topbar">
     <button class="icon-btn" onclick="openScreen('home')">‹</button>
     <div class="brand-row">Data Viz</div>
     <span></span>
   </div>
 
-  <div class="content">
+  <div class="medora-wide-scroll">
 
-    <div class="viz-hero">
-      <div class="viz-hero-content">
-        <h3>Medora Health Command Center</h3>
-        <p>
-          This page gathers your logs into visual patterns. As you track more sleep,
-          anxiety, food, hydration, pain, stress, symptoms, and activity, Medora can
-          start showing possible relationships.
-        </p>
+    <div class="medora-dashboard-canvas">
 
-        <div class="viz-dashboard">
-          <div class="viz-stat">
-            <strong id="vizHealthCount">0</strong>
-            <small>Health</small>
-          </div>
-          <div class="viz-stat">
-            <strong id="vizAnxietyCount">0</strong>
-            <small>Anxiety</small>
-          </div>
-          <div class="viz-stat">
-            <strong id="vizFoodFluidCount">0</strong>
-            <small>Food/Fluid</small>
+      <!-- LEFT MENU -->
+      <aside class="viz-left-menu">
+        <div class="viz-logo">💙 Medora</div>
+
+        <button>▦ Overview</button>
+        <button>▣ Timeline</button>
+        <button class="active">🧬 Data Visualization</button>
+        <button>⌁ Insights <span>NEW</span></button>
+        <button>✉ Messages</button>
+        <button>♙ Care Team</button>
+        <button>⚙ Settings</button>
+
+        <div class="viz-premium-card">
+          <strong>⭐ Medora Premium</strong>
+          <small>Pro Health Analytics</small>
+        </div>
+
+        <div class="viz-sync">✓ Data synced<br><small>2m ago</small></div>
+      </aside>
+
+      <!-- TOP HEADER -->
+      <header class="viz-dashboard-header">
+        <div>
+          <h1>Data Visualization <span></span></h1>
+          <p>Unified view of your health · Real-time insights</p>
+        </div>
+
+        <div class="viz-header-actions">
+          <button class="viz-assistant-btn">✦ AI Health Assistant ›</button>
+          <button class="viz-bell">♧</button>
+          <div class="viz-profile-chip">
+            <div class="viz-profile-avatar"></div>
+            <div>
+              <small>Good morning,</small>
+              <strong>Alexandra</strong>
+            </div>
+            <span>⌄</span>
           </div>
         </div>
-      </div>
-    </div>
+      </header>
 
-    <div class="body-scan-card">
-      <div class="body-scan-title">
-        <h3>🧍 Interactive Body Scan</h3>
-        <span class="scan-pill">LIVE VIEW</span>
-      </div>
+      <!-- LEFT DATA CARDS -->
+      <section class="viz-left-column">
+        <article class="viz-card sleep-card">
+          <div class="viz-card-head">
+            <div>
+              <h3>🌙 Sleep Trend</h3>
+              <small>7-Day Overview</small>
+            </div>
+            <button>Tap to expand ›</button>
+          </div>
 
-      <div class="body-stage">
-        <div class="scan-ring"></div>
+          <div class="viz-card-body two-col">
+            <div class="big-number">
+              <strong>7<span>h</span> 42<span>m</span></strong>
+              <small>Avg. Sleep</small>
+              <em>↑ 8% vs last 7 days</em>
+            </div>
 
-        <div class="body-model" id="medoraBodyModel">
-          <div class="body-head"></div>
-          <div class="body-torso"></div>
-          <div class="body-arm left"></div>
-          <div class="body-arm right"></div>
-          <div class="body-leg left"></div>
-          <div class="body-leg right"></div>
+            <div class="bar-chart-demo">
+              <i style="height:48%"></i>
+              <i style="height:76%"></i>
+              <i style="height:68%"></i>
+              <i style="height:58%"></i>
+              <i style="height:72%"></i>
+              <i style="height:64%"></i>
+            </div>
+          </div>
+        </article>
+
+        <article class="viz-card anxiety-card">
+          <div class="viz-card-head">
+            <div>
+              <h3>💧 Anxiety Level</h3>
+              <small>7-Day Trend</small>
+            </div>
+            <button>Tap to expand ›</button>
+          </div>
+
+          <div class="viz-card-body two-col">
+            <div class="big-number">
+              <strong>28</strong>
+              <small>Low</small>
+              <em>↓ 16% vs last 7 days</em>
+            </div>
+
+            <div class="line-chart-demo">
+              <svg viewBox="0 0 260 120" preserveAspectRatio="none">
+                <path d="M0 75 C30 90, 45 10, 75 24 S120 100, 150 55 S190 12, 220 75 S250 30, 260 62" />
+              </svg>
+            </div>
+          </div>
+        </article>
+
+        <article class="viz-card hydration-card">
+          <div class="viz-card-head">
+            <div>
+              <h3>💧 Hydration</h3>
+              <small>Today</small>
+            </div>
+            <button>Tap to expand ›</button>
+          </div>
+
+          <div class="viz-card-body hydration-layout">
+            <div class="big-number">
+              <strong>2.1<span>L</span></strong>
+              <small>71% of goal</small>
+              <p>Goal: 3.0 L</p>
+            </div>
+
+            <div class="donut-demo">
+              <div>💧</div>
+            </div>
+
+            <ul class="drink-list">
+              <li>8:00 AM <b>250 ml</b></li>
+              <li>11:00 AM <b>300 ml</b></li>
+              <li>1:30 PM <b>350 ml</b></li>
+              <li>4:00 PM <b>400 ml</b></li>
+              <li>7:30 PM <b>300 ml</b></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="viz-card nutrition-card">
+          <div class="viz-card-head">
+            <div>
+              <h3>☘ Nutrition · Correlation</h3>
+              <small>Food vs Symptoms</small>
+            </div>
+            <button>Tap to expand ›</button>
+          </div>
+
+          <div class="viz-card-body nutrition-layout">
+            <div class="donut-large">
+              <strong>78%</strong>
+              <small>Positive<br>Correlation</small>
+            </div>
+
+            <div class="nutrition-key">
+              <p><span class="green"></span> Anti-inflammatory</p>
+              <p><span class="blue"></span> Balanced</p>
+              <p><span class="purple"></span> Trigger Foods</p>
+              <p><span class="gray"></span> Uncertain</p>
+              <hr>
+              <small>Top Impact This Week</small>
+              <strong>Omega-3 Intake</strong>
+              <em>↑ 23% improvement</em>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- CENTER HUMAN BODY -->
+      <section class="viz-human-section">
+        <div class="viz-human-title">3D Body · Drag to rotate ⟳</div>
+
+        <div class="organ-tag brain">🧠 <span>Brain<br><b>Normal</b></span></div>
+        <div class="organ-tag lungs">🫁 <span>Lungs<br><b>Good</b></span></div>
+        <div class="organ-tag liver">▰ <span>Liver<br><b>Good</b></span></div>
+        <div class="organ-tag muscles">〽 <span>Muscles<br><b>Good</b></span></div>
+
+        <div class="organ-tag sleep">🌙 <span>Sleep<br><b>Good</b></span></div>
+        <div class="organ-tag heart">❤️ <span>Heart<br><b>72 bpm</b></span></div>
+        <div class="organ-tag stomach">◖ <span>Stomach<br><b>Good</b></span></div>
+        <div class="organ-tag joints">🦴 <span>Joints<br><b>Mild Stress</b></span></div>
+
+        <div class="human-glow">
+          <div class="human-head"></div>
+          <div class="human-neck"></div>
+          <div class="human-torso"></div>
+          <div class="human-arm left"></div>
+          <div class="human-arm right"></div>
+          <div class="human-leg left"></div>
+          <div class="human-leg right"></div>
+          <div class="hotspot shoulder-left"></div>
+          <div class="hotspot shoulder-right"></div>
+          <div class="hotspot stomach-hot"></div>
+          <div class="hotspot knee-left"></div>
+          <div class="hotspot knee-right"></div>
+          <div class="human-ring"></div>
         </div>
-      </div>
 
-      <div class="body-controls">
-        <label style="color:#B7E8F7;margin-top:0;">Rotate body model</label>
-        <input
-          id="bodyRotateSlider"
-          type="range"
-          min="-180"
-          max="180"
-          value="0"
-          oninput="rotateMedoraBody(this.value)"
-        >
-      </div>
+        <div class="human-tabs">
+          <button class="active">Front</button>
+          <button>Back</button>
+          <button>Left</button>
+          <button>Right</button>
+        </div>
+      </section>
 
-      <div class="viz-chip-row">
-        <span class="viz-mini-chip" id="bodyFocusChip">Body focus: Not enough data yet</span>
-        <span class="viz-mini-chip" id="bodySymptomChip">Symptoms: 0</span>
-      </div>
-    </div>
+      <!-- RIGHT MIDDLE CARDS -->
+      <section class="viz-right-middle">
+        <article class="viz-card vital-card">
+          <div class="viz-card-head">
+            <div>
+              <h3>🫀 Vital Signs · <span>Live</span></h3>
+            </div>
+            <button>Tap to expand ›</button>
+          </div>
 
-    <h3 class="viz-tier-title">Tier 1 — Core Health Patterns</h3>
+          <div class="vital-row">
+            <strong>❤️ Heart Rate<br><span>72 bpm</span></strong>
+            <div class="mini-wave cyan"></div>
+          </div>
 
-    <div class="viz-grid">
-      <div class="viz-card viz-wide" onclick="openVizModal('sleepAnxietyViz', 'Sleep + Anxiety')">
-        <h4>Sleep + Anxiety</h4>
-        <canvas id="sleepAnxietyViz"></canvas>
-        <p>Looks for anxiety changes after lower sleep nights.</p>
-      </div>
+          <div class="vital-row">
+            <strong>💜 Heart Rate Variability<br><span>48 ms</span></strong>
+            <div class="mini-wave purple"></div>
+          </div>
 
-      <div class="viz-card" onclick="openVizModal('stressPainViz', 'Stress + Pain')">
-        <h4>Stress + Pain</h4>
-        <canvas id="stressPainViz"></canvas>
-        <p>Compares stress and pain scores.</p>
-      </div>
+          <div class="vital-row">
+            <strong>🫁 Breathing Rate<br><span>14 brpm</span></strong>
+            <div class="mini-wave green"></div>
+          </div>
+        </article>
 
-      <div class="viz-card" onclick="openVizModal('energySleepViz', 'Energy + Sleep')">
-        <h4>Energy + Sleep</h4>
-        <canvas id="energySleepViz"></canvas>
-        <p>Shows whether sleep tracks with next-day energy.</p>
-      </div>
-    </div>
+        <article class="viz-card pain-map-card">
+          <div class="viz-card-head">
+            <div>
+              <h3>🧬 Symptom / Pain Map</h3>
+            </div>
+            <button>Tap to expand ›</button>
+          </div>
 
-    <h3 class="viz-tier-title">Tier 2 — Lifestyle + Trigger Patterns</h3>
+          <div class="pain-map-layout">
+            <div class="mini-body-pain"></div>
 
-    <div class="viz-grid">
-      <div class="viz-card" onclick="openVizModal('waterSymptomsViz', 'Water + Symptoms')">
-        <h4>Water + Symptoms</h4>
-        <canvas id="waterSymptomsViz"></canvas>
-        <p>Compares hydration with headache or dizziness mentions.</p>
-      </div>
+            <div class="pain-list">
+              <small>Top Areas This Week</small>
+              <p><span class="pink"></span> Lower Back <b>High</b></p>
+              <p><span class="orange"></span> Neck <b>Medium</b></p>
+              <p><span class="yellow"></span> Left Knee <b>Medium</b></p>
+              <p><span class="yellow"></span> Shoulders <b>Low</b></p>
+            </div>
+          </div>
+        </article>
+      </section>
 
-      <div class="viz-card" onclick="openVizModal('caffeineAnxietyViz', 'Caffeine + Anxiety')">
-        <h4>Caffeine + Anxiety</h4>
-        <canvas id="caffeineAnxietyViz"></canvas>
-        <p>Watches for caffeine notes near high-anxiety days.</p>
-      </div>
+      <!-- FAR RIGHT CARDS -->
+      <section class="viz-far-right">
+        <article class="viz-card activity-card">
+          <div class="viz-card-head">
+            <div>
+              <h3>🏃 Activity Summary</h3>
+              <small>Today</small>
+            </div>
+            <button>Tap to expand ›</button>
+          </div>
 
-      <div class="viz-card" onclick="openVizModal('foodReactionViz', 'Food Reactions')">
-        <h4>Food Reactions</h4>
-        <canvas id="foodReactionViz"></canvas>
-        <p>Tracks bloating, nausea, tiredness, reflux, and cravings.</p>
-      </div>
+          <div class="activity-layout">
+            <div class="multi-ring"></div>
 
-      <div class="viz-card" onclick="openVizModal('logVolumeViz', 'Log Volume')">
-        <h4>Log Volume</h4>
-        <canvas id="logVolumeViz"></canvas>
-        <p>Shows how much data Medora has to learn from.</p>
-      </div>
-    </div>
+            <div class="activity-stats">
+              <p>💎 <strong>6,842</strong><br><small>Steps</small></p>
+              <p>⌚ <strong>28</strong><br><small>Active Min</small></p>
+              <p>⌂ <strong>6</strong><br><small>Floors</small></p>
+              <p>♨ <strong>3.2 km</strong></p>
+            </div>
+          </div>
+        </article>
 
-    <div class="card">
-      <h3 style="margin-top:0;">Medora Visualization Notes</h3>
-      <div id="vizNarrative" class="small">
-        Add more logs to unlock stronger pattern summaries.
-      </div>
-      <button class="secondary" onclick="renderVisualization()">Refresh Visualization</button>
-    </div>
+        <article class="viz-card logs-card">
+          <div class="viz-card-head">
+            <div>
+              <h3>▦ Logs Summary</h3>
+              <small>This Week</small>
+            </div>
+            <button>Tap to expand ›</button>
+          </div>
 
-  </div>
+          <div class="logs-grid">
+            <div>🦷 <strong>21</strong><small>Meals</small></div>
+            <div>💊 <strong>14</strong><small>Supplements</small></div>
+            <div>💗 <strong>7</strong><small>Symptoms</small></div>
+            <div>🙂 <strong>12</strong><small>Mood Entries</small></div>
+            <div>♻ <strong>5</strong><small>Workouts</small></div>
+            <div>🌙 <strong>7</strong><small>Sleep Sessions</small></div>
+          </div>
+        </article>
+      </section>
 
-  <div class="viz-modal" id="vizModal" onclick="closeVizModal()">
-    <div class="viz-modal-box" onclick="event.stopPropagation()">
-      <div class="viz-modal-head">
-        <h3 id="vizModalTitle">Chart</h3>
-        <button onclick="closeVizModal()">×</button>
-      </div>
-      <canvas id="vizModalCanvas"></canvas>
+      <!-- BOTTOM ANALYSIS -->
+      <section class="viz-analysis-card">
+        <div class="viz-card-head">
+          <div>
+            <h3>Advanced Pattern Analysis <span class="insight-pill">TOP-TIER INSIGHT</span></h3>
+          </div>
+          <button>Tap to expand ›</button>
+        </div>
+
+        <div class="analysis-layout">
+          <div>
+            <small>Key Finding</small>
+            <p>Poor sleep quality is strongly correlated with increased anxiety levels.</p>
+            <strong>Confidence Score</strong>
+            <div class="confidence-bar"><span></span></div>
+            <b>92%</b>
+          </div>
+
+          <div>
+            <small>Sleep Quality vs Anxiety Level</small>
+            <div class="scatter-demo"></div>
+          </div>
+
+          <div>
+            <small>Contributing Factors</small>
+            <p>• Late screen time</p>
+            <p>• Caffeine after 2 PM</p>
+            <p>• Irregular sleep schedule</p>
+            <button class="view-analysis-btn">View Full Analysis ↗</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FLOATING SLEEP DETAIL CARD -->
+      <section class="viz-floating-sleep-card">
+        <div class="viz-card-head">
+          <div>
+            <h3>Sleep Trend <span>· Detailed 30-Day Overview</span></h3>
+          </div>
+          <button>⛶ ×</button>
+        </div>
+
+        <div class="sleep-detail-layout">
+          <div class="sleep-metrics">
+            <div><small>Average Sleep</small><strong>7 h 42 m</strong><em>↑ 8%</em></div>
+            <div><small>Sleep Efficiency</small><strong>85%</strong><em>↑ 6%</em></div>
+            <div><small>Deep Sleep</small><strong>1 h 48 m</strong><em>↑ 12%</em></div>
+          </div>
+
+          <div class="wide-bar-scroll">
+            <div class="sleep-bars-wide">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="sleep-insight">💡 You’re getting more deep sleep lately. Keep maintaining your consistent bedtime!</div>
+      </section>
+
     </div>
   </div>
 </section>
+
 
     <nav class="nav">
       <button id="tab-home" class="active-tab" onclick="openScreen('home')"><span class="nav-icon">⌂</span>Home</button>
