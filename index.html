@@ -1968,6 +1968,37 @@ body.viz-fit-mode .medora-wide-scroll {
 
 /* human center */
 
+.body-model-toggle {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(2, 12, 25, .82);
+  border: 1px solid rgba(0, 217, 255, .24);
+  box-shadow: 0 0 18px rgba(0, 217, 255, .16);
+}
+
+.body-model-toggle button {
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 15px;
+  background: transparent;
+  color: #8faabd;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.body-model-toggle button.active {
+  background: rgba(0, 183, 255, .25);
+  color: white;
+}
+
 .medora-body-viewer-wrap {
   position: absolute;
   left: 62px;
@@ -3604,7 +3635,12 @@ body.viz-fit-mode .medora-wide-scroll {
         <div class="organ-tag stomach">◖ <span>Stomach<br><b>Good</b></span></div>
         <div class="organ-tag joints">🦴 <span>Joints<br><b>Mild Stress</b></span></div>
 
-        <div class="medora-body-viewer-wrap">
+<div class="body-model-toggle">
+  <button class="active" onclick="setBodyModel(this, 'female')">Female</button>
+  <button onclick="setBodyModel(this, 'male')">Male</button>
+</div>
+
+<div class="medora-body-viewer-wrap">
   <model-viewer
     id="medoraBodyViewer"
     class="medora-body-viewer"
@@ -6111,7 +6147,7 @@ function applyVizFitMode() {
   if (!scroll || !canvas) return;
 
   const canvasWidth = 1660;
-  const canvasHeight = 1240;
+  const canvasHeight = 930;
 
   if (!vizFitMode) {
     scroll.classList.remove("fit-mode");
@@ -6163,6 +6199,24 @@ function toggleVizFitMode() {
 
 function updateDataVisualizationFromApp() {
   const data = getVizData();
+  
+  const savedBodyModel = getData().settings?.bodyModel || "female";
+const bodyViewer = document.getElementById("medoraBodyViewer");
+
+if (bodyViewer) {
+  const savedSrc = savedBodyModel === "male"
+    ? "/models/male-body.glb"
+    : "/models/female-body.glb";
+
+  if (bodyViewer.getAttribute("src") !== savedSrc) {
+    bodyViewer.setAttribute("src", savedSrc);
+  }
+
+  document.querySelectorAll(".body-model-toggle button").forEach(btn => {
+    const text = btn.textContent.trim().toLowerCase();
+    btn.classList.toggle("active", text === savedBodyModel);
+  });
+}
 
   const profileName = document.getElementById("vizProfileName");
   const greeting = document.getElementById("vizGreeting");
@@ -6494,19 +6548,42 @@ function setHumanView(button, view) {
     btn.classList.remove("active");
   });
 
-  button.classList.add("active");
+  if (button) button.classList.add("active");
 
-  const human = document.querySelector(".human-glow");
-  if (!human) return;
+  const viewer = document.getElementById("medoraBodyViewer");
+  if (!viewer) return;
 
-  const rotations = {
-    front: "rotateY(0deg)",
-    back: "rotateY(180deg)",
-    left: "rotateY(-55deg)",
-    right: "rotateY(55deg)"
+  const orbits = {
+    front: "0deg 78deg 3.2m",
+    back: "180deg 78deg 3.2m",
+    left: "-90deg 78deg 3.2m",
+    right: "90deg 78deg 3.2m"
   };
 
-  human.style.transform = rotations[view] || "rotateY(0deg)";
+  viewer.setAttribute("camera-orbit", orbits[view] || orbits.front);
+}
+
+function setBodyModel(button, type) {
+  const viewer = document.getElementById("medoraBodyViewer");
+  if (!viewer) return;
+
+  document.querySelectorAll(".body-model-toggle button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  if (button) button.classList.add("active");
+
+  const models = {
+    female: "/models/female-body.glb",
+    male: "/models/male-body.glb"
+  };
+
+  viewer.setAttribute("src", models[type] || models.female);
+
+  const data = getData();
+  data.settings = data.settings || {};
+  data.settings.bodyModel = type;
+  saveData(data);
 }
 
     window.onload = function() {
@@ -6526,6 +6603,7 @@ window.toggleVizFitMode = toggleVizFitMode;
 window.openVizDetail = openVizDetail;
 window.closeVizDetail = closeVizDetail;
 window.setHumanView = setHumanView;
+window.setBodyModel = setBodyModel;
 window.rotateMedoraBody = rotateMedoraBody;
 window.toggleQuickMenu = toggleQuickMenu;
 window.closeQuickMenu = closeQuickMenu;
