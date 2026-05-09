@@ -1069,6 +1069,354 @@ body.keyboard-open .messages{
   }
 }
 
+/* =========================
+   Medora Data Visualization
+========================= */
+
+.viz-hero {
+  background: radial-gradient(circle at top, #102A43 0%, #061826 55%, #03111D 100%);
+  color: #EAFBFF;
+  border: 1px solid rgba(39, 219, 255, .28);
+  border-radius: 26px;
+  padding: 18px;
+  box-shadow: 0 18px 45px rgba(4, 20, 35, .22);
+  overflow: hidden;
+  position: relative;
+}
+
+.viz-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(39,219,255,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(39,219,255,.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: .45;
+  pointer-events: none;
+}
+
+.viz-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.viz-hero h3 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.viz-hero p {
+  margin: 0;
+  color: #B7E8F7;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.viz-dashboard {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.viz-stat {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(98,232,255,.18);
+  border-radius: 16px;
+  padding: 10px;
+  text-align: center;
+}
+
+.viz-stat strong {
+  display: block;
+  color: #58E6FF;
+  font-size: 18px;
+  margin-bottom: 3px;
+}
+
+.viz-stat small {
+  color: #B7E8F7;
+  font-size: 11px;
+}
+
+.body-scan-card {
+  background: #071D2E;
+  border: 1px solid rgba(39,219,255,.25);
+  border-radius: 24px;
+  padding: 16px;
+  margin-top: 16px;
+  color: #EAFBFF;
+  box-shadow: 0 14px 36px rgba(5, 20, 35, .2);
+  overflow: hidden;
+  position: relative;
+}
+
+.body-scan-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(47,128,237,.25), transparent 55%),
+    linear-gradient(rgba(39,219,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(39,219,255,.06) 1px, transparent 1px);
+  background-size: auto, 24px 24px, 24px 24px;
+  pointer-events: none;
+}
+
+.body-scan-title {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.body-scan-title h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.scan-pill {
+  background: rgba(35,197,138,.16);
+  color: #6EF3B5;
+  border: 1px solid rgba(35,197,138,.25);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.body-stage {
+  position: relative;
+  z-index: 2;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 900px;
+}
+
+.body-model {
+  width: 150px;
+  height: 300px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .25s ease;
+  filter: drop-shadow(0 0 25px rgba(54, 215, 255, .42));
+}
+
+.body-head,
+.body-torso,
+.body-arm,
+.body-leg {
+  position: absolute;
+  background: linear-gradient(180deg, rgba(88,230,255,.9), rgba(47,128,237,.45));
+  border: 1px solid rgba(160,245,255,.75);
+  box-shadow: inset 0 0 18px rgba(255,255,255,.18), 0 0 16px rgba(39,219,255,.28);
+}
+
+.body-head {
+  width: 54px;
+  height: 64px;
+  border-radius: 45% 45% 42% 42%;
+  left: 48px;
+  top: 0;
+}
+
+.body-torso {
+  width: 82px;
+  height: 132px;
+  left: 34px;
+  top: 70px;
+  border-radius: 38px 38px 28px 28px;
+}
+
+.body-arm.left {
+  width: 28px;
+  height: 128px;
+  left: 4px;
+  top: 82px;
+  border-radius: 20px;
+  transform: rotate(13deg);
+}
+
+.body-arm.right {
+  width: 28px;
+  height: 128px;
+  right: 4px;
+  top: 82px;
+  border-radius: 20px;
+  transform: rotate(-13deg);
+}
+
+.body-leg.left {
+  width: 34px;
+  height: 112px;
+  left: 42px;
+  top: 196px;
+  border-radius: 20px;
+}
+
+.body-leg.right {
+  width: 34px;
+  height: 112px;
+  right: 42px;
+  top: 196px;
+  border-radius: 20px;
+}
+
+.scan-ring {
+  position: absolute;
+  width: 230px;
+  height: 42px;
+  border: 2px solid rgba(88,230,255,.7);
+  border-radius: 50%;
+  bottom: 18px;
+  box-shadow: 0 0 20px rgba(88,230,255,.38);
+  animation: scanPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes scanPulse {
+  0%, 100% { transform: scale(.92); opacity: .45; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+.body-controls {
+  position: relative;
+  z-index: 2;
+  margin-top: 10px;
+}
+
+.body-controls input {
+  width: 100%;
+}
+
+.viz-tier-title {
+  margin: 20px 0 10px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.viz-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 13px;
+  box-shadow: 0 8px 22px rgba(24,39,75,.05);
+  cursor: pointer;
+}
+
+.viz-card:active {
+  transform: scale(.98);
+}
+
+.viz-card h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.viz-card p {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.viz-card canvas {
+  width: 100% !important;
+  height: 135px !important;
+}
+
+.viz-wide {
+  grid-column: 1 / -1;
+}
+
+.viz-wide canvas {
+  height: 180px !important;
+}
+
+.viz-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.viz-mini-chip {
+  border: 1px solid rgba(47,128,237,.18);
+  background: #F4F8FF;
+  color: #1C64D8;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.viz-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 8, 23, .72);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.viz-modal.open {
+  display: flex;
+}
+
+.viz-modal-box {
+  background: #fff;
+  width: 100%;
+  max-width: 430px;
+  border-radius: 24px;
+  padding: 18px;
+  box-shadow: 0 22px 80px rgba(0,0,0,.32);
+}
+
+.viz-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.viz-modal-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.viz-modal-head button {
+  border: 0;
+  background: #F2F4F7;
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.viz-modal canvas {
+  width: 100% !important;
+  height: 330px !important;
+}
+
+#visualization .content {
+  padding-bottom: 220px;
+}
+
   </style>
 </head>
 
@@ -1921,6 +2269,149 @@ body.keyboard-open .messages{
       </div>
     </section>
 
+<section id="visualization" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="openScreen('home')">‹</button>
+    <div class="brand-row">Data Viz</div>
+    <span></span>
+  </div>
+
+  <div class="content">
+
+    <div class="viz-hero">
+      <div class="viz-hero-content">
+        <h3>Medora Health Command Center</h3>
+        <p>
+          This page gathers your logs into visual patterns. As you track more sleep,
+          anxiety, food, hydration, pain, stress, symptoms, and activity, Medora can
+          start showing possible relationships.
+        </p>
+
+        <div class="viz-dashboard">
+          <div class="viz-stat">
+            <strong id="vizHealthCount">0</strong>
+            <small>Health</small>
+          </div>
+          <div class="viz-stat">
+            <strong id="vizAnxietyCount">0</strong>
+            <small>Anxiety</small>
+          </div>
+          <div class="viz-stat">
+            <strong id="vizFoodFluidCount">0</strong>
+            <small>Food/Fluid</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="body-scan-card">
+      <div class="body-scan-title">
+        <h3>🧍 Interactive Body Scan</h3>
+        <span class="scan-pill">LIVE VIEW</span>
+      </div>
+
+      <div class="body-stage">
+        <div class="scan-ring"></div>
+
+        <div class="body-model" id="medoraBodyModel">
+          <div class="body-head"></div>
+          <div class="body-torso"></div>
+          <div class="body-arm left"></div>
+          <div class="body-arm right"></div>
+          <div class="body-leg left"></div>
+          <div class="body-leg right"></div>
+        </div>
+      </div>
+
+      <div class="body-controls">
+        <label style="color:#B7E8F7;margin-top:0;">Rotate body model</label>
+        <input
+          id="bodyRotateSlider"
+          type="range"
+          min="-180"
+          max="180"
+          value="0"
+          oninput="rotateMedoraBody(this.value)"
+        >
+      </div>
+
+      <div class="viz-chip-row">
+        <span class="viz-mini-chip" id="bodyFocusChip">Body focus: Not enough data yet</span>
+        <span class="viz-mini-chip" id="bodySymptomChip">Symptoms: 0</span>
+      </div>
+    </div>
+
+    <h3 class="viz-tier-title">Tier 1 — Core Health Patterns</h3>
+
+    <div class="viz-grid">
+      <div class="viz-card viz-wide" onclick="openVizModal('sleepAnxietyViz', 'Sleep + Anxiety')">
+        <h4>Sleep + Anxiety</h4>
+        <canvas id="sleepAnxietyViz"></canvas>
+        <p>Looks for anxiety changes after lower sleep nights.</p>
+      </div>
+
+      <div class="viz-card" onclick="openVizModal('stressPainViz', 'Stress + Pain')">
+        <h4>Stress + Pain</h4>
+        <canvas id="stressPainViz"></canvas>
+        <p>Compares stress and pain scores.</p>
+      </div>
+
+      <div class="viz-card" onclick="openVizModal('energySleepViz', 'Energy + Sleep')">
+        <h4>Energy + Sleep</h4>
+        <canvas id="energySleepViz"></canvas>
+        <p>Shows whether sleep tracks with next-day energy.</p>
+      </div>
+    </div>
+
+    <h3 class="viz-tier-title">Tier 2 — Lifestyle + Trigger Patterns</h3>
+
+    <div class="viz-grid">
+      <div class="viz-card" onclick="openVizModal('waterSymptomsViz', 'Water + Symptoms')">
+        <h4>Water + Symptoms</h4>
+        <canvas id="waterSymptomsViz"></canvas>
+        <p>Compares hydration with headache or dizziness mentions.</p>
+      </div>
+
+      <div class="viz-card" onclick="openVizModal('caffeineAnxietyViz', 'Caffeine + Anxiety')">
+        <h4>Caffeine + Anxiety</h4>
+        <canvas id="caffeineAnxietyViz"></canvas>
+        <p>Watches for caffeine notes near high-anxiety days.</p>
+      </div>
+
+      <div class="viz-card" onclick="openVizModal('foodReactionViz', 'Food Reactions')">
+        <h4>Food Reactions</h4>
+        <canvas id="foodReactionViz"></canvas>
+        <p>Tracks bloating, nausea, tiredness, reflux, and cravings.</p>
+      </div>
+
+      <div class="viz-card" onclick="openVizModal('logVolumeViz', 'Log Volume')">
+        <h4>Log Volume</h4>
+        <canvas id="logVolumeViz"></canvas>
+        <p>Shows how much data Medora has to learn from.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Medora Visualization Notes</h3>
+      <div id="vizNarrative" class="small">
+        Add more logs to unlock stronger pattern summaries.
+      </div>
+      <button class="secondary" onclick="renderVisualization()">Refresh Visualization</button>
+    </div>
+
+  </div>
+
+  <div class="viz-modal" id="vizModal" onclick="closeVizModal()">
+    <div class="viz-modal-box" onclick="event.stopPropagation()">
+      <div class="viz-modal-head">
+        <h3 id="vizModalTitle">Chart</h3>
+        <button onclick="closeVizModal()">×</button>
+      </div>
+      <canvas id="vizModalCanvas"></canvas>
+    </div>
+  </div>
+</section>
+
     <nav class="nav">
       <button id="tab-home" class="active-tab" onclick="openScreen('home')"><span class="nav-icon">⌂</span>Home</button>
       <button id="tab-chat" onclick="openScreen('chat')"><span class="nav-icon">☵</span>Chat</button>
@@ -2218,8 +2709,9 @@ function openScreen(id) {
   closeQuickMenu();
 
   if (id === "insights") renderPatterns();
-  if (id === "doctor") generateDoctorReport();
-  if (id === "home") updateHomeMetrics();
+if (id === "visualization") renderVisualization();
+if (id === "doctor") generateDoctorReport();
+if (id === "home") updateHomeMetrics();
 
   if (id === "chat") {
     renderChat();
@@ -3887,6 +4379,398 @@ function fixKeyboardView() {
     setTimeout(updateKeyboardOffset, 300);
   });
 }
+
+let medoraVizCharts = {};
+let medoraModalChart = null;
+
+function rotateMedoraBody(value) {
+  const body = document.getElementById("medoraBodyModel");
+  if (!body) return;
+  body.style.transform = `rotateY(${value}deg)`;
+}
+
+function destroyMedoraVizCharts() {
+  Object.keys(medoraVizCharts).forEach(key => {
+    if (medoraVizCharts[key]) {
+      medoraVizCharts[key].destroy();
+    }
+  });
+
+  medoraVizCharts = {};
+
+  if (medoraModalChart) {
+    medoraModalChart.destroy();
+    medoraModalChart = null;
+  }
+}
+
+function numberOrZero(value) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function includesText(value, word) {
+  return String(value || "").toLowerCase().includes(word.toLowerCase());
+}
+
+function countKeyword(logs, fields, keywords) {
+  return logs.map(log => {
+    const text = fields.map(field => log[field] || "").join(" ").toLowerCase();
+    return keywords.some(keyword => text.includes(keyword.toLowerCase())) ? 1 : 0;
+  });
+}
+
+function getHealthLabels(health) {
+  return health.map((log, index) => {
+    if (log.date) {
+      const date = new Date(log.date);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      }
+    }
+
+    return `Log ${index + 1}`;
+  });
+}
+
+function makeLineChart(canvasId, title, labels, datasets, maxY = null) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || typeof Chart === "undefined") return;
+
+  if (medoraVizCharts[canvasId]) {
+    medoraVizCharts[canvasId].destroy();
+  }
+
+  medoraVizCharts[canvasId] = new Chart(canvas, {
+    type: "line",
+    data: {
+      labels,
+      datasets: datasets.map(item => ({
+        label: item.label,
+        data: item.data,
+        tension: 0.35,
+        borderWidth: 3,
+        pointRadius: 3
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom",
+          labels: {
+            boxWidth: 10,
+            font: { size: 10 }
+          }
+        },
+        title: {
+          display: false,
+          text: title
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: maxY || undefined
+        }
+      }
+    }
+  });
+}
+
+function makeBarChart(canvasId, title, labels, datasets, maxY = null) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || typeof Chart === "undefined") return;
+
+  if (medoraVizCharts[canvasId]) {
+    medoraVizCharts[canvasId].destroy();
+  }
+
+  medoraVizCharts[canvasId] = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: datasets.map(item => ({
+        label: item.label,
+        data: item.data,
+        borderWidth: 1
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom",
+          labels: {
+            boxWidth: 10,
+            font: { size: 10 }
+          }
+        },
+        title: {
+          display: false,
+          text: title
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: maxY || undefined
+        }
+      }
+    }
+  });
+}
+
+function renderVisualization() {
+  const data = getData();
+  const health = Array.isArray(data.health) ? data.health : [];
+  const anxiety = Array.isArray(data.anxiety) ? data.anxiety : [];
+  const food = Array.isArray(data.food) ? data.food : [];
+  const fluids = Array.isArray(data.fluids) ? data.fluids : [];
+
+  destroyMedoraVizCharts();
+
+  document.getElementById("vizHealthCount").textContent = health.length;
+  document.getElementById("vizAnxietyCount").textContent = anxiety.length;
+  document.getElementById("vizFoodFluidCount").textContent = food.length + fluids.length;
+
+  const labels = getHealthLabels(health);
+
+  const sleepData = health.map(log => numberOrZero(log.sleep));
+  const anxietyData = health.map(log => numberOrZero(log.anxiety));
+  const stressData = health.map(log => numberOrZero(log.stress));
+  const painData = health.map(log => numberOrZero(log.pain));
+  const energyData = health.map(log => numberOrZero(log.energy));
+  const waterData = health.map(log => numberOrZero(log.water));
+
+  const symptomMentions = countKeyword(
+    health,
+    ["symptoms", "notes", "possibleTriggers", "environment"],
+    ["headache", "dizzy", "dizziness", "nausea", "cramp", "pain", "fatigue", "tight"]
+  );
+
+  const caffeineMentions = health.map(log => {
+    const text = `${log.caffeine || ""} ${log.notes || ""}`.toLowerCase();
+    return text.trim() ? 1 : 0;
+  });
+
+  const foodReactionLabels = ["Bloating", "Nausea", "Pain", "Tired", "Reflux", "Cravings"];
+  const foodReactionCounts = foodReactionLabels.map(label => {
+    const word = label.toLowerCase();
+    return food.filter(log => {
+      const text = `${log.reaction || ""} ${log.cravings || ""} ${log.notes || ""}`.toLowerCase();
+      return text.includes(word) || text.includes(word.replace("pain", "stomach pain"));
+    }).length;
+  });
+
+  makeLineChart(
+    "sleepAnxietyViz",
+    "Sleep + Anxiety",
+    labels,
+    [
+      { label: "Sleep", data: sleepData },
+      { label: "Anxiety", data: anxietyData }
+    ],
+    10
+  );
+
+  makeLineChart(
+    "stressPainViz",
+    "Stress + Pain",
+    labels,
+    [
+      { label: "Stress", data: stressData },
+      { label: "Pain", data: painData }
+    ],
+    10
+  );
+
+  makeLineChart(
+    "energySleepViz",
+    "Energy + Sleep",
+    labels,
+    [
+      { label: "Energy", data: energyData },
+      { label: "Sleep", data: sleepData }
+    ],
+    10
+  );
+
+  makeBarChart(
+    "waterSymptomsViz",
+    "Water + Symptoms",
+    labels,
+    [
+      { label: "Water cups", data: waterData },
+      { label: "Symptom mention", data: symptomMentions }
+    ]
+  );
+
+  makeBarChart(
+    "caffeineAnxietyViz",
+    "Caffeine + Anxiety",
+    labels,
+    [
+      { label: "Caffeine logged", data: caffeineMentions },
+      { label: "Anxiety", data: anxietyData }
+    ],
+    10
+  );
+
+  makeBarChart(
+    "foodReactionViz",
+    "Food Reactions",
+    foodReactionLabels,
+    [
+      { label: "Count", data: foodReactionCounts }
+    ]
+  );
+
+  makeBarChart(
+    "logVolumeViz",
+    "Log Volume",
+    ["Health", "Anxiety", "Food", "Fluid", "Chat", "Files"],
+    [
+      {
+        label: "Saved logs",
+        data: [
+          health.length,
+          anxiety.length,
+          food.length,
+          fluids.length,
+          Array.isArray(data.chat) ? data.chat.length : 0,
+          Array.isArray(data.uploads) ? data.uploads.length : 0
+        ]
+      }
+    ]
+  );
+
+  updateBodyScanSummary(health);
+  updateVizNarrative(data);
+}
+
+function updateBodyScanSummary(health) {
+  const allSymptoms = health
+    .map(log => `${log.symptoms || ""} ${log.bodyLocation || ""} ${log.notes || ""}`)
+    .join(" ")
+    .toLowerCase();
+
+  const symptomCount = health.filter(log => String(log.symptoms || "").trim()).length;
+
+  let focus = "Not enough data yet";
+
+  if (allSymptoms.includes("head") || allSymptoms.includes("headache")) {
+    focus = "Head / headache";
+  } else if (allSymptoms.includes("neck") || allSymptoms.includes("shoulder")) {
+    focus = "Neck / shoulders";
+  } else if (allSymptoms.includes("chest")) {
+    focus = "Chest";
+  } else if (allSymptoms.includes("stomach") || allSymptoms.includes("abdomen") || allSymptoms.includes("nausea")) {
+    focus = "Stomach / digestion";
+  } else if (allSymptoms.includes("back")) {
+    focus = "Back";
+  } else if (allSymptoms.includes("fatigue") || allSymptoms.includes("tired")) {
+    focus = "Whole-body fatigue";
+  }
+
+  document.getElementById("bodyFocusChip").textContent = `Body focus: ${focus}`;
+  document.getElementById("bodySymptomChip").textContent = `Symptoms: ${symptomCount}`;
+}
+
+function updateVizNarrative(data) {
+  const health = data.health || [];
+  const box = document.getElementById("vizNarrative");
+  if (!box) return;
+
+  if (health.length < 2) {
+    box.innerHTML = `
+      Medora needs at least 2 detailed health logs to begin comparing patterns.
+      Start with sleep, anxiety, stress, pain, water, caffeine, symptoms, and notes.
+    `;
+    return;
+  }
+
+  const lowSleepHighAnxiety = health.filter(log =>
+    numberOrZero(log.sleep) > 0 &&
+    numberOrZero(log.sleep) < 6 &&
+    numberOrZero(log.anxiety) >= 6
+  ).length;
+
+  const stressPain = health.filter(log =>
+    numberOrZero(log.stress) >= 7 &&
+    numberOrZero(log.pain) >= 5
+  ).length;
+
+  const lowWaterSymptoms = health.filter(log =>
+    numberOrZero(log.water) > 0 &&
+    numberOrZero(log.water) <= 3 &&
+    String(log.symptoms || "").trim()
+  ).length;
+
+  const notes = [];
+
+  if (lowSleepHighAnxiety >= 1) {
+    notes.push("Low sleep and higher anxiety appear together in your logs.");
+  }
+
+  if (stressPain >= 1) {
+    notes.push("Stress and pain are appearing together in at least one log.");
+  }
+
+  if (lowWaterSymptoms >= 1) {
+    notes.push("Lower hydration and symptoms may be worth watching.");
+  }
+
+  if (notes.length === 0) {
+    notes.push("No strong pattern yet. Keep logging consistently so Medora can compare more days.");
+  }
+
+  box.innerHTML = notes.map(note => `• ${escapeHTML(note)}`).join("<br>");
+}
+
+function openVizModal(chartId, title) {
+  const sourceChart = medoraVizCharts[chartId];
+  if (!sourceChart) return;
+
+  const modal = document.getElementById("vizModal");
+  const modalTitle = document.getElementById("vizModalTitle");
+  const modalCanvas = document.getElementById("vizModalCanvas");
+
+  if (!modal || !modalCanvas) return;
+
+  if (medoraModalChart) {
+    medoraModalChart.destroy();
+    medoraModalChart = null;
+  }
+
+  modalTitle.textContent = title || "Chart";
+  modal.classList.add("open");
+
+  const configCopy = {
+    type: sourceChart.config.type,
+    data: JSON.parse(JSON.stringify(sourceChart.data)),
+    options: JSON.parse(JSON.stringify(sourceChart.options))
+  };
+
+  configCopy.options.maintainAspectRatio = false;
+
+  medoraModalChart = new Chart(modalCanvas, configCopy);
+}
+
+function closeVizModal() {
+  const modal = document.getElementById("vizModal");
+  if (modal) modal.classList.remove("open");
+
+  if (medoraModalChart) {
+    medoraModalChart.destroy();
+    medoraModalChart = null;
+  }
+}
+
     window.onload = function() {
       window.openScreen = openScreen;
 window.toggleMenu = toggleMenu;
@@ -3899,6 +4783,11 @@ window.saveFood = saveFood;
 window.saveFluids = saveFluids;
 window.generateDoctorReport = generateDoctorReport;
 window.renderPatterns = renderPatterns;
+window.renderPatterns = renderPatterns;
+window.renderVisualization = renderVisualization;
+window.openVizModal = openVizModal;
+window.closeVizModal = closeVizModal;
+window.rotateMedoraBody = rotateMedoraBody;
 window.toggleQuickMenu = toggleQuickMenu;
 window.closeQuickMenu = closeQuickMenu;
 window.sendMessage = sendMessage;
