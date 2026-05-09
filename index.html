@@ -2,10 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover"
+  />
   <title>Medora AI Health Companion</title>
 
+  <!-- Chart.js for your charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Google model-viewer for 3D body models -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
   <style>
     :root{
@@ -25,6 +32,20 @@
     }
 
     *{box-sizing:border-box}
+    
+    html,
+body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  touch-action: manipulation;
+}
+
+#visualization,
+#visualization .medora-wide-scroll {
+  touch-action: pan-x pan-y pinch-zoom;
+}
 
     body{
       margin:0;
@@ -33,7 +54,7 @@
       color:var(--text);
     }
 
-   .app{
+.app{
   max-width:430px;
   width:100%;
   margin:0 auto;
@@ -43,6 +64,14 @@
   overflow-x:hidden;
   border-left:1px solid var(--border);
   border-right:1px solid var(--border);
+}
+
+body.viz-active .app{
+  max-width:none;
+  width:100vw;
+  border-left:0;
+  border-right:0;
+  overflow:hidden;
 }
 
    .screen{
@@ -1430,20 +1459,23 @@ body.keyboard-open .messages{
   background: #fff;
 }
 
+/* Main dashboard viewport */
 .medora-wide-scroll {
   width: 100%;
-  height: calc(100vh - 86px - 78px);
+  height: calc(100dvh - 86px - 78px);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   background: #020b14;
   padding: 0;
-  padding-bottom: 140px;
   position: relative;
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y pinch-zoom;
 }
 
+/* The full desktop dashboard canvas */
 .medora-dashboard-canvas {
   width: 1660px;
-  height: 1240px;
+  height: 930px;
   position: relative;
   transform-origin: top left;
   background:
@@ -1456,20 +1488,31 @@ body.keyboard-open .messages{
   transition: transform .22s ease;
 }
 
+/* Fit Page mode */
 .medora-wide-scroll.fit-mode {
   overflow: hidden;
 }
 
 .medora-wide-scroll.fit-mode .medora-dashboard-canvas {
   pointer-events: auto;
+  transform-origin: top left;
 }
 
 body.viz-fit-mode .nav {
   display: none;
 }
 
+body.viz-fit-mode .topbar {
+  height: 56px;
+}
+
+body.viz-fit-mode .brand-row {
+  font-size: 22px;
+}
+
 body.viz-fit-mode .medora-wide-scroll {
-  height: calc(100vh - 86px);
+  height: calc(100dvh - 56px);
+  overflow: hidden;
 }
 
 /* left menu */
@@ -1924,6 +1967,24 @@ body.viz-fit-mode .medora-wide-scroll {
 }
 
 /* human center */
+
+.medora-body-viewer-wrap {
+  position: absolute;
+  left: 62px;
+  top: 52px;
+  width: 310px;
+  height: 430px;
+  z-index: 3;
+  filter: drop-shadow(0 0 24px rgba(0,217,255,.65));
+}
+
+.medora-body-viewer {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  background: transparent;
+}
+
 .viz-human-title {
   text-align: center;
   color: #cbefff;
@@ -2261,6 +2322,7 @@ body.viz-fit-mode .medora-wide-scroll {
   width: 540px;
   min-height: 220px;
   padding: 16px;
+  z-index: 4;
 }
 
 .insight-pill {
@@ -2326,20 +2388,25 @@ body.viz-fit-mode .medora-wide-scroll {
   padding: 10px 14px;
 }
 
+/* Bottom-right floating Sleep Detail Card */
 .viz-floating-sleep-card {
   position: absolute;
-  left: 552px;
-  top: 930px;
-  width: 1084px;
-  min-height: 260px;
+  left: 1115px;
+  top: 610px;
+  width: 520px;
+  min-height: 275px;
   padding: 16px;
   box-shadow: 0 0 28px rgba(0, 217, 255, .32);
+  z-index: 4;
 }
+
+/* Keep the inside compact like the reference image */
 .sleep-detail-layout {
   margin-top: 12px;
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 18px;
+  grid-template-columns: 110px 1fr;
+  gap: 14px;
+  align-items: start;
 }
 
 .sleep-metrics div {
@@ -2367,12 +2434,12 @@ body.viz-fit-mode .medora-wide-scroll {
 }
 
 .wide-bar-scroll {
-  overflow-x: auto;
+  overflow-x: hidden;
   padding-bottom: 8px;
 }
 
 .sleep-bars-wide {
-  width: 760px;
+  width: 360px;
   height: 150px;
   display: flex;
   align-items: end;
@@ -2383,10 +2450,11 @@ body.viz-fit-mode .medora-wide-scroll {
 }
 
 .sleep-bars-wide i {
-  width: 12px;
+  width: 10px;
   height: 60%;
   border-radius: 6px 6px 0 0;
   background: linear-gradient(180deg, #9d5cff 0 35%, #20e4ff 35% 78%, #275dff 78%);
+  flex: none;
 }
 
 .sleep-bars-wide i:nth-child(3n) { height: 75%; }
@@ -3396,7 +3464,7 @@ body.viz-fit-mode .medora-wide-scroll {
         </div>
 
         <div class="viz-header-actions">
-          <button class="viz-assistant-btn" onclick="toggleVizFitMode()">⛶ Fit Page</button>
+          <button class="viz-assistant-btn" id="vizFitBtn" onclick="toggleVizFitMode()">⛶ Fit Page</button>
           <button class="viz-assistant-btn" onclick="openScreen('chat')">✦ AI Health Assistant ›</button>
           <button class="viz-bell">♧</button>
           <div class="viz-profile-chip" onclick="openScreen('profile')">
@@ -3536,21 +3604,21 @@ body.viz-fit-mode .medora-wide-scroll {
         <div class="organ-tag stomach">◖ <span>Stomach<br><b>Good</b></span></div>
         <div class="organ-tag joints">🦴 <span>Joints<br><b>Mild Stress</b></span></div>
 
-        <div class="human-glow">
-          <div class="human-head"></div>
-          <div class="human-neck"></div>
-          <div class="human-torso"></div>
-          <div class="human-arm left"></div>
-          <div class="human-arm right"></div>
-          <div class="human-leg left"></div>
-          <div class="human-leg right"></div>
-          <div class="hotspot shoulder-left"></div>
-          <div class="hotspot shoulder-right"></div>
-          <div class="hotspot stomach-hot"></div>
-          <div class="hotspot knee-left"></div>
-          <div class="hotspot knee-right"></div>
-          <div class="human-ring"></div>
-        </div>
+        <div class="medora-body-viewer-wrap">
+  <model-viewer
+    id="medoraBodyViewer"
+    class="medora-body-viewer"
+    src="/models/female-body.glb"
+    camera-controls
+    interaction-prompt="none"
+    shadow-intensity="0"
+    exposure="1.1"
+    camera-orbit="0deg 78deg 3.2m"
+    min-camera-orbit="auto auto 2.4m"
+    max-camera-orbit="auto auto 5m"
+    touch-action="pan-y"
+  ></model-viewer>
+</div>
 
         <div class="human-tabs">
             <button class="active" onclick="setHumanView(this, 'front')">Front</button>
@@ -3999,6 +4067,13 @@ function formatHours(value) {
 function openScreen(id) {
   const screen = document.getElementById(id);
   if (!screen) return;
+
+document.body.classList.toggle("viz-active", id === "visualization");
+
+if (id !== "visualization") {
+  vizFitMode = false;
+  document.body.classList.remove("viz-fit-mode");
+}
 
   document.querySelectorAll(".screen").forEach(s => {
     s.classList.remove("active");
@@ -6035,10 +6110,17 @@ function applyVizFitMode() {
 
   if (!scroll || !canvas) return;
 
+  const canvasWidth = 1660;
+  const canvasHeight = 1240;
+
   if (!vizFitMode) {
     scroll.classList.remove("fit-mode");
     document.body.classList.remove("viz-fit-mode");
+
     canvas.style.transform = "";
+    canvas.style.width = `${canvasWidth}px`;
+    canvas.style.height = `${canvasHeight}px`;
+
     scroll.scrollLeft = 0;
     scroll.scrollTop = 0;
     return;
@@ -6047,24 +6129,35 @@ function applyVizFitMode() {
   scroll.classList.add("fit-mode");
   document.body.classList.add("viz-fit-mode");
 
-  const canvasWidth = 1660;
-  const canvasHeight = 1240;
+  requestAnimationFrame(() => {
+    const availableWidth = scroll.clientWidth;
+    const availableHeight = scroll.clientHeight;
 
-  const availableWidth = scroll.clientWidth;
-  const availableHeight = scroll.clientHeight;
+    const scale = Math.min(
+      availableWidth / canvasWidth,
+      availableHeight / canvasHeight
+    );
 
-  const scale = Math.min(
-    availableWidth / canvasWidth,
-    availableHeight / canvasHeight
-  );
+    canvas.style.transform = `scale(${scale})`;
 
-  canvas.style.transform = `scale(${scale})`;
-  scroll.scrollLeft = 0;
-  scroll.scrollTop = 0;
+    // Important: this keeps the scroll container from acting like
+    // the unscaled 1660 x 1240 canvas is still full size.
+    canvas.style.width = `${canvasWidth}px`;
+    canvas.style.height = `${canvasHeight}px`;
+
+    scroll.scrollLeft = 0;
+    scroll.scrollTop = 0;
+  });
 }
 
 function toggleVizFitMode() {
   vizFitMode = !vizFitMode;
+
+  const btn = document.getElementById("vizFitBtn");
+  if (btn) {
+    btn.textContent = vizFitMode ? "↔ Scroll View" : "⛶ Fit Page";
+  }
+
   applyVizFitMode();
 }
 
