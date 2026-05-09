@@ -1432,18 +1432,20 @@ body.keyboard-open .messages{
 
 .medora-wide-scroll {
   width: 100%;
-  overflow-x: auto;
-  overflow-y: auto;
+  height: calc(100vh - 86px - 78px);
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
   background: #020b14;
   padding: 0;
-  padding-bottom: 120px;
+  padding-bottom: 140px;
+  position: relative;
 }
 
 .medora-dashboard-canvas {
   width: 1660px;
-  min-height: 930px;
+  height: 1240px;
   position: relative;
+  transform-origin: top left;
   background:
     radial-gradient(circle at 48% 35%, rgba(0, 183, 255, .17), transparent 27%),
     radial-gradient(circle at 78% 60%, rgba(0, 255, 204, .08), transparent 25%),
@@ -1451,6 +1453,23 @@ body.keyboard-open .messages{
   color: #e8faff;
   font-family: Inter, system-ui, sans-serif;
   padding: 26px 22px;
+  transition: transform .22s ease;
+}
+
+.medora-wide-scroll.fit-mode {
+  overflow: hidden;
+}
+
+.medora-wide-scroll.fit-mode .medora-dashboard-canvas {
+  pointer-events: auto;
+}
+
+body.viz-fit-mode .nav {
+  display: none;
+}
+
+body.viz-fit-mode .medora-wide-scroll {
+  height: calc(100vh - 86px);
 }
 
 /* left menu */
@@ -2309,19 +2328,18 @@ body.keyboard-open .messages{
 
 .viz-floating-sleep-card {
   position: absolute;
-  left: 1115px;
-  top: 610px;
-  width: 520px;
-  min-height: 275px;
+  left: 552px;
+  top: 930px;
+  width: 1084px;
+  min-height: 260px;
   padding: 16px;
   box-shadow: 0 0 28px rgba(0, 217, 255, .32);
 }
-
 .sleep-detail-layout {
   margin-top: 12px;
   display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 14px;
+  grid-template-columns: 260px 1fr;
+  gap: 18px;
 }
 
 .sleep-metrics div {
@@ -2354,7 +2372,7 @@ body.keyboard-open .messages{
 }
 
 .sleep-bars-wide {
-  width: 470px;
+  width: 760px;
   height: 150px;
   display: flex;
   align-items: end;
@@ -3378,6 +3396,7 @@ body.keyboard-open .messages{
         </div>
 
         <div class="viz-header-actions">
+          <button class="viz-assistant-btn" onclick="toggleVizFitMode()">⛶ Fit Page</button>
           <button class="viz-assistant-btn" onclick="openScreen('chat')">✦ AI Health Assistant ›</button>
           <button class="viz-bell">♧</button>
           <div class="viz-profile-chip" onclick="openScreen('profile')">
@@ -6008,6 +6027,47 @@ function getTimeGreeting() {
   return "Good evening,";
 }
 
+let vizFitMode = false;
+
+function applyVizFitMode() {
+  const scroll = document.querySelector(".medora-wide-scroll");
+  const canvas = document.querySelector(".medora-dashboard-canvas");
+
+  if (!scroll || !canvas) return;
+
+  if (!vizFitMode) {
+    scroll.classList.remove("fit-mode");
+    document.body.classList.remove("viz-fit-mode");
+    canvas.style.transform = "";
+    scroll.scrollLeft = 0;
+    scroll.scrollTop = 0;
+    return;
+  }
+
+  scroll.classList.add("fit-mode");
+  document.body.classList.add("viz-fit-mode");
+
+  const canvasWidth = 1660;
+  const canvasHeight = 1240;
+
+  const availableWidth = scroll.clientWidth;
+  const availableHeight = scroll.clientHeight;
+
+  const scale = Math.min(
+    availableWidth / canvasWidth,
+    availableHeight / canvasHeight
+  );
+
+  canvas.style.transform = `scale(${scale})`;
+  scroll.scrollLeft = 0;
+  scroll.scrollTop = 0;
+}
+
+function toggleVizFitMode() {
+  vizFitMode = !vizFitMode;
+  applyVizFitMode();
+}
+
 function updateDataVisualizationFromApp() {
   const data = getVizData();
 
@@ -6066,6 +6126,8 @@ function updateDataVisualizationFromApp() {
   updateMiniChartBars(data.health);
   updateHydrationList(data);
   updateAnalysisText(data);
+  
+  applyVizFitMode();
 }
 
 function updateTextInCard(selector, html) {
@@ -6367,6 +6429,7 @@ window.saveFluids = saveFluids;
 window.generateDoctorReport = generateDoctorReport;
 window.renderPatterns = renderPatterns;
 window.updateDataVisualizationFromApp = updateDataVisualizationFromApp;
+window.toggleVizFitMode = toggleVizFitMode;
 window.openVizDetail = openVizDetail;
 window.closeVizDetail = closeVizDetail;
 window.setHumanView = setHumanView;
@@ -6382,6 +6445,11 @@ window.resizeComposer = resizeComposer;
       loadProfileFields();
       updateHomeMetrics();
       renderChat();
+      window.addEventListener("resize", () => {
+  if (document.getElementById("visualization")?.classList.contains("active")) {
+    applyVizFitMode();
+  }
+});
     };
   </script>
 </body>
