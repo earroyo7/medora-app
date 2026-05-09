@@ -3719,16 +3719,16 @@ body.viz-active .nav {
   shadow-intensity="0"
   exposure="1.1"
 
-  camera-orbit="0deg 76deg 6.2m"
-  min-camera-orbit="auto auto 3.2m"
-  max-camera-orbit="auto auto 10m"
-  field-of-view="28deg"
+  camera-orbit="0deg 76deg 10m"
+  min-camera-orbit="auto auto 6m"
+  max-camera-orbit="auto auto 16m"
+  field-of-view="24deg"
   min-field-of-view="18deg"
-  max-field-of-view="45deg"
-
+  max-field-of-view="50deg"
   camera-target="0m 1.25m 0m"
+
   touch-action="pan-y"
-></model-viewer>
+></model-viewer>m
 </div>
 
         <div class="human-tabs">
@@ -6628,7 +6628,7 @@ function setHumanView(button, view) {
   const viewer = document.getElementById("medoraBodyViewer");
   if (!viewer) return;
 
-  const distance = "6.2m";
+  const distance = "10m";
 
   const orbits = {
     front: `0deg 76deg ${distance}`,
@@ -6637,9 +6637,9 @@ function setHumanView(button, view) {
     right: `90deg 76deg ${distance}`
   };
 
-  viewer.setAttribute("camera-orbit", orbits[view] || orbits.front);
   viewer.setAttribute("camera-target", "0m 1.25m 0m");
-  viewer.setAttribute("field-of-view", "28deg");
+  viewer.setAttribute("camera-orbit", orbits[view] || orbits.front);
+  viewer.setAttribute("field-of-view", "24deg");
 }
 
 function setBodyModel(button, type) {
@@ -6663,6 +6663,27 @@ function setBodyModel(button, type) {
   data.settings = data.settings || {};
   data.settings.bodyModel = type;
   saveData(data);
+}
+
+function forceBodyCamera() {
+  const viewer = document.getElementById("medoraBodyViewer");
+  if (!viewer) return;
+
+  const applyCamera = () => {
+    viewer.setAttribute("camera-target", "0m 1.25m 0m");
+    viewer.setAttribute("camera-orbit", "0deg 76deg 10m");
+    viewer.setAttribute("field-of-view", "24deg");
+    viewer.setAttribute("min-camera-orbit", "auto auto 6m");
+    viewer.setAttribute("max-camera-orbit", "auto auto 16m");
+  };
+
+  applyCamera();
+
+  viewer.addEventListener("load", () => {
+    setTimeout(applyCamera, 100);
+    setTimeout(applyCamera, 500);
+    setTimeout(applyCamera, 1000);
+  });
 }
 
     window.onload = function() {
@@ -6690,7 +6711,9 @@ window.sendMessage = sendMessage;
 window.sendChip = sendChip;
 window.handleUpload = handleUpload;
 window.handleMessageKeydown = handleMessageKeydown;
-window.resizeComposer = resizeComposer; 
+window.resizeComposer = resizeComposer;
+window.forceBodyCamera = forceBodyCamera;
+      forceBodyCamera(); 
       migrateBotRoleToMedora();
       loadProfileFields();
       updateHomeMetrics();
