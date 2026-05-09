@@ -2001,12 +2001,14 @@ body.viz-fit-mode .medora-wide-scroll {
 
 .medora-body-viewer-wrap {
   position: absolute;
-  left: 62px;
-  top: 52px;
-  width: 310px;
-  height: 430px;
+  left: 50%;
+  top: 58px;
+  transform: translateX(-50%);
+  width: 390px;
+  height: 500px;
   z-index: 3;
   filter: drop-shadow(0 0 24px rgba(0,217,255,.65));
+  overflow: visible;
 }
 
 .medora-body-viewer {
@@ -2604,6 +2606,20 @@ body.viz-fit-mode .medora-wide-scroll {
   }
 }
 
+#visualization.screen {
+  padding-bottom: 0 !important;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+#visualization .medora-wide-scroll {
+  height: calc(100dvh - 86px - 78px);
+  background: #020b14;
+}
+
+body.viz-active .nav {
+  background: #fff;
+}
   </style>
 </head>
 
@@ -3644,19 +3660,21 @@ body.viz-fit-mode .medora-wide-scroll {
 <model-viewer
   id="medoraBodyViewer"
   class="medora-body-viewer"
-  src="/models/female-body.glb"
+  src="models/female-body.glb"
   camera-controls
-  auto-rotate
   interaction-prompt="none"
-  shadow-intensity="0.4"
-  exposure="1.4"
-  camera-orbit="0deg 75deg 2.2m"
-  min-camera-orbit="auto auto 1.2m"
-  max-camera-orbit="auto auto 5m"
-  field-of-view="25deg"
+  shadow-intensity="0"
+  exposure="1.05"
+
+  camera-orbit="0deg 75deg 7m"
+  camera-target="0m 1.1m 0m"
+  min-camera-orbit="auto auto 2.2m"
+  max-camera-orbit="auto auto 12m"
+  field-of-view="28deg"
+  min-field-of-view="18deg"
+  max-field-of-view="55deg"
+
   touch-action="pan-y"
-  onload="console.log('Female body model loaded')"
-  onerror="alert('3D model failed to load')"
 ></model-viewer>
 </div>
 
@@ -6558,13 +6576,14 @@ function setHumanView(button, view) {
   if (!viewer) return;
 
   const orbits = {
-    front: "0deg 78deg 3.2m",
-    back: "180deg 78deg 3.2m",
-    left: "-90deg 78deg 3.2m",
-    right: "90deg 78deg 3.2m"
+    front: "0deg 75deg 7m",
+    back: "180deg 75deg 7m",
+    left: "-90deg 75deg 7m",
+    right: "90deg 75deg 7m"
   };
 
   viewer.setAttribute("camera-orbit", orbits[view] || orbits.front);
+  viewer.setAttribute("camera-target", "0m 1.1m 0m");
 }
 
 function setBodyModel(button, type) {
