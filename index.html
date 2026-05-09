@@ -33,24 +33,25 @@
       color:var(--text);
     }
 
-    .app{
-      max-width:430px;
-      margin:0 auto;
-      min-height:100vh;
-      background:#fff;
-      position:relative;
-      overflow-x:hidden;
-      border-left:1px solid var(--border);
-      border-right:1px solid var(--border);
-    }
+   .app{
+  max-width:430px;
+  width:100%;
+  margin:0 auto;
+  height:100vh;
+  background:#fff;
+  position:relative;
+  overflow:hidden;
+  border-left:1px solid var(--border);
+  border-right:1px solid var(--border);
+}
 
     .screen{
-      display:none;
-      min-height:100vh;
-      padding-bottom:88px;
-      animation:fade .2s ease;
-    }
-
+  display:none;
+  height:100vh;
+  overflow:hidden;
+  padding-bottom:0;
+  animation:fade .2s ease;
+}
     .screen.active{display:block}
 
     @keyframes fade{
@@ -379,14 +380,18 @@
     }
 
     .chat-top{
-      height:76px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:14px 20px;
-      border-bottom:1px solid #F1F3F7;
-      background:#fff;
-    }
+  height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 20px;
+  border-bottom:1px solid #F1F3F7;
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:40;
+  flex:none;
+}
 
     .chat-title{
       display:flex;
@@ -413,11 +418,20 @@
     }
 
     .messages{
-  padding:18px 18px 170px;
+  padding:18px 18px 190px;
   background:#FBFCFF;
   height:calc(100vh - 76px);
   overflow-y:auto;
-  scroll-padding-bottom:170px;
+  overflow-x:hidden;
+  scroll-padding-bottom:190px;
+  -webkit-overflow-scrolling:touch;
+  display:flex;
+  flex-direction:column;
+}
+
+.messages::before{
+  content:"";
+  flex:1;
 }
 
 .upload-preview{
@@ -446,8 +460,9 @@
   gap:8px;
   margin:8px 0;
   align-items:flex-end;
+  width:100%;
+  flex-shrink:0;
 }
-
 .row.user{
   justify-content:flex-end;
 }
@@ -471,8 +486,8 @@
   line-height:1.28;
   box-shadow:0 4px 12px rgba(24,39,75,.05);
   white-space:normal;
-  overflow-wrap:break-word;
-  word-break:normal;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .user .bubble{
@@ -1544,10 +1559,10 @@ body.keyboard-open .messages{
       if (id === "doctor") generateDoctorReport();
       if (id === "home") updateHomeMetrics();
       if (id === "chat") {
-        renderChat();
-        scrollChatToBottom();
-      }
-
+  renderChat();
+  setTimeout(scrollChatToBottom, 80);
+  setTimeout(scrollChatToBottom, 250);
+}
       window.scrollTo(0,0);
     }
 
@@ -2746,13 +2761,17 @@ function removeThinking(){
     }
 
     function scrollChatToBottom() {
-      const box = document.getElementById("messages");
-      if (!box) return;
+  const box = document.getElementById("messages");
+  if (!box) return;
 
-      setTimeout(() => {
-        box.scrollTop = box.scrollHeight;
-      }, 150);
-    }
+  requestAnimationFrame(() => {
+    box.scrollTop = box.scrollHeight;
+  });
+
+  setTimeout(() => {
+    box.scrollTop = box.scrollHeight;
+  }, 120);
+}
 
     function toggleQuickMenu() {
       const menu = document.getElementById("quickMenu");
