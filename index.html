@@ -3644,7 +3644,7 @@ body.viz-fit-mode .medora-wide-scroll {
 <model-viewer
   id="medoraBodyViewer"
   class="medora-body-viewer"
-  src="models/female-body.glb"
+  src="/models/female-body.glb"
   camera-controls
   auto-rotate
   interaction-prompt="none"
@@ -6209,8 +6209,8 @@ const bodyViewer = document.getElementById("medoraBodyViewer");
 
 if (bodyViewer) {
   const savedSrc = savedBodyModel === "male"
-  ? "models/male-body.glb"
-  : "models/female-body.glb";
+  ? "/models/male-body.glb"
+  : "/models/female-body.glb";
 
   if (bodyViewer.getAttribute("src") !== savedSrc) {
     bodyViewer.setAttribute("src", savedSrc);
@@ -6578,9 +6578,9 @@ function setBodyModel(button, type) {
   if (button) button.classList.add("active");
 
   const models = {
-    female: "models/female-body.glb",
-    male: "models/male-body.glb"
-  };
+  female: "/models/female-body.glb",
+  male: "/models/male-body.glb"
+};
 
   viewer.setAttribute("src", models[type] || models.female);
 
