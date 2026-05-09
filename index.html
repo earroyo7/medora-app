@@ -916,6 +916,159 @@ body.keyboard-open .messages{
   padding-bottom:calc(250px + var(--keyboard-height, 0px));
 }
 
+/* =========================
+   Medora Detailed Log UI
+========================= */
+
+.form-intro {
+  background: linear-gradient(135deg, #EAF3FF, #F8FBFF);
+  border: 1px solid #D7E7FF;
+  border-radius: 22px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.form-intro h3 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.form-intro p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.log-section {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 16px;
+  margin-top: 14px;
+  box-shadow: 0 8px 22px rgba(24,39,75,.05);
+}
+
+.log-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.log-section-title span {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: #F8FAFC;
+  color: #344054;
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chip input {
+  display: none;
+}
+
+.chip:has(input:checked) {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 8px 18px rgba(47,128,237,.18);
+}
+
+.helper-text {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-row input[type="range"] {
+  padding: 0;
+}
+
+.score-pill {
+  min-width: 48px;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 900;
+}
+
+.mini-summary {
+  background: #F8FBFF;
+  border: 1px dashed #CFE1FF;
+  border-radius: 18px;
+  padding: 13px;
+  color: #475467;
+  font-size: 13px;
+  line-height: 1.45;
+  margin-top: 12px;
+}
+
+.warning-soft {
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  border-radius: 16px;
+  padding: 12px;
+  color: #9A3412;
+  font-size: 13px;
+  line-height: 1.45;
+  margin-top: 12px;
+}
+
+@media (max-width: 380px) {
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
   </style>
 </head>
 
@@ -1187,136 +1340,523 @@ body.keyboard-open .messages{
       </div>
     </section>
 
-    <section id="health" class="screen">
-      <div class="topbar">
-        <button class="icon-btn" onclick="openScreen('home')">‹</button>
-        <div class="brand-row">Log Health</div>
-        <span></span>
+<section id="health" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="openScreen('home')">‹</button>
+    <div class="brand-row">Log Health</div>
+    <span></span>
+  </div>
+
+  <div class="content">
+
+    <div class="form-intro">
+      <h3>Today’s Health Check-In</h3>
+      <p>Log your body, mood, sleep, symptoms, and daily context so Medora can detect patterns over time.</p>
+    </div>
+
+    <div class="log-section">
+      <h3 class="log-section-title"><span>☀️</span> Today’s Baseline</h3>
+
+      <label>Mood</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="moodChips" value="Calm"> Calm</label>
+        <label class="chip"><input type="checkbox" name="moodChips" value="Good"> Good</label>
+        <label class="chip"><input type="checkbox" name="moodChips" value="Anxious"> Anxious</label>
+        <label class="chip"><input type="checkbox" name="moodChips" value="Sad"> Sad</label>
+        <label class="chip"><input type="checkbox" name="moodChips" value="Irritable"> Irritable</label>
+        <label class="chip"><input type="checkbox" name="moodChips" value="Overwhelmed"> Overwhelmed</label>
       </div>
+      <input id="moodOther" placeholder="Other mood or emotion">
 
-      <div class="content">
-        <div class="card">
-          <label>Mood</label>
-          <input id="mood" placeholder="Anxious, calm, sad, tired...">
-
+      <div class="field-grid">
+        <div>
           <label>Sleep hours</label>
-          <input id="sleep" type="number" placeholder="Example: 6">
+          <input id="sleep" type="number" min="0" step="0.5" placeholder="Example: 6.5">
+        </div>
 
+        <div>
+          <label>Sleep quality 1-10</label>
+          <input id="sleepQuality" type="number" min="1" max="10" placeholder="Example: 7">
+        </div>
+
+        <div>
           <label>Energy level 1-10</label>
-          <input id="energy" type="number" min="1" max="10">
+          <input id="energy" type="number" min="1" max="10" placeholder="Example: 5">
+        </div>
 
+        <div>
           <label>Pain level 1-10</label>
-          <input id="pain" type="number" min="1" max="10">
-
-          <label>Symptoms</label>
-<textarea id="symptoms" placeholder="Headache, nausea, dizziness, cramps..."></textarea>
-
-<label>Anxiety level 1-10</label>
-<input id="healthAnxiety" type="number" min="1" max="10" placeholder="Example: 7">
-
-<label>Stress level 1-10</label>
-<input id="healthStress" type="number" min="1" max="10" placeholder="Example: 6">
-
-<label>Water cups today</label>
-<input id="healthWater" type="number" min="0" placeholder="Example: 4">
-
-<label>Caffeine today</label>
-<input id="healthCaffeine" placeholder="Example: 2 coffees, energy drink, tea">
-
-<label>Food notes</label>
-<textarea id="healthFood" placeholder="What did you eat? Any bloating, nausea, cravings, stomach pain?"></textarea>
-
-<label>Activity / movement</label>
-<input id="healthActivity" placeholder="Example: 20 min walk, gym, none">
-
-<label>Medication / supplements</label>
-<input id="healthMedication" placeholder="Taken, skipped, changed, side effects...">
-
-<label>Menstrual cycle</label>
-<input id="healthCycle" placeholder="Period, cramps, ovulation, PMS, not applicable">
-
-<label>Environment</label>
-<input id="healthEnvironment" placeholder="Weather, allergies, heat, noise, work stress, travel...">
-
-<label>Notes</label>
-<textarea id="healthNotes" placeholder="Anything else that might matter today?"></textarea>
-
-<button class="primary" onclick="saveHealth()">Save Health Log</button>
+          <input id="pain" type="number" min="0" max="10" placeholder="Example: 2">
         </div>
-      </div>
-    </section>
 
-    <section id="anxietyPage" class="screen">
-      <div class="topbar">
-        <button class="icon-btn" onclick="openScreen('home')">‹</button>
-        <div class="brand-row">Anxiety</div>
-        <span></span>
-      </div>
-
-      <div class="content">
-        <div class="card">
+        <div>
           <label>Anxiety level 1-10</label>
-          <input id="anxietyLevel" type="number" min="1" max="10">
+          <input id="healthAnxiety" type="number" min="0" max="10" placeholder="Example: 7">
+        </div>
 
-          <label>Trigger</label>
-          <input id="trigger" placeholder="What caused it?">
-
-          <label>Body symptoms</label>
-          <textarea id="bodySymptoms" placeholder="Racing heart, tight chest, shaking..."></textarea>
-
-          <label>What helped?</label>
-          <textarea id="coping" placeholder="Breathing, walking, talking, rest..."></textarea>
-
-          <button class="primary" onclick="saveAnxiety()">Save Anxiety Check-In</button>
+        <div>
+          <label>Stress level 1-10</label>
+          <input id="healthStress" type="number" min="0" max="10" placeholder="Example: 6">
         </div>
       </div>
-    </section>
+    </div>
 
-    <section id="food" class="screen">
-      <div class="topbar">
-        <button class="icon-btn" onclick="openScreen('home')">‹</button>
-        <div class="brand-row">Food</div>
-        <span></span>
+    <div class="log-section">
+      <h3 class="log-section-title"><span>🩺</span> Symptoms & Body Signals</h3>
+
+      <label>Symptoms</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="symptomChips" value="Headache"> Headache</label>
+        <label class="chip"><input type="checkbox" name="symptomChips" value="Fatigue"> Fatigue</label>
+        <label class="chip"><input type="checkbox" name="symptomChips" value="Nausea"> Nausea</label>
+        <label class="chip"><input type="checkbox" name="symptomChips" value="Dizziness"> Dizziness</label>
+        <label class="chip"><input type="checkbox" name="symptomChips" value="Cramps"> Cramps</label>
+        <label class="chip"><input type="checkbox" name="symptomChips" value="Bloating"> Bloating</label>
+        <label class="chip"><input type="checkbox" name="symptomChips" value="Chest tightness"> Chest tightness</label>
+        <label class="chip"><input type="checkbox" name="symptomChips" value="Muscle tension"> Muscle tension</label>
       </div>
 
-      <div class="content">
-        <div class="card">
-          <label>Meal</label>
-          <input id="meal" placeholder="Breakfast, lunch, dinner, snack">
+      <textarea id="symptomsOther" placeholder="Other symptoms or body signals"></textarea>
 
-          <label>What did you eat?</label>
-          <textarea id="foodText"></textarea>
+      <div class="field-grid">
+        <div>
+          <label>Symptom severity 1-10</label>
+          <input id="symptomSeverity" type="number" min="0" max="10" placeholder="Example: 6">
+        </div>
 
-          <label>Reaction after eating</label>
-          <textarea id="foodReaction" placeholder="Bloated, energized, tired, stomach pain..."></textarea>
+        <div>
+          <label>Body location</label>
+          <select id="bodyLocation">
+            <option value="">Select</option>
+            <option>Head</option>
+            <option>Neck / shoulders</option>
+            <option>Chest</option>
+            <option>Stomach / abdomen</option>
+            <option>Lower back</option>
+            <option>Joints</option>
+            <option>Whole body</option>
+            <option>Other</option>
+          </select>
+        </div>
 
-          <button class="primary" onclick="saveFood()">Save Food Log</button>
+        <div>
+          <label>Started around</label>
+          <input id="symptomStartTime" type="time">
+        </div>
+
+        <div>
+          <label>Duration</label>
+          <select id="symptomDuration">
+            <option value="">Select</option>
+            <option>Less than 30 minutes</option>
+            <option>30 minutes - 1 hour</option>
+            <option>1 - 3 hours</option>
+            <option>Half day</option>
+            <option>All day</option>
+            <option>Ongoing</option>
+          </select>
         </div>
       </div>
-    </section>
 
-    <section id="fluids" class="screen">
-      <div class="topbar">
-        <button class="icon-btn" onclick="openScreen('home')">‹</button>
-        <div class="brand-row">Fluids</div>
-        <span></span>
+      <label>Possible trigger</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="triggerChips" value="Poor sleep"> Poor sleep</label>
+        <label class="chip"><input type="checkbox" name="triggerChips" value="Stress"> Stress</label>
+        <label class="chip"><input type="checkbox" name="triggerChips" value="Caffeine"> Caffeine</label>
+        <label class="chip"><input type="checkbox" name="triggerChips" value="Dehydration"> Dehydration</label>
+        <label class="chip"><input type="checkbox" name="triggerChips" value="Food"> Food</label>
+        <label class="chip"><input type="checkbox" name="triggerChips" value="Medication"> Medication</label>
+        <label class="chip"><input type="checkbox" name="triggerChips" value="Cycle / hormones"> Cycle / hormones</label>
+        <label class="chip"><input type="checkbox" name="triggerChips" value="Unknown"> Unknown</label>
+      </div>
+      <input id="triggerOther" placeholder="Other possible trigger">
+
+      <label>Relief tried</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="reliefChips" value="Water"> Water</label>
+        <label class="chip"><input type="checkbox" name="reliefChips" value="Rest"> Rest</label>
+        <label class="chip"><input type="checkbox" name="reliefChips" value="Medication"> Medication</label>
+        <label class="chip"><input type="checkbox" name="reliefChips" value="Breathing"> Breathing</label>
+        <label class="chip"><input type="checkbox" name="reliefChips" value="Walk"> Walk</label>
+        <label class="chip"><input type="checkbox" name="reliefChips" value="Food"> Food</label>
+        <label class="chip"><input type="checkbox" name="reliefChips" value="Heat / ice"> Heat / ice</label>
       </div>
 
-      <div class="content">
-        <div class="card">
+      <select id="reliefResult">
+        <option value="">Did it help?</option>
+        <option>Helped</option>
+        <option>Somewhat helped</option>
+        <option>No change</option>
+        <option>Made it worse</option>
+      </select>
+    </div>
+
+    <div class="log-section">
+      <h3 class="log-section-title"><span>🍽</span> Food, Fluids & Lifestyle</h3>
+
+      <label>Water cups today</label>
+      <input id="healthWater" type="number" min="0" placeholder="Example: 4">
+
+      <label>Caffeine today</label>
+      <input id="healthCaffeine" placeholder="Example: 2 coffees, tea, energy drink">
+
+      <label>Food notes</label>
+      <textarea id="healthFood" placeholder="Meals, skipped meals, cravings, bloating, nausea, stomach pain"></textarea>
+
+      <label>Activity / movement</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="activityChips" value="Walk"> Walk</label>
+        <label class="chip"><input type="checkbox" name="activityChips" value="Gym"> Gym</label>
+        <label class="chip"><input type="checkbox" name="activityChips" value="Stretching"> Stretching</label>
+        <label class="chip"><input type="checkbox" name="activityChips" value="Yoga"> Yoga</label>
+        <label class="chip"><input type="checkbox" name="activityChips" value="None"> None</label>
+      </div>
+      <input id="healthActivity" placeholder="Example: 20 min walk, gym, no movement">
+
+      <label>Medication / supplements</label>
+      <textarea id="healthMedication" placeholder="Taken, skipped, changed, dose, time, side effects"></textarea>
+    </div>
+
+    <div class="log-section">
+      <h3 class="log-section-title"><span>🌎</span> Context</h3>
+
+      <label>Environment</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="environmentChips" value="Heat"> Heat</label>
+        <label class="chip"><input type="checkbox" name="environmentChips" value="Cold"> Cold</label>
+        <label class="chip"><input type="checkbox" name="environmentChips" value="Allergies"> Allergies</label>
+        <label class="chip"><input type="checkbox" name="environmentChips" value="Noise"> Noise</label>
+        <label class="chip"><input type="checkbox" name="environmentChips" value="Travel"> Travel</label>
+        <label class="chip"><input type="checkbox" name="environmentChips" value="Work stress"> Work stress</label>
+        <label class="chip"><input type="checkbox" name="environmentChips" value="Relationship stress"> Relationship stress</label>
+      </div>
+      <input id="healthEnvironment" placeholder="Other environment or life context">
+
+      <label>Menstrual cycle / hormonal context</label>
+      <select id="healthCycle">
+        <option value="">Select if applicable</option>
+        <option>Not applicable</option>
+        <option>Period</option>
+        <option>PMS</option>
+        <option>Ovulation</option>
+        <option>Cramps</option>
+        <option>Spotting</option>
+        <option>Hormonal medication / birth control change</option>
+      </select>
+
+      <label>Notes</label>
+      <textarea id="healthNotes" placeholder="Anything else Medora should know today?"></textarea>
+
+      <div class="mini-summary">
+        Medora will compare this log with sleep, anxiety, food, hydration, symptoms, medications, and environment to find possible patterns.
+      </div>
+
+      <button class="primary" onclick="saveHealth()">Save Health Log</button>
+    </div>
+
+  </div>
+</section>
+
+<section id="anxietyPage" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="openScreen('home')">‹</button>
+    <div class="brand-row">Anxiety</div>
+    <span></span>
+  </div>
+
+  <div class="content">
+
+    <div class="form-intro">
+      <h3>Anxiety Episode Check-In</h3>
+      <p>Track what happened, what your body felt, what triggered it, and what helped.</p>
+    </div>
+
+    <div class="log-section">
+      <h3 class="log-section-title"><span>🧠</span> Episode Details</h3>
+
+      <label>Anxiety level 1-10</label>
+      <div class="slider-row">
+        <input id="anxietyLevel" type="range" min="0" max="10" value="5" oninput="document.getElementById('anxietyLevelValue').textContent=this.value + '/10'">
+        <div class="score-pill" id="anxietyLevelValue">5/10</div>
+      </div>
+
+      <div class="field-grid">
+        <div>
+          <label>Started around</label>
+          <input id="anxietyStartTime" type="time">
+        </div>
+
+        <div>
+          <label>Duration</label>
+          <select id="anxietyDuration">
+            <option value="">Select</option>
+            <option>Less than 10 minutes</option>
+            <option>10 - 30 minutes</option>
+            <option>30 - 60 minutes</option>
+            <option>1 - 3 hours</option>
+            <option>Most of the day</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Trigger</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="anxietyTriggerChips" value="Relationship"> Relationship</label>
+        <label class="chip"><input type="checkbox" name="anxietyTriggerChips" value="Work"> Work</label>
+        <label class="chip"><input type="checkbox" name="anxietyTriggerChips" value="Money"> Money</label>
+        <label class="chip"><input type="checkbox" name="anxietyTriggerChips" value="Health worry"> Health worry</label>
+        <label class="chip"><input type="checkbox" name="anxietyTriggerChips" value="Family"> Family</label>
+        <label class="chip"><input type="checkbox" name="anxietyTriggerChips" value="Social situation"> Social situation</label>
+        <label class="chip"><input type="checkbox" name="anxietyTriggerChips" value="Unknown"> Unknown</label>
+      </div>
+      <input id="trigger" placeholder="Other trigger or what caused it">
+
+      <label>Body symptoms</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="bodySymptomChips" value="Racing heart"> Racing heart</label>
+        <label class="chip"><input type="checkbox" name="bodySymptomChips" value="Tight chest"> Tight chest</label>
+        <label class="chip"><input type="checkbox" name="bodySymptomChips" value="Tight neck muscles"> Tight neck</label>
+        <label class="chip"><input type="checkbox" name="bodySymptomChips" value="Shortness of breath"> Short breath</label>
+        <label class="chip"><input type="checkbox" name="bodySymptomChips" value="Shaking"> Shaking</label>
+        <label class="chip"><input type="checkbox" name="bodySymptomChips" value="Sweating"> Sweating</label>
+        <label class="chip"><input type="checkbox" name="bodySymptomChips" value="Nausea"> Nausea</label>
+        <label class="chip"><input type="checkbox" name="bodySymptomChips" value="Stomach knot"> Stomach knot</label>
+      </div>
+      <textarea id="bodySymptoms" placeholder="Other body symptoms"></textarea>
+    </div>
+
+    <div class="log-section">
+      <h3 class="log-section-title"><span>💭</span> Thoughts & Coping</h3>
+
+      <label>Main thought or worry</label>
+      <textarea id="anxietyThoughts" placeholder="What was your mind saying during the episode?"></textarea>
+
+      <label>Coping used</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="copingChips" value="Breathing"> Breathing</label>
+        <label class="chip"><input type="checkbox" name="copingChips" value="Walking"> Walking</label>
+        <label class="chip"><input type="checkbox" name="copingChips" value="Talking to someone"> Talking</label>
+        <label class="chip"><input type="checkbox" name="copingChips" value="Music"> Music</label>
+        <label class="chip"><input type="checkbox" name="copingChips" value="Journaling"> Journaling</label>
+        <label class="chip"><input type="checkbox" name="copingChips" value="Rest"> Rest</label>
+        <label class="chip"><input type="checkbox" name="copingChips" value="Prayer / meditation"> Prayer / meditation</label>
+      </div>
+      <textarea id="coping" placeholder="Other things that helped"></textarea>
+
+      <label>After coping, anxiety level 1-10</label>
+      <input id="anxietyAfter" type="number" min="0" max="10" placeholder="Example: 4">
+
+      <label>What helped most?</label>
+      <input id="whatHelpedMost" placeholder="Example: spending time with my girlfriend">
+
+      <div class="warning-soft">
+        If anxiety includes chest pain, trouble breathing, fainting, or thoughts of self-harm, Medora should encourage urgent support instead of treating it like a normal check-in.
+      </div>
+
+      <button class="primary" onclick="saveAnxiety()">Save Anxiety Check-In</button>
+    </div>
+
+  </div>
+</section>
+
+<section id="food" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="openScreen('home')">‹</button>
+    <div class="brand-row">Food</div>
+    <span></span>
+  </div>
+
+  <div class="content">
+
+    <div class="form-intro">
+      <h3>Food Intake & Reaction Log</h3>
+      <p>Track meals, cravings, digestion, and reactions so Medora can connect food with symptoms, mood, sleep, and energy.</p>
+    </div>
+
+    <div class="log-section">
+      <h3 class="log-section-title"><span>🍽</span> Meal Details</h3>
+
+      <div class="field-grid">
+        <div>
+          <label>Meal type</label>
+          <select id="meal">
+            <option value="">Select</option>
+            <option>Breakfast</option>
+            <option>Lunch</option>
+            <option>Dinner</option>
+            <option>Snack</option>
+            <option>Late-night food</option>
+            <option>Skipped meal</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Meal time</label>
+          <input id="mealTime" type="time">
+        </div>
+      </div>
+
+      <label>What did you eat?</label>
+      <textarea id="foodText" placeholder="Example: eggs, toast, coffee, pasta, chicken, salad"></textarea>
+
+      <label>Food categories</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="foodCategoryChips" value="Protein"> Protein</label>
+        <label class="chip"><input type="checkbox" name="foodCategoryChips" value="Carbs"> Carbs</label>
+        <label class="chip"><input type="checkbox" name="foodCategoryChips" value="Dairy"> Dairy</label>
+        <label class="chip"><input type="checkbox" name="foodCategoryChips" value="Gluten"> Gluten</label>
+        <label class="chip"><input type="checkbox" name="foodCategoryChips" value="Fried food"> Fried</label>
+        <label class="chip"><input type="checkbox" name="foodCategoryChips" value="Spicy food"> Spicy</label>
+        <label class="chip"><input type="checkbox" name="foodCategoryChips" value="Sugar"> Sugar</label>
+        <label class="chip"><input type="checkbox" name="foodCategoryChips" value="Caffeine"> Caffeine</label>
+      </div>
+
+      <label>Appetite</label>
+      <select id="appetite">
+        <option value="">Select</option>
+        <option>Low</option>
+        <option>Normal</option>
+        <option>High</option>
+        <option>Cravings</option>
+        <option>No appetite</option>
+      </select>
+    </div>
+
+    <div class="log-section">
+      <h3 class="log-section-title"><span>🧬</span> Reaction & Digestion</h3>
+
+      <label>Reaction after eating</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="foodReactionChips" value="No reaction"> No reaction</label>
+        <label class="chip"><input type="checkbox" name="foodReactionChips" value="Bloated"> Bloated</label>
+        <label class="chip"><input type="checkbox" name="foodReactionChips" value="Nausea"> Nausea</label>
+        <label class="chip"><input type="checkbox" name="foodReactionChips" value="Stomach pain"> Stomach pain</label>
+        <label class="chip"><input type="checkbox" name="foodReactionChips" value="Reflux"> Reflux</label>
+        <label class="chip"><input type="checkbox" name="foodReactionChips" value="Tired"> Tired</label>
+        <label class="chip"><input type="checkbox" name="foodReactionChips" value="Energized"> Energized</label>
+        <label class="chip"><input type="checkbox" name="foodReactionChips" value="Anxious"> Anxious</label>
+      </div>
+
+      <textarea id="foodReaction" placeholder="Other reaction details"></textarea>
+
+      <div class="field-grid">
+        <div>
+          <label>Reaction started</label>
+          <select id="reactionDelay">
+            <option value="">Select</option>
+            <option>Immediately</option>
+            <option>Within 30 minutes</option>
+            <option>Within 1 hour</option>
+            <option>2 - 3 hours later</option>
+            <option>Later that day</option>
+            <option>Next day</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Reaction severity 1-10</label>
+          <input id="foodSeverity" type="number" min="0" max="10" placeholder="Example: 5">
+        </div>
+      </div>
+
+      <label>Cravings</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="cravingChips" value="Sweet"> Sweet</label>
+        <label class="chip"><input type="checkbox" name="cravingChips" value="Salty"> Salty</label>
+        <label class="chip"><input type="checkbox" name="cravingChips" value="Carbs"> Carbs</label>
+        <label class="chip"><input type="checkbox" name="cravingChips" value="Caffeine"> Caffeine</label>
+        <label class="chip"><input type="checkbox" name="cravingChips" value="None"> None</label>
+      </div>
+
+      <button class="primary" onclick="saveFood()">Save Food Log</button>
+    </div>
+
+  </div>
+</section>
+
+
+<section id="fluids" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="openScreen('home')">‹</button>
+    <div class="brand-row">Fluids</div>
+    <span></span>
+  </div>
+
+  <div class="content">
+
+    <div class="form-intro">
+      <h3>Hydration & Caffeine Log</h3>
+      <p>Track water, caffeine, electrolytes, and hydration symptoms so Medora can compare them with headaches, anxiety, sleep, and fatigue.</p>
+    </div>
+
+    <div class="log-section">
+      <h3 class="log-section-title"><span>💧</span> Hydration</h3>
+
+      <div class="field-grid">
+        <div>
           <label>Water cups today</label>
-          <input id="water" type="number">
+          <input id="water" type="number" min="0" placeholder="Example: 4">
+        </div>
 
-          <label>Caffeine</label>
-          <input id="caffeine" placeholder="Coffee, energy drinks, tea...">
-
-          <label>Hydration symptoms</label>
-          <textarea id="hydrationSymptoms" placeholder="Dry mouth, headache, dark urine..."></textarea>
-
-          <button class="primary" onclick="saveFluids()">Save Fluid Log</button>
+        <div>
+          <label>Electrolytes</label>
+          <select id="electrolytes">
+            <option value="">Select</option>
+            <option>No</option>
+            <option>Yes</option>
+            <option>Unsure</option>
+          </select>
         </div>
       </div>
-    </section>
+
+      <label>Hydration symptoms</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="hydrationSymptomChips" value="Dry mouth"> Dry mouth</label>
+        <label class="chip"><input type="checkbox" name="hydrationSymptomChips" value="Headache"> Headache</label>
+        <label class="chip"><input type="checkbox" name="hydrationSymptomChips" value="Dizziness"> Dizziness</label>
+        <label class="chip"><input type="checkbox" name="hydrationSymptomChips" value="Dark urine"> Dark urine</label>
+        <label class="chip"><input type="checkbox" name="hydrationSymptomChips" value="Fatigue"> Fatigue</label>
+        <label class="chip"><input type="checkbox" name="hydrationSymptomChips" value="None"> None</label>
+      </div>
+      <textarea id="hydrationSymptoms" placeholder="Other hydration notes"></textarea>
+    </div>
+
+    <div class="log-section">
+      <h3 class="log-section-title"><span>☕</span> Caffeine & Other Drinks</h3>
+
+      <label>Caffeine type</label>
+      <div class="chip-group">
+        <label class="chip"><input type="checkbox" name="caffeineTypeChips" value="Coffee"> Coffee</label>
+        <label class="chip"><input type="checkbox" name="caffeineTypeChips" value="Tea"> Tea</label>
+        <label class="chip"><input type="checkbox" name="caffeineTypeChips" value="Energy drink"> Energy drink</label>
+        <label class="chip"><input type="checkbox" name="caffeineTypeChips" value="Soda"> Soda</label>
+        <label class="chip"><input type="checkbox" name="caffeineTypeChips" value="None"> None</label>
+      </div>
+
+      <div class="field-grid">
+        <div>
+          <label>Caffeine amount</label>
+          <input id="caffeineAmount" placeholder="Example: 2 coffees">
+        </div>
+
+        <div>
+          <label>Last caffeine time</label>
+          <input id="caffeineTime" type="time">
+        </div>
+      </div>
+
+      <label>Other drinks</label>
+      <input id="caffeine" placeholder="Juice, soda, alcohol, protein shake, etc.">
+
+      <label>After caffeine, did anything change?</label>
+      <textarea id="caffeineReaction" placeholder="Example: more anxious, more alert, headache, no change"></textarea>
+
+      <button class="primary" onclick="saveFluids()">Save Fluid Log</button>
+    </div>
+
+  </div>
+</section>
+
 
     <section id="insights" class="screen">
       <div class="topbar">
@@ -1388,6 +1928,7 @@ body.keyboard-open .messages{
     let anxietyChartInstance = null;
     let thinkingTimer = null;
     let thinkingStartTime = null;
+    
     function getData() {
   const defaultData = {
     version: "1.0.0",
@@ -1483,18 +2024,29 @@ body.keyboard-open .messages{
         data.insights.recommendations = [];
       }
 
-      data.health = data.health.map((item, index) => ({
+data.health = data.health.map((item, index) => ({
   id: item.id || `health-${Date.now()}-${index}`,
   date: item.date || new Date().toLocaleString(),
+  timestamp: item.timestamp || "",
+  logType: item.logType || "daily-health",
 
   mood: item.mood || "",
   sleep: item.sleep || "",
+  sleepQuality: item.sleepQuality || "",
   energy: item.energy || "",
   pain: item.pain || "",
-  symptoms: item.symptoms || "",
-
   anxiety: item.anxiety || "",
   stress: item.stress || "",
+
+  symptoms: item.symptoms || "",
+  symptomSeverity: item.symptomSeverity || "",
+  bodyLocation: item.bodyLocation || "",
+  symptomStartTime: item.symptomStartTime || "",
+  symptomDuration: item.symptomDuration || "",
+  possibleTriggers: item.possibleTriggers || "",
+  reliefTried: item.reliefTried || "",
+  reliefResult: item.reliefResult || "",
+
   water: item.water || "",
   caffeine: item.caffeine || "",
   food: item.food || "",
@@ -1504,33 +2056,60 @@ body.keyboard-open .messages{
   environment: item.environment || "",
   notes: item.notes || ""
 }));
-      data.anxiety = data.anxiety.map((item, index) => ({
-        id: item.id || `anxiety-${Date.now()}-${index}`,
-        date: item.date || new Date().toLocaleString(),
-        level: item.level || "",
-        trigger: item.trigger || "",
-        bodySymptoms: item.bodySymptoms || "",
-        coping: item.coping || "",
-        notes: item.notes || ""
-      }));
 
-      data.food = data.food.map((item, index) => ({
-        id: item.id || `food-${Date.now()}-${index}`,
-        date: item.date || new Date().toLocaleString(),
-        meal: item.meal || "",
-        food: item.food || "",
-        reaction: item.reaction || "",
-        notes: item.notes || ""
-      }));
+data.anxiety = data.anxiety.map((item, index) => ({
+  id: item.id || `anxiety-${Date.now()}-${index}`,
+  date: item.date || new Date().toLocaleString(),
+  timestamp: item.timestamp || "",
+  logType: item.logType || "anxiety-episode",
 
-      data.fluids = data.fluids.map((item, index) => ({
-        id: item.id || `fluid-${Date.now()}-${index}`,
-        date: item.date || new Date().toLocaleString(),
-        water: item.water || "",
-        caffeine: item.caffeine || "",
-        symptoms: item.symptoms || "",
-        notes: item.notes || ""
-      }));
+  level: item.level || "",
+  startTime: item.startTime || "",
+  duration: item.duration || "",
+  trigger: item.trigger || "",
+  bodySymptoms: item.bodySymptoms || "",
+  thoughts: item.thoughts || "",
+  coping: item.coping || "",
+  afterLevel: item.afterLevel || "",
+  whatHelpedMost: item.whatHelpedMost || "",
+  notes: item.notes || ""
+}));
+
+data.food = data.food.map((item, index) => ({
+  id: item.id || `food-${Date.now()}-${index}`,
+  date: item.date || new Date().toLocaleString(),
+  timestamp: item.timestamp || "",
+  logType: item.logType || "food-reaction",
+
+  meal: item.meal || "",
+  mealTime: item.mealTime || "",
+  food: item.food || "",
+  foodCategories: item.foodCategories || "",
+  appetite: item.appetite || "",
+  reaction: item.reaction || "",
+  reactionDelay: item.reactionDelay || "",
+  severity: item.severity || "",
+  cravings: item.cravings || "",
+  notes: item.notes || ""
+}));
+
+data.fluids = data.fluids.map((item, index) => ({
+  id: item.id || `fluid-${Date.now()}-${index}`,
+  date: item.date || new Date().toLocaleString(),
+  timestamp: item.timestamp || "",
+  logType: item.logType || "fluid-hydration",
+
+  water: item.water || "",
+  electrolytes: item.electrolytes || "",
+  symptoms: item.symptoms || "",
+  caffeineType: item.caffeineType || "",
+  caffeineAmount: item.caffeineAmount || "",
+  caffeineTime: item.caffeineTime || "",
+  caffeine: item.caffeine || "",
+  caffeineReaction: item.caffeineReaction || "",
+  notes: item.notes || ""
+}));
+
 
       data.uploads = data.uploads.map((item, index) => ({
         id: item.id || `upload-${Date.now()}-${index}`,
@@ -1594,6 +2173,13 @@ body.keyboard-open .messages{
         day: "numeric"
       });
     }
+
+function formatHours(value) {
+  const text = String(value || "").trim();
+  if (!text) return "Not entered";
+  if (text.toLowerCase().includes("hour")) return text;
+  return `${text} hours`;
+}
 
 function openScreen(id) {
   const screen = document.getElementById(id);
@@ -1665,86 +2251,311 @@ function openScreen(id) {
       updateHomeMetrics();
     }
 
-    function saveHealth() {
+function getCheckedValues(name) {
+  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+    .map(input => input.value);
+}
+
+function combineValues(values, otherValue) {
+  const combined = [
+    ...(Array.isArray(values) ? values : []),
+    String(otherValue || "").trim()
+  ].filter(Boolean);
+
+  return combined.join(", ");
+}
+
+function clearCheckedValues(name) {
+  document.querySelectorAll(`input[name="${name}"]:checked`).forEach(input => {
+    input.checked = false;
+  });
+}
+
+function clearFields(ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    if (el.type === "range") {
+      el.value = 5;
+    } else {
+      el.value = "";
+    }
+  });
+}
+
+function saveHealth() {
   const data = getData();
+
+  const mood = combineValues(
+    getCheckedValues("moodChips"),
+    document.getElementById("moodOther")?.value
+  );
+
+  const symptoms = combineValues(
+    getCheckedValues("symptomChips"),
+    document.getElementById("symptomsOther")?.value
+  );
+
+  const possibleTriggers = combineValues(
+    getCheckedValues("triggerChips"),
+    document.getElementById("triggerOther")?.value
+  );
+
+  const reliefTried = combineValues(
+    getCheckedValues("reliefChips"),
+    ""
+  );
+
+  const activity = combineValues(
+    getCheckedValues("activityChips"),
+    document.getElementById("healthActivity")?.value
+  );
+
+  const environment = combineValues(
+    getCheckedValues("environmentChips"),
+    document.getElementById("healthEnvironment")?.value
+  );
 
   data.health.push({
     id: `health-${Date.now()}`,
     date: today(),
+    timestamp: new Date().toISOString(),
+    logType: "daily-health",
 
-    mood: document.getElementById("mood").value,
-    sleep: document.getElementById("sleep").value,
-    energy: document.getElementById("energy").value,
-    pain: document.getElementById("pain").value,
-    symptoms: document.getElementById("symptoms").value,
-
+    mood,
+    sleep: document.getElementById("sleep")?.value || "",
+    sleepQuality: document.getElementById("sleepQuality")?.value || "",
+    energy: document.getElementById("energy")?.value || "",
+    pain: document.getElementById("pain")?.value || "",
     anxiety: document.getElementById("healthAnxiety")?.value || "",
     stress: document.getElementById("healthStress")?.value || "",
+
+    symptoms,
+    symptomSeverity: document.getElementById("symptomSeverity")?.value || "",
+    bodyLocation: document.getElementById("bodyLocation")?.value || "",
+    symptomStartTime: document.getElementById("symptomStartTime")?.value || "",
+    symptomDuration: document.getElementById("symptomDuration")?.value || "",
+    possibleTriggers,
+    reliefTried,
+    reliefResult: document.getElementById("reliefResult")?.value || "",
+
     water: document.getElementById("healthWater")?.value || "",
     caffeine: document.getElementById("healthCaffeine")?.value || "",
     food: document.getElementById("healthFood")?.value || "",
-    activity: document.getElementById("healthActivity")?.value || "",
+    activity,
     medication: document.getElementById("healthMedication")?.value || "",
     menstrualCycle: document.getElementById("healthCycle")?.value || "",
-    environment: document.getElementById("healthEnvironment")?.value || "",
+    environment,
     notes: document.getElementById("healthNotes")?.value || ""
   });
 
   saveData(data);
-  alert("Health log saved.");
+
+  clearCheckedValues("moodChips");
+  clearCheckedValues("symptomChips");
+  clearCheckedValues("triggerChips");
+  clearCheckedValues("reliefChips");
+  clearCheckedValues("activityChips");
+  clearCheckedValues("environmentChips");
+
+  clearFields([
+    "moodOther",
+    "sleep",
+    "sleepQuality",
+    "energy",
+    "pain",
+    "healthAnxiety",
+    "healthStress",
+    "symptomsOther",
+    "symptomSeverity",
+    "bodyLocation",
+    "symptomStartTime",
+    "symptomDuration",
+    "triggerOther",
+    "reliefResult",
+    "healthWater",
+    "healthCaffeine",
+    "healthFood",
+    "healthActivity",
+    "healthMedication",
+    "healthCycle",
+    "healthEnvironment",
+    "healthNotes"
+  ]);
+
+  alert("Detailed health log saved.");
   updateHomeMetrics();
   openScreen("insights");
 }
 
-    function saveAnxiety() {
-      const data = getData();
 
-      data.anxiety.push({
-        id: `anxiety-${Date.now()}`,
-        date: today(),
-        level: document.getElementById("anxietyLevel").value,
-        trigger: document.getElementById("trigger").value,
-        bodySymptoms: document.getElementById("bodySymptoms").value,
-        coping: document.getElementById("coping").value
-      });
+   function saveAnxiety() {
+  const data = getData();
 
-      saveData(data);
-      alert("Anxiety check-in saved.");
-      updateHomeMetrics();
-      openScreen("insights");
-    }
+  const trigger = combineValues(
+    getCheckedValues("anxietyTriggerChips"),
+    document.getElementById("trigger")?.value
+  );
 
-    function saveFood() {
-      const data = getData();
+  const bodySymptoms = combineValues(
+    getCheckedValues("bodySymptomChips"),
+    document.getElementById("bodySymptoms")?.value
+  );
 
-      data.food.push({
-        id: `food-${Date.now()}`,
-        date: today(),
-        meal: document.getElementById("meal").value,
-        food: document.getElementById("foodText").value,
-        reaction: document.getElementById("foodReaction").value
-      });
+  const coping = combineValues(
+    getCheckedValues("copingChips"),
+    document.getElementById("coping")?.value
+  );
 
-      saveData(data);
-      alert("Food log saved.");
-      openScreen("insights");
-    }
+  data.anxiety.push({
+    id: `anxiety-${Date.now()}`,
+    date: today(),
+    timestamp: new Date().toISOString(),
+    logType: "anxiety-episode",
 
-    function saveFluids() {
-      const data = getData();
+    level: document.getElementById("anxietyLevel")?.value || "",
+    startTime: document.getElementById("anxietyStartTime")?.value || "",
+    duration: document.getElementById("anxietyDuration")?.value || "",
+    trigger,
+    bodySymptoms,
+    thoughts: document.getElementById("anxietyThoughts")?.value || "",
+    coping,
+    afterLevel: document.getElementById("anxietyAfter")?.value || "",
+    whatHelpedMost: document.getElementById("whatHelpedMost")?.value || ""
+  });
 
-      data.fluids.push({
-        id: `fluid-${Date.now()}`,
-        date: today(),
-        water: document.getElementById("water").value,
-        caffeine: document.getElementById("caffeine").value,
-        symptoms: document.getElementById("hydrationSymptoms").value
-      });
+  saveData(data);
 
-      saveData(data);
-      alert("Fluid log saved.");
-      openScreen("insights");
-    }
+  clearCheckedValues("anxietyTriggerChips");
+  clearCheckedValues("bodySymptomChips");
+  clearCheckedValues("copingChips");
+
+  clearFields([
+    "anxietyLevel",
+    "anxietyStartTime",
+    "anxietyDuration",
+    "trigger",
+    "bodySymptoms",
+    "anxietyThoughts",
+    "coping",
+    "anxietyAfter",
+    "whatHelpedMost"
+  ]);
+
+  document.getElementById("anxietyLevelValue").textContent = "5/10";
+
+  alert("Detailed anxiety check-in saved.");
+  updateHomeMetrics();
+  openScreen("insights");
+}
+
+function saveFood() {
+  const data = getData();
+
+  const foodCategories = combineValues(
+    getCheckedValues("foodCategoryChips"),
+    ""
+  );
+
+  const reaction = combineValues(
+    getCheckedValues("foodReactionChips"),
+    document.getElementById("foodReaction")?.value
+  );
+
+  const cravings = combineValues(
+    getCheckedValues("cravingChips"),
+    ""
+  );
+
+  data.food.push({
+    id: `food-${Date.now()}`,
+    date: today(),
+    timestamp: new Date().toISOString(),
+    logType: "food-reaction",
+
+    meal: document.getElementById("meal")?.value || "",
+    mealTime: document.getElementById("mealTime")?.value || "",
+    food: document.getElementById("foodText")?.value || "",
+    foodCategories,
+    appetite: document.getElementById("appetite")?.value || "",
+    reaction,
+    reactionDelay: document.getElementById("reactionDelay")?.value || "",
+    severity: document.getElementById("foodSeverity")?.value || "",
+    cravings
+  });
+
+  saveData(data);
+
+  clearCheckedValues("foodCategoryChips");
+  clearCheckedValues("foodReactionChips");
+  clearCheckedValues("cravingChips");
+
+  clearFields([
+    "meal",
+    "mealTime",
+    "foodText",
+    "appetite",
+    "foodReaction",
+    "reactionDelay",
+    "foodSeverity"
+  ]);
+
+  alert("Detailed food log saved.");
+  updateHomeMetrics();
+  openScreen("insights");
+}
+
+
+function saveFluids() {
+  const data = getData();
+
+  const hydrationSymptoms = combineValues(
+    getCheckedValues("hydrationSymptomChips"),
+    document.getElementById("hydrationSymptoms")?.value
+  );
+
+  const caffeineType = combineValues(
+    getCheckedValues("caffeineTypeChips"),
+    ""
+  );
+
+  data.fluids.push({
+    id: `fluid-${Date.now()}`,
+    date: today(),
+    timestamp: new Date().toISOString(),
+    logType: "fluid-hydration",
+
+    water: document.getElementById("water")?.value || "",
+    electrolytes: document.getElementById("electrolytes")?.value || "",
+    symptoms: hydrationSymptoms,
+
+    caffeineType,
+    caffeineAmount: document.getElementById("caffeineAmount")?.value || "",
+    caffeineTime: document.getElementById("caffeineTime")?.value || "",
+    caffeine: document.getElementById("caffeine")?.value || "",
+    caffeineReaction: document.getElementById("caffeineReaction")?.value || ""
+  });
+
+  saveData(data);
+
+  clearCheckedValues("hydrationSymptomChips");
+  clearCheckedValues("caffeineTypeChips");
+
+  clearFields([
+    "water",
+    "electrolytes",
+    "hydrationSymptoms",
+    "caffeineAmount",
+    "caffeineTime",
+    "caffeine",
+    "caffeineReaction"
+  ]);
+
+  alert("Detailed fluid log saved.");
+  updateHomeMetrics();
+  openScreen("insights");
+}
 
     function generateAutoInsights(data) {
       const insights = [];
@@ -1874,33 +2685,43 @@ function generateCorrelationInsights(data) {
 `;
 
       if (data.health.length > 0) {
-        const last = data.health[data.health.length - 1];
+  const last = data.health[data.health.length - 1];
 
-        box.innerHTML += `
-          <div class="data-row">
-            <strong>Last health log:</strong><br>
-            Mood: ${last.mood || "Not entered"}<br>
-            Sleep: ${last.sleep || "Not entered"} hours<br>
-            Energy: ${last.energy || "Not entered"}/10<br>
-            Pain: ${last.pain || "Not entered"}/10<br>
-            Symptoms: ${last.symptoms || "None entered"}
-          </div>
-        `;
-      }
+  box.innerHTML += `
+    <div class="data-row">
+      <strong>Last health log:</strong><br>
+      Mood: ${escapeHTML(last.mood || "Not entered")}<br>
+      Sleep: ${escapeHTML(formatHours(last.sleep))}<br>
+      Sleep quality: ${escapeHTML(last.sleepQuality || "Not entered")}/10<br>
+      Energy: ${escapeHTML(last.energy || "Not entered")}/10<br>
+      Pain: ${escapeHTML(last.pain || "Not entered")}/10<br>
+      Anxiety: ${escapeHTML(last.anxiety || "Not entered")}/10<br>
+      Stress: ${escapeHTML(last.stress || "Not entered")}/10<br>
+      Symptoms: ${escapeHTML(last.symptoms || "None entered")}<br>
+      Possible triggers: ${escapeHTML(last.possibleTriggers || "Not entered")}<br>
+      Relief tried: ${escapeHTML(last.reliefTried || "Not entered")}<br>
+      Relief result: ${escapeHTML(last.reliefResult || "Not entered")}
+    </div>
+  `;
+}
 
       if (data.anxiety.length > 0) {
-        const last = data.anxiety[data.anxiety.length - 1];
+  const last = data.anxiety[data.anxiety.length - 1];
 
-        box.innerHTML += `
-          <div class="data-row">
-            <strong>Last anxiety log:</strong><br>
-            Level: ${last.level || "Not entered"}/10<br>
-            Trigger: ${last.trigger || "Not entered"}<br>
-            Body symptoms: ${last.bodySymptoms || "Not entered"}<br>
-            What helped: ${last.coping || "Not entered"}
-          </div>
-        `;
-      }
+  box.innerHTML += `
+    <div class="data-row">
+      <strong>Last anxiety log:</strong><br>
+      Level: ${escapeHTML(last.level || "Not entered")}/10<br>
+      Start time: ${escapeHTML(last.startTime || "Not entered")}<br>
+      Duration: ${escapeHTML(last.duration || "Not entered")}<br>
+      Trigger: ${escapeHTML(last.trigger || "Not entered")}<br>
+      Body symptoms: ${escapeHTML(last.bodySymptoms || "Not entered")}<br>
+      Thoughts: ${escapeHTML(last.thoughts || "Not entered")}<br>
+      Coping: ${escapeHTML(last.coping || "Not entered")}<br>
+      After level: ${escapeHTML(last.afterLevel || "Not entered")}/10
+    </div>
+  `;
+}
 
       if (data.food.length > 0) {
         const last = data.food[data.food.length - 1];
@@ -2006,32 +2827,59 @@ function generateCorrelationInsights(data) {
         <p><strong>Total fluid logs:</strong> ${data.fluids.length}</p>
       `;
 
-      if (data.health.length > 0) {
-        const last = data.health[data.health.length - 1];
+     if (data.health.length > 0) {
+  const last = data.health[data.health.length - 1];
 
-        report.innerHTML += `
-          <h4>Most Recent Health Log</h4>
-          <p><strong>Date:</strong> ${escapeHTML(last.date)}</p>
-          <p><strong>Mood:</strong> ${escapeHTML(last.mood)}</p>
-          <p><strong>Sleep:</strong> ${escapeHTML(last.sleep)} hours</p>
-          <p><strong>Energy:</strong> ${escapeHTML(last.energy)}/10</p>
-          <p><strong>Pain:</strong> ${escapeHTML(last.pain)}/10</p>
-          <p><strong>Symptoms:</strong> ${escapeHTML(last.symptoms)}</p>
-        `;
-      }
+  report.innerHTML += `
+    <h4>Most Recent Health Log</h4>
+    <p><strong>Date:</strong> ${escapeHTML(last.date)}</p>
+    <p><strong>Mood:</strong> ${escapeHTML(last.mood || "Not entered")}</p>
+    <p><strong>Sleep:</strong> ${escapeHTML(formatHours(last.sleep))}</p>
+    <p><strong>Sleep quality:</strong> ${escapeHTML(last.sleepQuality || "Not entered")}/10</p>
+    <p><strong>Energy:</strong> ${escapeHTML(last.energy || "Not entered")}/10</p>
+    <p><strong>Pain:</strong> ${escapeHTML(last.pain || "Not entered")}/10</p>
+    <p><strong>Anxiety:</strong> ${escapeHTML(last.anxiety || "Not entered")}/10</p>
+    <p><strong>Stress:</strong> ${escapeHTML(last.stress || "Not entered")}/10</p>
+
+    <h4>Symptoms & Body Signals</h4>
+    <p><strong>Symptoms:</strong> ${escapeHTML(last.symptoms || "None entered")}</p>
+    <p><strong>Severity:</strong> ${escapeHTML(last.symptomSeverity || "Not entered")}/10</p>
+    <p><strong>Body location:</strong> ${escapeHTML(last.bodyLocation || "Not entered")}</p>
+    <p><strong>Started:</strong> ${escapeHTML(last.symptomStartTime || "Not entered")}</p>
+    <p><strong>Duration:</strong> ${escapeHTML(last.symptomDuration || "Not entered")}</p>
+    <p><strong>Possible triggers:</strong> ${escapeHTML(last.possibleTriggers || "Not entered")}</p>
+    <p><strong>Relief tried:</strong> ${escapeHTML(last.reliefTried || "Not entered")}</p>
+    <p><strong>Relief result:</strong> ${escapeHTML(last.reliefResult || "Not entered")}</p>
+
+    <h4>Lifestyle Context</h4>
+    <p><strong>Water:</strong> ${escapeHTML(last.water || "Not entered")} cups</p>
+    <p><strong>Caffeine:</strong> ${escapeHTML(last.caffeine || "Not entered")}</p>
+    <p><strong>Food:</strong> ${escapeHTML(last.food || "Not entered")}</p>
+    <p><strong>Activity:</strong> ${escapeHTML(last.activity || "Not entered")}</p>
+    <p><strong>Medication / supplements:</strong> ${escapeHTML(last.medication || "Not entered")}</p>
+    <p><strong>Cycle:</strong> ${escapeHTML(last.menstrualCycle || "Not entered")}</p>
+    <p><strong>Environment:</strong> ${escapeHTML(last.environment || "Not entered")}</p>
+    <p><strong>Notes:</strong> ${escapeHTML(last.notes || "None")}</p>
+  `;
+}
 
       if (data.anxiety.length > 0) {
-        const last = data.anxiety[data.anxiety.length - 1];
+  const last = data.anxiety[data.anxiety.length - 1];
 
-        report.innerHTML += `
-          <h4>Most Recent Anxiety Check-In</h4>
-          <p><strong>Date:</strong> ${escapeHTML(last.date)}</p>
-          <p><strong>Level:</strong> ${escapeHTML(last.level)}/10</p>
-          <p><strong>Trigger:</strong> ${escapeHTML(last.trigger)}</p>
-          <p><strong>Body symptoms:</strong> ${escapeHTML(last.bodySymptoms)}</p>
-          <p><strong>What helped:</strong> ${escapeHTML(last.coping)}</p>
-        `;
-      }
+  report.innerHTML += `
+    <h4>Most Recent Anxiety Check-In</h4>
+    <p><strong>Date:</strong> ${escapeHTML(last.date)}</p>
+    <p><strong>Level:</strong> ${escapeHTML(last.level || "Not entered")}/10</p>
+    <p><strong>Start time:</strong> ${escapeHTML(last.startTime || "Not entered")}</p>
+    <p><strong>Duration:</strong> ${escapeHTML(last.duration || "Not entered")}</p>
+    <p><strong>Trigger:</strong> ${escapeHTML(last.trigger || "Not entered")}</p>
+    <p><strong>Body symptoms:</strong> ${escapeHTML(last.bodySymptoms || "Not entered")}</p>
+    <p><strong>Main thought:</strong> ${escapeHTML(last.thoughts || "Not entered")}</p>
+    <p><strong>Coping used:</strong> ${escapeHTML(last.coping || "Not entered")}</p>
+    <p><strong>After coping level:</strong> ${escapeHTML(last.afterLevel || "Not entered")}/10</p>
+    <p><strong>What helped most:</strong> ${escapeHTML(last.whatHelpedMost || "Not entered")}</p>
+  `;
+}
     }
 
     function localDetectCrisis(message) {
@@ -2859,7 +3707,9 @@ function removeThinking(){
       const lastAnxiety = data.anxiety[data.anxiety.length - 1];
 
       document.getElementById("moodMetric").textContent = lastHealth?.mood || "Good";
-      document.getElementById("sleepMetric").textContent = lastHealth?.sleep ? `${lastHealth.sleep} hrs` : "-- hrs";
+      document.getElementById("sleepMetric").textContent = lastHealth?.sleep
+  ? formatHours(lastHealth.sleep).replace(" hours", " hrs")
+  : "-- hrs";
       document.getElementById("logMetric").textContent = data.health.length + data.anxiety.length + data.food.length + data.fluids.length;
       document.getElementById("anxietyMetric").textContent = lastAnxiety?.level ? `${lastAnxiety.level}/10` : "--";
     }
