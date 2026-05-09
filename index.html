@@ -3641,19 +3641,23 @@ body.viz-fit-mode .medora-wide-scroll {
 </div>
 
 <div class="medora-body-viewer-wrap">
-  <model-viewer
-    id="medoraBodyViewer"
-    class="medora-body-viewer"
-    src="models/female-body.glb"
-    camera-controls
-    interaction-prompt="none"
-    shadow-intensity="0"
-    exposure="1.1"
-    camera-orbit="0deg 78deg 3.2m"
-    min-camera-orbit="auto auto 2.4m"
-    max-camera-orbit="auto auto 5m"
-    touch-action="pan-y"
-  ></model-viewer>
+<model-viewer
+  id="medoraBodyViewer"
+  class="medora-body-viewer"
+  src="models/female-body.glb"
+  camera-controls
+  auto-rotate
+  interaction-prompt="none"
+  shadow-intensity="0.4"
+  exposure="1.4"
+  camera-orbit="0deg 75deg 2.2m"
+  min-camera-orbit="auto auto 1.2m"
+  max-camera-orbit="auto auto 5m"
+  field-of-view="25deg"
+  touch-action="pan-y"
+  onload="console.log('Female body model loaded')"
+  onerror="alert('3D model failed to load')"
+></model-viewer>
 </div>
 
         <div class="human-tabs">
