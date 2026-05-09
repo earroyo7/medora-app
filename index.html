@@ -6205,8 +6205,8 @@ const bodyViewer = document.getElementById("medoraBodyViewer");
 
 if (bodyViewer) {
   const savedSrc = savedBodyModel === "male"
-    ? "/models/male-body.glb"
-    : "/models/female-body.glb";
+  ? "models/male-body.glb"
+  : "models/female-body.glb";
 
   if (bodyViewer.getAttribute("src") !== savedSrc) {
     bodyViewer.setAttribute("src", savedSrc);
