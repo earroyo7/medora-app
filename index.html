@@ -1086,6 +1086,7 @@ body.keyboard-open .messages{
       <button onclick="go('food')">🍽 Food Intake</button>
       <button onclick="go('fluids')">💧 Fluid Intake</button>
       <button onclick="go('insights')">📊 My Patterns</button>
+      <button onclick="go('visualization')">🧬 Data Visualization</button>
       <button onclick="go('doctor')">📄 Doctor Report</button>
       <button onclick="go('chat')">💬 Chat</button>
     </aside>
@@ -1182,6 +1183,14 @@ body.keyboard-open .messages{
             <button class="action" onclick="openScreen('insights')">
               <span class="action-icon" style="background:var(--blue)">▥</span>
               <span><h3>My Patterns</h3><p>View insights and trends</p></span>
+            </button>
+            
+            <button class="action" onclick="openScreen('visualization')">
+              <span class="action-icon" style="background:#0EA5E9">🧬</span>
+              <span>
+                <h3>Data Visualization</h3>
+                <p>Body map, trends, charts</p>
+              </span>
             </button>
 
             <button class="action" onclick="openScreen('doctor')">
