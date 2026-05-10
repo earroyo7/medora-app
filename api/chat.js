@@ -532,34 +532,207 @@ function detectEmotionConfidence(message) {
 }
 
 // ---------- RESEARCH NEED DETECTION ----------
+// ---------- ADVANCED RESEARCH NEED DETECTION ----------
 function detectResearchNeed(message) {
-  return hasAnyPhrase(message, [
+  const text = normalizeText(message);
+
+  const explicitResearch = hasAnyPhrase(text, [
     "latest",
     "current",
     "up to date",
+    "updated",
+    "new",
+    "recent",
     "research",
     "studies",
     "study",
     "scientific",
     "science",
     "evidence",
+    "evidence based",
     "guidelines",
     "clinical guideline",
+    "medical guideline",
     "source",
     "sources",
     "credible",
     "peer reviewed",
     "medical journal",
     "what does science say",
-    "new treatment",
-    "recent data",
     "look this up",
     "search online",
     "internet",
-    "web"
+    "web",
+    "according to",
+    "is it true",
+    "fact check",
+    "verify",
+    "compare sources"
   ]);
+
+  const healthResearch = hasAnyPhrase(text, [
+    "cdc",
+    "who",
+    "nih",
+    "mayo clinic",
+    "cleveland clinic",
+    "healthline",
+    "pubmed",
+    "medical",
+    "symptom",
+    "symptoms",
+    "condition",
+    "treatment",
+    "medicine",
+    "medication",
+    "side effect",
+    "diagnosis",
+    "lab result",
+    "blood test",
+    "scan",
+    "mri",
+    "ct scan",
+    "ultrasound",
+    "pregnancy",
+    "sleep",
+    "nutrition",
+    "diet",
+    "hydration",
+    "exercise",
+    "pain",
+    "headache",
+    "heart",
+    "blood pressure",
+    "diabetes",
+    "infection",
+    "cancer",
+    "allergy"
+  ]);
+
+  const mentalHealthResearch = hasAnyPhrase(text, [
+    "mental health",
+    "anxiety",
+    "depression",
+    "panic attack",
+    "trauma",
+    "ptsd",
+    "adhd",
+    "ocd",
+    "bipolar",
+    "therapy",
+    "therapist",
+    "cbt",
+    "dbt",
+    "stress",
+    "burnout",
+    "grief",
+    "loneliness",
+    "attachment",
+    "emotional regulation"
+  ]);
+
+  const relationshipResearch = hasAnyPhrase(text, [
+    "relationship",
+    "dating",
+    "breakup",
+    "divorce",
+    "marriage",
+    "partner",
+    "boyfriend",
+    "girlfriend",
+    "ex",
+    "attachment style",
+    "communication",
+    "conflict",
+    "trust issues",
+    "love bombing",
+    "gaslighting",
+    "narcissistic",
+    "toxic relationship",
+    "family conflict",
+    "friendship"
+  ]);
+
+  const financialResearch = hasAnyPhrase(text, [
+    "finance",
+    "financial",
+    "money",
+    "budget",
+    "debt",
+    "credit score",
+    "loan",
+    "mortgage",
+    "rent",
+    "tax",
+    "insurance",
+    "investing",
+    "stocks",
+    "retirement",
+    "savings",
+    "inflation",
+    "interest rate",
+    "business",
+    "income",
+    "salary",
+    "career",
+    "job market"
+  ]);
+
+  const legalOrPolicyResearch = hasAnyPhrase(text, [
+    "law",
+    "legal",
+    "policy",
+    "rules",
+    "regulation",
+    "rights",
+    "privacy",
+    "hipaa",
+    "fda",
+    "terms",
+    "compliance"
+  ]);
+
+  return (
+    explicitResearch ||
+    (
+      hasAnyPhrase(text, ["what is", "how does", "can", "should", "is", "are", "why"]) &&
+      (
+        healthResearch ||
+        mentalHealthResearch ||
+        relationshipResearch ||
+        financialResearch ||
+        legalOrPolicyResearch
+      )
+    )
+  );
 }
 
+// ---------- ADVANCED DEEP RESEARCH DETECTION ----------
+function detectDeepResearch(message) {
+  return hasAnyPhrase(message, [
+    "deep research",
+    "full analysis",
+    "detailed analysis",
+    "systematic review",
+    "meta analysis",
+    "meta-analysis",
+    "all studies",
+    "comprehensive",
+    "break down the evidence",
+    "compare the evidence",
+    "pros and cons",
+    "risk and benefits",
+    "risks and benefits",
+    "clinical evidence",
+    "research paper",
+    "medical literature",
+    "what do studies show",
+    "what does the research say",
+    "give me sources",
+    "cite sources",
+    "show sources"
+  ]);
+}
 
 // ---------- MASTER MEDORA SYSTEM PROMPT ----------
 const medoraSystemPrompt = `
